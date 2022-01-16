@@ -4,10 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,7 +35,41 @@ namespace ReactiveUI.UwpRouting.Views
         public SecondView()
         {
             InitializeComponent();
-            this.WhenActivated(disposables => { });
+            this.WhenActivated(disposables =>
+            {
+                this.BindInteraction(ViewModel, x => x.ConfirmLeavePage, async ic =>
+                {
+                    await MainThread.GetCoreDispatcherForMainThread()?.RunTaskAsync(async () =>
+                    {
+                        var dialog = new ContentDialog()
+                        {
+                            Title = ic.Input.Title,
+                            Content = ic.Input.Text,
+                            PrimaryButtonText = ic.Input.Stay,
+                            SecondaryButtonText = ic.Input.Leave,
+                            DefaultButton = ContentDialogButton.Primary
+                        };
+                        Exception exception = null;
+                        ContentDialogResult result = ContentDialogResult.None;
+                        await dialog.ShowAsync().AsTask().ContinueWith(res =>
+                        {
+                            if (res.IsFaulted)
+                            {
+                                exception = res.Exception;
+                                return;
+                            }
+                            result = res.Result;
+                        });
+                        if (exception != null)
+                        {
+                            throw exception;
+                        }
+                        ic.SetOutput(result == ContentDialogResult.Secondary);
+                    });
+                }).DisposeWith(disposables);
+
+                this.Bind(ViewModel, x => x.SkipConfirmLeave, view => view.SkipConfirmLeaveCheckBox.IsChecked).DisposeWith(disposables);
+            });
         }
 
         public SecondViewModel ViewModel

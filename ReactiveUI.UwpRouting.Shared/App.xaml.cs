@@ -72,16 +72,18 @@ namespace ReactiveUI.UwpRouting
             _window = Windows.UI.Xaml.Window.Current;
 #endif
 
-            var rootFrame = _window.Content as Frame;
+            //var rootFrame = _window.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
-            if (rootFrame == null)
+            if (!(_window.Content is MainView mainView))
             {
-                // Create a Frame to act as the navigation context and navigate to the first page
-                rootFrame = new Frame();
+                //// Create a Frame to act as the navigation context and navigate to the first page
+                //rootFrame = new Frame();
 
-                rootFrame.NavigationFailed += OnNavigationFailed;
+                //rootFrame.NavigationFailed += OnNavigationFailed;
+
+                mainView = new MainView();
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -89,30 +91,31 @@ namespace ReactiveUI.UwpRouting
                 }
 
                 // Place the frame in the current Window
-                _window.Content = rootFrame;
+                _window.Content = mainView;
             }
 
 #if !(NET5_0 && WINDOWS)
             if (e.PrelaunchActivated == false)
 #endif
             {
-                if (rootFrame.Content == null)
-                {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
-                    rootFrame.Navigate(typeof(MainView), e.Arguments);
-                }
+                //if (rootFrame.Content == null)
+                //{
+                //    // When the navigation stack isn't restored navigate to the first page,
+                //    // configuring the new page by passing required information as a navigation
+                //    // parameter
+                //    rootFrame.Navigate(typeof(MainView), e.Arguments);
+                //}
+
                 // Ensure the current window is active
                 _window.Activate();
             }
-#if NETFX_CORE || __WASM__
-            var frame = (Frame)Windows.UI.Xaml.Window.Current.Content;
-            var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
-            frame.Navigated += (s, args) => manager.AppViewBackButtonVisibility = frame.CanGoBack
-            ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
-            : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
-#endif
+            //#if NETFX_CORE || __WASM__
+            //            var frame = (Frame)Windows.UI.Xaml.Window.Current.Content;
+            //            var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
+            //            frame.Navigated += (s, args) => manager.AppViewBackButtonVisibility = frame.CanGoBack
+            //            ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
+            //            : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+            //#endif
         }
 
         /// <summary>

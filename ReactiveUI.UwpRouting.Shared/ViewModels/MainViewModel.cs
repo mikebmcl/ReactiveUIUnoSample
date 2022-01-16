@@ -23,15 +23,6 @@ namespace ReactiveUI.UwpRouting.ViewModels
     // framework around which an app could be built.
     public class MainViewModel : ReactiveObject, IScreen//, IEnableLogger
     {
-        // The Router associated with this Screen.
-        // Required by the IScreen interface.
-        public RoutingState Router { get; } = new RoutingState();
-
-        [Reactive]
-        public ContentControl CurrentHeader { get; set; }
-        [Reactive]
-        public bool IsBackEnabled { get; set; }
-
         /// <summary>
         /// Lets us keep track of when navigation has occurred. For more info about <see cref="IObservable{T}"/>, 
         /// see https://docs.microsoft.com/en-us/dotnet/api/system.iobserver-1?view=netstandard-2.0
@@ -72,11 +63,12 @@ namespace ReactiveUI.UwpRouting.ViewModels
             {
                 //this.Log().
                 //throw new NotImplementedException();
+                throw error;
             }
 
             public void OnNext(IChangeSet<IRoutableViewModel> value)
             {
-                m_mainViewModel.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
+                m_mainViewModel.m_navigationView.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
                 var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
 #if NETFX_CORE || __WASM__
                 manager.AppViewBackButtonVisibility = m_mainViewModel.Router.NavigationStack.Count > 1
@@ -92,7 +84,7 @@ namespace ReactiveUI.UwpRouting.ViewModels
                     }
                     if (displayViewModelBase.HeaderContent is string headerString)
                     {
-                        m_mainViewModel.CurrentHeader = new ContentControl() { Content = new TextBlock() { Text = headerString } };
+                        m_mainViewModel.CurrentHeader = headerString;//new ContentControl() { Content = new TextBlock() { Text = headerString } };
                     }
                     else
                     {
@@ -105,6 +97,15 @@ namespace ReactiveUI.UwpRouting.ViewModels
                 }
             }
         }
+
+        // The Router associated with this Screen.
+        // Required by the IScreen interface.
+        public RoutingState Router { get; } = new RoutingState();
+
+        [Reactive]
+        public object CurrentHeader { get; set; }
+        //[Reactive]
+        //public bool IsBackEnabled { get; set; }
 
         private NavigationChangedObserver m_NavigationChangedObserver;
 
@@ -143,11 +144,7 @@ namespace ReactiveUI.UwpRouting.ViewModels
             m_navigationView = navigationView;
             m_navigationView.BackRequested += NavigationView_BackRequested;
             m_navigationView.ItemInvoked += NavigationView_ItemInvoked;
-
-#if __ANDROID__ || __IOS__
-            // For small form-factor platforms we want the most compact pane display mode
-            m_navigationView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
-#endif
+            CurrentHeader = "Loading";//new ContentControl { Content = new TextBlock() { Text = "Loading" } };
             //
             // View resolution
             //
@@ -212,14 +209,15 @@ namespace ReactiveUI.UwpRouting.ViewModels
             // - uwp: title bar back button
             // - droid: os back button/gesture
             // - wasm: browser back button
-            manager.BackRequested += (s, e) =>
-            {
-                if (Router.NavigationStack.Count > 1)
-                {
-                    Router.NavigateBack.Execute();
-                    e.Handled = true;
-                }
-            };
+            manager.BackRequested += SystemNavigationManager_BackRequested;
+            //    (s, e) =>
+            //{
+            //    if (Router.NavigationStack.Count > 1)
+            //    {
+            //        Router.NavigateBack.Execute();
+            //        e.Handled = true;
+            //    }
+            //};
 #endif
 #if NETFX_CORE || __WASM__
             manager.AppViewBackButtonVisibility = Router.NavigationStack.Count > 1
@@ -230,9 +228,39 @@ namespace ReactiveUI.UwpRouting.ViewModels
 
         private void NavigationView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (Router.NavigationStack.Count > 1)
+            if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
             {
-                Router.NavigateBack.Execute();
+                if (callOnBackNavigation.CallOnBackNavigation())
+                {
+                    Router.NavigateBack.Execute();
+                }
+            }
+            else
+            {
+                if (Router.NavigationStack.Count > 1)
+                {
+                    Router.NavigateBack.Execute();
+                }
+            }
+        }
+
+        private void SystemNavigationManager_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs args)
+        {
+            if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+            {
+                if (callOnBackNavigation.CallOnBackNavigation())
+                {
+                    Router.NavigateBack.Execute();
+                }
+                args.Handled = true;
+            }
+            else
+            {
+                if (Router.NavigationStack.Count > 1)
+                {
+                    Router.NavigateBack.Execute();
+                    args.Handled = true;
+                }
             }
         }
     }

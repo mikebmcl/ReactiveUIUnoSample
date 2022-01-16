@@ -21,11 +21,15 @@ namespace ReactiveUI.UwpRouting
         public MainView()
         {
             this.InitializeComponent();
+            //#if __ANDROID__ || __IOS__ || true
+            //            // For small form-factor platforms we want the most compact pane display mode
+            //            RootNavigationView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+            //#endif
             ViewModel = new MainViewModel(RootNavigationView);
             this.WhenActivated(disposables =>
             {
-                this.Bind(ViewModel, x => x.CurrentHeader, view => view.RootNavigationView.Header).DisposeWith(disposables);
-                this.Bind(ViewModel, x => x.IsBackEnabled, view => view.RootNavigationView.IsBackEnabled).DisposeWith(disposables);
+                //this.Bind(ViewModel, x => x.CurrentHeader, view => view.RootNavigationView.Header).DisposeWith(disposables);
+                //this.Bind(ViewModel, x => x.IsBackEnabled, view => view.RootNavigationView.IsBackEnabled).DisposeWith(disposables);
             });
         }
 

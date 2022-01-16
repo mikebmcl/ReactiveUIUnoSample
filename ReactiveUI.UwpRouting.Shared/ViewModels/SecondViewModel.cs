@@ -1,13 +1,15 @@
-﻿namespace ReactiveUI.UwpRouting.ViewModels
-{
-    public class SecondViewModel : ReactiveObject, IRoutableViewModel
-    {
-        public string UrlPathSegment { get; }
-        public IScreen HostScreen { get; }
+﻿using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
-        public SecondViewModel(IScreen screen)
+namespace ReactiveUI.UwpRouting.ViewModels
+{
+    public class SecondViewModel : DisplayViewModelBase
+    {
+        public SecondViewModel(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
         {
-            HostScreen = screen;
+            HeaderContent = new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } };
         }
+
+        public override object HeaderContent { get; set; }
     }
 }

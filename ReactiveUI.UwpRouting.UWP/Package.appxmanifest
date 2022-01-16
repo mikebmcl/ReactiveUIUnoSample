@@ -14,8 +14,8 @@
   <mp:PhoneIdentity PhoneProductId="140ef37f-7c02-4aab-8d75-a64d9d1b626c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>ReactiveUI.UwpRouting</DisplayName>
-    <PublisherDisplayName>ReactiveUI.UwpRouting</PublisherDisplayName>
+    <DisplayName>ReactiveUI with Uno</DisplayName>
+    <PublisherDisplayName>(None)</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

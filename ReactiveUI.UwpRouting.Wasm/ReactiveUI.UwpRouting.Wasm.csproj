@@ -4,6 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <NoWarn>NU1701</NoWarn>
+    <Product>ReactiveUI with Uno for WebAssembly</Product>
+    <Copyright>Copyright © 2022</Copyright>
+    <Description>A sample showing how to use ReactiveUI with Uno Platform.</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>

@@ -1,25 +1,24 @@
 ﻿using ReactiveUI.Fody.Helpers;
 
 using System;
+using System.Windows.Input;
 
 namespace ReactiveUI.UwpRouting.ViewModels
 {
-    public class FirstViewModel : ReactiveObject, IRoutableViewModel
+    public class FirstViewModel : DisplayViewModelBase
     {
+        public FirstViewModel(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
+        {
+            HeaderContent = "First Page";
+            NextPageCommand = ReactiveCommand.CreateFromObservable(() => HostScreen.Router.Navigate.Execute(new SecondViewModel(HostScreen)));
+        }
+
         // The ReactiveAttribute from Fody adds INotifyProperty, including a backing field, for us. See: https://www.reactiveui.net/docs/handbook/view-models/boilerplate-code
         [Reactive]
         public decimal EnteredAmount { get; set; }
 
-        public FirstViewModel(IScreen screen)
-        {
-            HostScreen = screen;
-            //this.RaisePropertyChanged(nameof(EnteredAmount));
-        }
+        public override object HeaderContent { get; set; }
 
-        // Reference to IScreen that owns the routable view model.
-        public IScreen HostScreen { get; }
-
-        // Unique identifier for the routable view model.
-        public string UrlPathSegment { get; } = Guid.NewGuid().ToString().Substring(0, 5);
+        public ICommand NextPageCommand { get; set; }
     }
 }

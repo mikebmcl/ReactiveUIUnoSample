@@ -40,6 +40,10 @@ namespace ReactiveUI.UwpRouting
         {
             InitializeLogging();
 
+#if __IOS__ || __ANDROID__
+            global::Uno.UI.FeatureConfiguration.Style.ConfigureNativeFrameNavigation();
+#endif
+
             this.InitializeComponent();
 
 #if HAS_UNO || NETFX_CORE
@@ -102,6 +106,13 @@ namespace ReactiveUI.UwpRouting
                 // Ensure the current window is active
                 _window.Activate();
             }
+#if NETFX_CORE || __WASM__
+            var frame = (Frame)Windows.UI.Xaml.Window.Current.Content;
+            var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
+            frame.Navigated += (s, args) => manager.AppViewBackButtonVisibility = frame.CanGoBack
+            ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
+            : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+#endif
         }
 
         /// <summary>
@@ -181,7 +192,7 @@ namespace ReactiveUI.UwpRouting
                 // builder.AddFilter("Uno.Foundation.WebAssemblyRuntime", LogLevel.Debug );
             });
 
-            ////global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = factory;
+            //global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = factory;
         }
     }
 }

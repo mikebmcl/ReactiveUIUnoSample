@@ -4,6 +4,9 @@
     <OutputType Condition="'$(Configuration)'=='Release'">WinExe</OutputType>
     <OutputType Condition="'$(Configuration)'=='Debug'">Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <Description>A sample showing how to use ReactiveUI with Uno Platform.</Description>
+    <Product>ReactiveUI with Uno for Gtk</Product>
+    <Copyright>Copyright © 2022</Copyright>
   </PropertyGroup>
   <ItemGroup Condition="exists('..\ReactiveUI.UwpRouting.UWP')">
     <EmbeddedResource Include="..\ReactiveUI.UwpRouting.UWP\Package.appxmanifest" LogicalName="Package.appxmanifest" />

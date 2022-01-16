@@ -5,6 +5,9 @@
     <TargetFramework>tizen80</TargetFramework>
     <OutputType>Exe</OutputType>
     <DefineConstants>$(DefineConstants);__TIZEN__;</DefineConstants>
+    <Product>ReactiveUI with Uno for Tizen</Product>
+    <Copyright>Copyright © 2022</Copyright>
+    <Description>A sample showing how to use ReactiveUI with Uno Platform.</Description>
   </PropertyGroup>
   <ItemGroup Condition="exists('..\ReactiveUI.UwpRouting.UWP')">
     <EmbeddedResource Include="..\ReactiveUI.UwpRouting.UWP\Package.appxmanifest" LogicalName="Package.appxmanifest" />

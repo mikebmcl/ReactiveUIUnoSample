@@ -1,6 +1,8 @@
 ﻿
 using ReactiveUI.UwpRouting.ViewModels;
 
+using System.Reactive.Disposables;
+
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -19,8 +21,12 @@ namespace ReactiveUI.UwpRouting
         public MainView()
         {
             this.InitializeComponent();
-            ViewModel = new MainViewModel();
-            this.WhenActivated(disposables => { });
+            ViewModel = new MainViewModel(RootNavigationView);
+            this.WhenActivated(disposables =>
+            {
+                this.Bind(ViewModel, x => x.CurrentHeader, view => view.RootNavigationView.Header).DisposeWith(disposables);
+                this.Bind(ViewModel, x => x.IsBackEnabled, view => view.RootNavigationView.IsBackEnabled).DisposeWith(disposables);
+            });
         }
 
         public MainViewModel ViewModel

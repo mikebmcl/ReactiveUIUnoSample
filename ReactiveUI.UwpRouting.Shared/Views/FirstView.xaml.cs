@@ -32,6 +32,7 @@ namespace ReactiveUI.UwpRouting.Views
             this.WhenActivated(disposables =>
             {
                 this.Bind(ViewModel, x => x.EnteredAmount, view => view.EnteredAmountTextBox.Text, Observable.FromEventPattern(EnteredAmountTextBox, nameof(TextBox.LostFocus)), null, m_decimalToStringBindingTypeConverter, m_decimalToStringBindingTypeConverter).DisposeWith(disposables);
+                this.BindCommand(ViewModel, x => x.NextPageCommand, x => x.NextPageButton);
             });
         }
 

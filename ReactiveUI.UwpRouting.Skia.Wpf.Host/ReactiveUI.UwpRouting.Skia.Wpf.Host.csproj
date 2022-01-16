@@ -5,6 +5,9 @@
     <OutputType Condition="'$(Configuration)'=='Debug'">Exe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Product>ReactiveUI with Uno for WPF</Product>
+    <Description>A sample showing how to use ReactiveUI with Uno Platform.</Description>
+    <Copyright>Copyright © 2022</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ReactiveUI.Uno" Version="17.*" />
@@ -16,5 +19,18 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.UwpRouting.Skia.WPF\ReactiveUI.UwpRouting.Skia.WPF.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>

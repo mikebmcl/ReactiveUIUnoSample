@@ -2,6 +2,6 @@
 
     splashScreenImage: "Assets/SplashScreen.png",
     splashScreenColor: "#fff",
-    displayName: "ReactiveUI.UwpRouting"
+    displayName: "ReactiveUI with Uno for WebAssembly"
 
 }

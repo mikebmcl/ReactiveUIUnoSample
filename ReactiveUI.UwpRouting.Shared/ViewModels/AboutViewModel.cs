@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
+using Windows.System;
+
 namespace ReactiveUI.UwpRouting.ViewModels
 {
     public class AboutViewModel : DisplayViewModelBase
     {
-        public AboutViewModel(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
+        public AboutViewModel(IScreen hostScreen, DispatcherQueue uiThreadDispatcherQueue, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, uiThreadDispatcherQueue, urlPathSegment, useNullUrlPathSegment)
         {
             // Note: For UWP, Skia.Gtk, and Skia.Tizen these properties should be extracted from the App Manifest or hard-coded here.
             HeaderContent = "About";

@@ -10,6 +10,12 @@
 			-->
       <Version>6.2.13</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp">
+      <Version>7.1.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls.Primitives">
+      <Version>7.1.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml" Version="2.7.0" />
     <PackageReference Include="ReactiveUI.Fody">
       <Version>17.1.17</Version>

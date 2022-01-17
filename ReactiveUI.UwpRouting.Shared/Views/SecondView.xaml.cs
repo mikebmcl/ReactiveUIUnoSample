@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,6 +20,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+
+using Microsoft.Toolkit.Extensions;
+using Microsoft.Toolkit.Uwp;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -32,14 +36,17 @@ namespace ReactiveUI.UwpRouting.Views
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty
             .Register(nameof(ViewModel), typeof(SecondViewModel), typeof(SecondView), null);
 
+        private DispatcherQueue m_mainThreadDispatcherQueue;
         public SecondView()
         {
             InitializeComponent();
+            m_mainThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
             this.WhenActivated(disposables =>
             {
                 this.BindInteraction(ViewModel, x => x.ConfirmLeavePage, async ic =>
                 {
-                    await MainThread.GetCoreDispatcherForMainThread()?.RunTaskAsync(async () =>
+                    await m_mainThreadDispatcherQueue.EnqueueAsync(async () =>
                     {
                         var dialog = new ContentDialog()
                         {

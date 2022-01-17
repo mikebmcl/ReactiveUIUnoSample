@@ -5,24 +5,26 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Microsoft.Toolkit.Uwp;
 
 namespace ReactiveUI.UwpRouting.ViewModels
 {
     public class SecondViewModel : DisplayViewModelBase, Interfaces.ICallOnBackNavigation
     {
-        public SecondViewModel(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
+        public SecondViewModel(IScreen hostScreen, DispatcherQueue uiThreadDispatcherQueue, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, uiThreadDispatcherQueue, urlPathSegment, useNullUrlPathSegment)
         {
             HeaderContent = new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } };
             m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave), bool>();
             SkipConfirmLeave = false;
         }
-
         public override object HeaderContent { get; set; }
 
         private readonly Interaction<(string Title, string Text, string Stay, string Leave), bool> m_confirmLeavePage;
+
         public Interaction<(string Title, string Text, string Stay, string Leave), bool> ConfirmLeavePage => m_confirmLeavePage;
 
         /// <summary>
@@ -50,11 +52,11 @@ namespace ReactiveUI.UwpRouting.ViewModels
                 var result = await m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave"));
                 if (result)
                 {
-                    await MainThread.GetCoreDispatcherForMainThread().RunAsync(CoreDispatcherPriority.Normal, () =>
+                    await UIThreadDispatcherQueue.EnqueueAsync(() =>
                     {
                         SkipConfirmLeave = true;
                         HostScreen.Router.NavigateBack.Execute();
-                    }).AsTask();
+                    });
                 }
             });
             return false;

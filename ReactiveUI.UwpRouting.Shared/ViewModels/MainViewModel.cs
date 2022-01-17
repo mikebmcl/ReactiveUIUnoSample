@@ -6,6 +6,8 @@ using System.Reflection;
 
 using DynamicData;
 
+using Microsoft.Toolkit.Uwp;
+
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.UwpRouting.Views;
 
@@ -13,6 +15,7 @@ using Splat;
 
 using Uno.Extensions;
 
+using Windows.System;
 using Windows.UI.Xaml.Controls;
 
 namespace ReactiveUI.UwpRouting.ViewModels
@@ -68,33 +71,36 @@ namespace ReactiveUI.UwpRouting.ViewModels
 
             public void OnNext(IChangeSet<IRoutableViewModel> value)
             {
-                m_mainViewModel.m_navigationView.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
-                var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
-#if NETFX_CORE || __WASM__
-                manager.AppViewBackButtonVisibility = m_mainViewModel.Router.NavigationStack.Count > 1
-                ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
-                : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
-#endif
-                if (m_mainViewModel.Router.CurrentViewModel is DisplayViewModelBase displayViewModelBase)
+                m_mainViewModel.m_uiThreadDispatcherQueue.EnqueueAsync(() =>
                 {
-                    if (displayViewModelBase.NoHeader)
+                    m_mainViewModel.m_navigationView.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
+                    var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
+#if NETFX_CORE || __WASM__
+                    manager.AppViewBackButtonVisibility = m_mainViewModel.Router.NavigationStack.Count > 1
+                    ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
+                    : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+#endif
+                    if (m_mainViewModel.Router.NavigationStack.Last() is DisplayViewModelBase displayViewModelBase)
                     {
-                        m_mainViewModel.CurrentHeader = null;
-                        return;
-                    }
-                    if (displayViewModelBase.HeaderContent is string headerString)
-                    {
-                        m_mainViewModel.CurrentHeader = headerString;//new ContentControl() { Content = new TextBlock() { Text = headerString } };
+                        if (displayViewModelBase.NoHeader)
+                        {
+                            m_mainViewModel.m_navigationView.Header = "";
+                            return;
+                        }
+                        if (displayViewModelBase.HeaderContent is string headerString)
+                        {
+                            m_mainViewModel.m_navigationView.Header = new ContentControl() { Content = new TextBlock() { Text = headerString } };
+                        }
+                        else
+                        {
+                            m_mainViewModel.m_navigationView.Header = new ContentControl() { Content = displayViewModelBase.HeaderContent };
+                        }
                     }
                     else
                     {
-                        m_mainViewModel.CurrentHeader = new ContentControl() { Content = displayViewModelBase.HeaderContent };
+                        m_mainViewModel.m_navigationView.Header = "";
                     }
-                }
-                else
-                {
-                    m_mainViewModel.CurrentHeader = null;
-                }
+                });
             }
         }
 
@@ -102,12 +108,7 @@ namespace ReactiveUI.UwpRouting.ViewModels
         // Required by the IScreen interface.
         public RoutingState Router { get; } = new RoutingState();
 
-        [Reactive]
-        public object CurrentHeader { get; set; }
-        //[Reactive]
-        //public bool IsBackEnabled { get; set; }
-
-        private NavigationChangedObserver m_NavigationChangedObserver;
+        private NavigationChangedObserver m_navigationChangedObserver;
 
         public void NavigationView_ItemInvoked(NavigationView view, NavigationViewItemInvokedEventArgs args)
         {
@@ -132,19 +133,24 @@ namespace ReactiveUI.UwpRouting.ViewModels
             switch (item.Tag)
             {
                 case "about":
-                    return new AboutViewModel(this);
+                    return new AboutViewModel(this, m_uiThreadDispatcherQueue);
                 default:
                     return null;
             }
         }
+        private DispatcherQueue m_uiThreadDispatcherQueue;
 
         private NavigationView m_navigationView;
+
         public MainViewModel(NavigationView navigationView)
         {
+            m_uiThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
             m_navigationView = navigationView;
             m_navigationView.BackRequested += NavigationView_BackRequested;
             m_navigationView.ItemInvoked += NavigationView_ItemInvoked;
-            CurrentHeader = "Loading";//new ContentControl { Content = new TextBlock() { Text = "Loading" } };
+
+            //m_navigationView.Header = "Loading";//new ContentControl { Content = new TextBlock() { Text = "Loading" } };
             //
             // View resolution
             //
@@ -178,8 +184,8 @@ namespace ReactiveUI.UwpRouting.ViewModels
 
             // We want to know when navigation has occurred so that we can update the NavigationView's header and manage whether or not the
             // user can navigate back based on the number of items on the Router's NavigationStack.
-            m_NavigationChangedObserver = new NavigationChangedObserver(this);
-            m_NavigationChangedObserver.Subscribe(Router.NavigationChanged);
+            m_navigationChangedObserver = new NavigationChangedObserver(this);
+            m_navigationChangedObserver.Subscribe(Router.NavigationChanged);
 
             // Manage the routing state. Use the Router.Navigate.Execute
             // command to navigate to different view models.
@@ -197,7 +203,7 @@ namespace ReactiveUI.UwpRouting.ViewModels
             // are limited (e.g. if your app should just swap between pages or if you want to give the user the option to go back to the "home" page without navigating
             // back through all the previous pages).
 
-            Router.Navigate.Execute(new FirstViewModel(this));
+            Router.Navigate.Execute(new FirstViewModel(this, m_uiThreadDispatcherQueue));
 
             // The following is some special code needed to let us handle things like pressing the browser back button in WASM or the system back button in Android
             // This is based off of https://platform.uno/docs/articles/features/native-frame-nav.html with modifications due to our use of ReactiveUI rather than

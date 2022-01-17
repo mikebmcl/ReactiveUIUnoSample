@@ -21,7 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DecimalToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICallOnBackNavigation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MainThread.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>

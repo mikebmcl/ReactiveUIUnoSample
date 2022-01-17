@@ -17,7 +17,7 @@
                          IsBackEnabled="False"
                          AlwaysShowHeader="True"
                          PaneTitle="Common Items"
-                         Header="{x:Bind ViewModel.CurrentHeader, Mode=OneWay}"
+                         Header="Welcome!"
                          android:PaneDisplayMode="LeftMinimal"
                          ios:PaneDisplayMode="LeftMinimal"
                          IsPaneOpen="False"

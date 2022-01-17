@@ -73,6 +73,12 @@
       <Version>17.1.17</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI.Uno" Version="17.*" />
+    <PackageReference Include="Uno.Microsoft.Toolkit.Uwp">
+      <Version>7.1.11</Version>
+    </PackageReference>
+    <PackageReference Include="Uno.Microsoft.Toolkit.Uwp.UI.Controls.Primitives">
+      <Version>7.1.11</Version>
+    </PackageReference>
     <PackageReference Include="Uno.UI.RemoteControl" Version="4.0.11" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />

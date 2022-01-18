@@ -19,6 +19,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AtomicBoolean.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DecimalToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICallOnBackNavigation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainView.xaml.cs">

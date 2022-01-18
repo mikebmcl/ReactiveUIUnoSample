@@ -47,7 +47,7 @@ namespace ReactiveUIUnoSample.Views
             {
                 this.BindInteraction(ViewModel, x => x.ConfirmLeavePage, async ic =>
                 {
-                    await m_mainThreadDispatcherQueue.EnqueueAsync(async () =>
+                    try
                     {
                         var dialog = new ContentDialog()
                         {
@@ -72,8 +72,13 @@ namespace ReactiveUIUnoSample.Views
                         {
                             throw exception;
                         }
-                        ic.SetOutput(result == ContentDialogResult.Secondary);
-                    });
+                        await ic.Input.FinishInteraction(result == ContentDialogResult.Secondary);
+                        ic.SetOutput(null);
+                    }
+                    finally
+                    {
+                        ic.Input.IsNavigating.ForceToFalse();
+                    }
                 }).DisposeWith(disposables);
 
                 this.Bind(ViewModel, x => x.SkipConfirmLeave, view => view.SkipConfirmLeaveCheckBox.IsChecked).DisposeWith(disposables);

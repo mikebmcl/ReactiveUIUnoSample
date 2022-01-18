@@ -8,8 +8,10 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel>
-        <TextBlock Text="Ahoy! I'm the second page!" Margin="8" />
-        <CheckBox x:Name="SkipConfirmLeaveCheckBox" Content="Skip confirm leave?" />
+    <StackPanel Margin="8">
+        <TextBlock Text="Ahoy! I'm the second page!"
+                   Margin="8" />
+        <CheckBox x:Name="SkipConfirmLeaveCheckBox"
+                  Content="Skip confirm leave?" />
     </StackPanel>
 </Page>

@@ -19,14 +19,14 @@ namespace ReactiveUIUnoSample.ViewModels
         public SecondViewModel(IScreen hostScreen, DispatcherQueue uiThreadDispatcherQueue, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, uiThreadDispatcherQueue, urlPathSegment, useNullUrlPathSegment)
         {
             HeaderContent = new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } };
-            m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave), bool>();
+            m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>();
             SkipConfirmLeave = false;
         }
         public override object HeaderContent { get; set; }
 
-        private readonly Interaction<(string Title, string Text, string Stay, string Leave), bool> m_confirmLeavePage;
+        private readonly Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object> m_confirmLeavePage;
 
-        public Interaction<(string Title, string Text, string Stay, string Leave), bool> ConfirmLeavePage => m_confirmLeavePage;
+        public Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object> ConfirmLeavePage => m_confirmLeavePage;
 
         /// <summary>
         /// Note: This is bound to the IsChecked property of a <see cref="Windows.UI.Xaml.Controls.CheckBox"/> as an example of
@@ -42,24 +42,36 @@ namespace ReactiveUIUnoSample.ViewModels
         [Reactive]
         public bool? SkipConfirmLeave { get; set; }
 
+        private async Task FinishCallOnNavigateBack(bool navigateBack)
+        {
+            if (navigateBack)
+            {
+                SkipConfirmLeave = true;
+                await HostScreen.Router.NavigateBack.Execute();
+            }
+        }
+        private readonly AtomicBoolean m_isNavigating = new AtomicBoolean();
         public bool CallOnBackNavigation()
         {
             if (SkipConfirmLeave is true)
             {
                 return true;
             }
-            _ = Task.Run(async () =>
+            if (!m_isNavigating.Set(true))
             {
-                var result = await m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave"));
-                if (result)
-                {
-                    await UIThreadDispatcherQueue.EnqueueAsync(() =>
-                    {
-                        SkipConfirmLeave = true;
-                        HostScreen.Router.NavigateBack.Execute();
-                    });
-                }
-            });
+                m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave", FinishInteraction: FinishCallOnNavigateBack, IsNavigating: m_isNavigating)).ObserveOn(RxApp.MainThreadScheduler).Subscribe();
+            }
+            //if (result)
+            //{
+            //    RxApp.MainThreadScheduler.Schedule(result, (scheduler, res) =>
+            //    {
+            //    //)
+            //    //await UIThreadDispatcherQueue.EnqueueAsync(() =>
+            //    //{
+            //        SkipConfirmLeave = true;
+            //        HostScreen.Router.NavigateBack.Execute();
+            //    });
+            //}
             return false;
         }
     }

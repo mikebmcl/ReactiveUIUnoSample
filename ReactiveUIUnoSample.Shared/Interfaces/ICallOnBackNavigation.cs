@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
@@ -12,6 +14,10 @@ namespace ReactiveUIUnoSample.Interfaces
     /// when the user attempts to navigate away from the associated view using a system back button (web browser back, 
     /// Android back button, etc.), which is handled in <see cref="ViewModels.MainViewModel"/> for cross-platform reasons.
     /// For more information, see: https://platform.uno/docs/articles/features/native-frame-nav.html .
+    /// NOTE: On WASM, if the user repeatedly presses the browser back button, this may not be called, especially if the 
+    /// current page does not implement this but a previous page in the navigation stack does.
+    /// NOTE: On iOS, this cannot be used to prevent backward navigation. See the summary section of <see cref="CallOnBackNavigation"/>
+    /// for suggested workarounds.
     /// </summary>
     internal interface ICallOnBackNavigation
     {
@@ -28,14 +34,24 @@ namespace ReactiveUIUnoSample.Interfaces
         /// This method should not attempt call anything that needs to run on the UI thread as this will cause the application
         /// to silently crash on certain platforms. If you wish to display a <see cref="Popup"/>, a <see cref="ContentDialog"/>,
         /// etc., you should schedule them to run on a background thread, e.g. by using a non-awaited <see cref="Task.Run(System.Action)"/>
-        /// and ensure that anything that needs to run in on the UI thread inside that method is scheduled to run on the UI thread's
-        /// <see cref="CoreDispatcher"/>, which can be obtained from <see cref="MainThread.GetCoreDispatcherForMainThread"/>.
+        /// and ensure that anything that needs to run in on the UI thread inside that method is scheduled to run on the UI thread. An
+        /// example of how to do this using ReactiveUI's <see cref="ReactiveUI.RxApp.MainThreadScheduler"/> together with the 
+        /// <see cref="Observable.ObserveOn{TSource}(IObservable{TSource}, System.Reactive.Concurrency.IScheduler)"/> extension
+        /// method for <see cref="IObservable{T}"/> can be seen in <see cref="ViewModels.SecondViewModel.CallOnBackNavigation"/>.
         /// 
         /// If you do use that method of displaying a popup/dialog, you should return false from this method and then have
         /// the background task initiate navigation back on the main thread if the user confirms that they would like to
         /// leave without finishing/saving whatever they were doing.
         /// 
         /// It's highly recommended that you use interactions for UI operations: <see cref="ReactiveUI.Interaction{TInput, TOutput}"/>
+        /// 
+        /// IMPORTANT: On WASM, if the user repeatedly presses the browser back button, this may not be called, especially if the 
+        /// current page does not implement this but a previous page in the navigation stack does. If important data might be lost 
+        /// or other problems might occur, you should consider mitigation strategies such as saving state at appropriate times, and
+        /// giving the user the option to return to where they last left off the next time they start the application or on whatever
+        /// page they stop at if they do not competely exit the application by multiple, rapid browser back button presses. This only 
+        /// applies to browser back button; the application's NavigationView back button properly ignores multiple clicks/taps and 
+        /// will run this method.
         /// 
         /// IMPORTANT: You cannot stop back button navigation from proceeding on iOS. For that platform you should consider
         /// doing something such as using this to save state and then on the page they navigated back to showing a dialog asking

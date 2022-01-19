@@ -16,7 +16,7 @@ namespace ReactiveUIUnoSample.ViewModels
 {
     public class SecondViewModel : DisplayViewModelBase, Interfaces.ICallOnBackNavigation
     {
-        public SecondViewModel(IScreen hostScreen, DispatcherQueue uiThreadDispatcherQueue, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, uiThreadDispatcherQueue, urlPathSegment, useNullUrlPathSegment)
+        public SecondViewModel(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
         {
             HeaderContent = new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } };
             m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>();
@@ -59,19 +59,9 @@ namespace ReactiveUIUnoSample.ViewModels
             }
             if (!m_isNavigating.Set(true))
             {
+                // Note: Without the call to Subscribe at the end, this code will never execute.
                 m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave", FinishInteraction: FinishCallOnNavigateBack, IsNavigating: m_isNavigating)).ObserveOn(RxApp.MainThreadScheduler).Subscribe();
             }
-            //if (result)
-            //{
-            //    RxApp.MainThreadScheduler.Schedule(result, (scheduler, res) =>
-            //    {
-            //    //)
-            //    //await UIThreadDispatcherQueue.EnqueueAsync(() =>
-            //    //{
-            //        SkipConfirmLeave = true;
-            //        HostScreen.Router.NavigateBack.Execute();
-            //    });
-            //}
             return false;
         }
     }

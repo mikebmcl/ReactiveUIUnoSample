@@ -18,6 +18,7 @@ using Splat;
 using Uno.Extensions;
 
 using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace ReactiveUIUnoSample.ViewModels
@@ -50,7 +51,7 @@ namespace ReactiveUIUnoSample.ViewModels
                 if (provider != null)
                 {
                     m_unsubscriber?.Dispose();
-                    m_unsubscriber = provider.Subscribe(this);
+                    m_unsubscriber = provider.ObserveOn(RxApp.MainThreadScheduler).Subscribe(this);
                 }
             }
 
@@ -73,36 +74,37 @@ namespace ReactiveUIUnoSample.ViewModels
 
             public void OnNext(IChangeSet<IRoutableViewModel> value)
             {
-                m_mainViewModel.m_uiThreadDispatcherQueue.EnqueueAsync(() =>
-                {
-                    m_mainViewModel.m_navigationView.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
-                    var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
+                m_mainViewModel.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
+                var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
 #if NETFX_CORE || __WASM__
-                    manager.AppViewBackButtonVisibility = m_mainViewModel.Router.NavigationStack.Count > 1
-                    ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
-                    : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+                manager.AppViewBackButtonVisibility = m_mainViewModel.Router.NavigationStack.Count > 1
+                ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
+                : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
 #endif
-                    if (m_mainViewModel.Router.NavigationStack.Last() is DisplayViewModelBase displayViewModelBase)
+                if (m_mainViewModel.Router.NavigationStack.Last() is DisplayViewModelBase displayViewModelBase)
+                {
+                    if (m_mainViewModel.CurrentHeader == null)
                     {
-                        if (displayViewModelBase.NoHeader)
-                        {
-                            m_mainViewModel.m_navigationView.Header = "";
-                            return;
-                        }
-                        if (displayViewModelBase.HeaderContent is string headerString)
-                        {
-                            m_mainViewModel.m_navigationView.Header = new ContentControl() { Content = new TextBlock() { Text = headerString } };
-                        }
-                        else
-                        {
-                            m_mainViewModel.m_navigationView.Header = new ContentControl() { Content = displayViewModelBase.HeaderContent };
-                        }
+                        m_mainViewModel.CurrentHeader = new ContentControl();
+                    }
+                    if (displayViewModelBase.NoHeader)
+                    {
+                        m_mainViewModel.CurrentHeader.Content = null;
+                        return;
+                    }
+                    if (displayViewModelBase.HeaderContent is string headerString)
+                    {
+                        m_mainViewModel.CurrentHeader.Content = new TextBlock() { Text = headerString };
                     }
                     else
                     {
-                        m_mainViewModel.m_navigationView.Header = "";
+                        m_mainViewModel.CurrentHeader.Content = displayViewModelBase.HeaderContent;
                     }
-                });
+                }
+                else
+                {
+                    m_mainViewModel.CurrentHeader.Content = null;
+                }
             }
         }
 
@@ -110,7 +112,7 @@ namespace ReactiveUIUnoSample.ViewModels
         // Required by the IScreen interface.
         public RoutingState Router { get; } = new RoutingState();
 
-        private NavigationChangedObserver m_navigationChangedObserver;
+        private readonly NavigationChangedObserver m_navigationChangedObserver;
 
         public void NavigationView_ItemInvoked(NavigationView view, NavigationViewItemInvokedEventArgs args)
         {
@@ -135,22 +137,31 @@ namespace ReactiveUIUnoSample.ViewModels
             switch (item.Tag)
             {
                 case "about":
-                    return new AboutViewModel(this, m_uiThreadDispatcherQueue);
+                    return new AboutViewModel(this);
                 default:
                     return null;
             }
         }
-        private DispatcherQueue m_uiThreadDispatcherQueue;
 
         private NavigationView m_navigationView;
 
+        [Reactive]
+        public ContentControl CurrentHeader { get; set; }
+
+        [Reactive]
+        public bool IsBackEnabled { get; set; }
+
+        [Reactive]
+        public Thickness RoutedHostPadding { get; set; }
+
         public MainViewModel(NavigationView navigationView)
         {
-            m_uiThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
-
             m_navigationView = navigationView;
             m_navigationView.BackRequested += NavigationView_BackRequested;
             m_navigationView.ItemInvoked += NavigationView_ItemInvoked;
+            IsBackEnabled = false;
+            RoutedHostPadding = new Thickness(4);
+            CurrentHeader = new ContentControl() { };
 
             //m_navigationView.Header = "Loading";//new ContentControl { Content = new TextBlock() { Text = "Loading" } };
             //
@@ -178,7 +189,6 @@ namespace ReactiveUIUnoSample.ViewModels
             // Lastly, we're using Splat for dependency resolving because it doesn't require any additional setup or additional packages, but you can use a number of
             // other dependency resolvers instead if their functionality better fits your needs. For a list of them along with details about how to set them up to be
             // used with ReactiveUI, see: https://www.reactiveui.net/api/splat/imutabledependencyresolver/ 
-            //RoutingState
 
             //
             // Routing state management
@@ -205,7 +215,7 @@ namespace ReactiveUIUnoSample.ViewModels
             // are limited (e.g. if your app should just swap between pages or if you want to give the user the option to go back to the "home" page without navigating
             // back through all the previous pages).
 
-            Router.Navigate.Execute(new FirstViewModel(this, m_uiThreadDispatcherQueue));
+            Router.Navigate.Execute(new FirstViewModel(this));
 
             // The following is some special code needed to let us handle things like pressing the browser back button in WASM or the system back button in Android
             // This is based off of https://platform.uno/docs/articles/features/native-frame-nav.html with modifications due to our use of ReactiveUI rather than
@@ -234,41 +244,69 @@ namespace ReactiveUIUnoSample.ViewModels
 #endif
         }
 
+        private readonly AtomicBoolean m_navigationViewBackRequestedIsRunning = new AtomicBoolean();
         private void NavigationView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+            if (!m_navigationViewBackRequestedIsRunning.Set(true))
             {
-                if (callOnBackNavigation.CallOnBackNavigation())
+                try
                 {
-                    Router.NavigateBack.Execute();
+                    if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+                    {
+                        if (callOnBackNavigation.CallOnBackNavigation())
+                        {
+                            Router.NavigateBack.Execute();
+                        }
+                    }
+                    else
+                    {
+                        if (Router.NavigationStack.Count > 1)
+                        {
+                            Router.NavigateBack.Execute();
+                        }
+                    }
                 }
-            }
-            else
-            {
-                if (Router.NavigationStack.Count > 1)
+                finally
                 {
-                    Router.NavigateBack.Execute();
+                    m_navigationViewBackRequestedIsRunning.ForceToFalse();
                 }
             }
         }
 
+        private readonly AtomicBoolean m_systemNavigationManagerBackRequestedIsRunning = new AtomicBoolean();
         private void SystemNavigationManager_BackRequested(object sender, Windows.UI.Core.BackRequestedEventArgs args)
         {
-            if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+            // Note: On WASM, if the user repeatedly clicks the browser back button before this is called, backwards navigation will occur
+            if (!m_systemNavigationManagerBackRequestedIsRunning.Set(true))
             {
-                if (callOnBackNavigation.CallOnBackNavigation())
+                try
                 {
-                    Router.NavigateBack.Execute();
+                    if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+                    {
+                        if (callOnBackNavigation.CallOnBackNavigation())
+                        {
+                            Router.NavigateBack.Execute();
+                        }
+                        args.Handled = true;
+                    }
+                    else
+                    {
+                        if (Router.NavigationStack.Count > 1)
+                        {
+                            Router.NavigateBack.Execute();
+                            args.Handled = true;
+                        }
+                    }
                 }
-                args.Handled = true;
+                finally
+                {
+                    m_systemNavigationManagerBackRequestedIsRunning.ForceToFalse();
+                }
             }
             else
             {
-                if (Router.NavigationStack.Count > 1)
-                {
-                    Router.NavigateBack.Execute();
-                    args.Handled = true;
-                }
+                // Already running so mark as handled to prevent navigation from occurring while waiting for navigation to occur.
+                args.Handled = true;
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+
 using ReactiveUIUnoSample.ViewModels;
 
 using System;
@@ -43,9 +44,6 @@ namespace ReactiveUIUnoSample.Views
             set => ViewModel = (AboutViewModel)value;
         }
 
-        // An instance of a class that implements IBindingTypeConverter
-        //DecimalToStringBindingTypeConverter m_decimalToStringBindingTypeConverter = new DecimalToStringBindingTypeConverter();
-
         public AboutView()
         {
             this.InitializeComponent();
@@ -54,10 +52,9 @@ namespace ReactiveUIUnoSample.Views
             // See: https://www.reactiveui.net/docs/handbook/when-activated/ and https://www.reactiveui.net/docs/handbook/data-binding/
             this.WhenActivated(disposables =>
             {
-                this.Bind(ViewModel, x => x.AppProductNameText, view => view.AppProductNameTextBlock.Text).DisposeWith(disposables);
-                this.Bind(ViewModel, x => x.AppCopyrightText, view => view.AppCopyrightTextBlock.Text).DisposeWith(disposables);
-                this.Bind(ViewModel, x => x.AppVersionText, view => view.AppVersionTextBlock.Text).DisposeWith(disposables);
-                //this.Bind(ViewModel, x => x.EnteredAmount, view => view.EnteredAmountTextBox.Text, Observable.FromEventPattern(EnteredAmountTextBox, nameof(TextBox.LostFocus)), null, m_decimalToStringBindingTypeConverter, m_decimalToStringBindingTypeConverter).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, x => x.AppProductNameText, view => view.AppProductNameTextBlock.Text).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, x => x.AppCopyrightText, view => view.AppCopyrightTextBlock.Text).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, x => x.AppVersionText, view => view.AppVersionTextBlock.Text).DisposeWith(disposables);
             });
         }
     }

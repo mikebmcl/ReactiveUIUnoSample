@@ -14,10 +14,8 @@
     <muxc:NavigationView Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                          x:Name="RootNavigationView"
                          IsBackButtonVisible="Visible"
-                         IsBackEnabled="False"
                          AlwaysShowHeader="True"
-                         PaneTitle="Common Items"
-                         Header="Welcome!"
+                         PaneTitle="Common Tasks"
                          android:PaneDisplayMode="LeftMinimal"
                          ios:PaneDisplayMode="LeftMinimal"
                          IsPaneOpen="False"
@@ -56,6 +54,7 @@
             </NavigationView.PaneFooter>-->
 
         <!-- The RoutedViewHost is responsible for displaying all of the pages in the app. This is important to keep. -->
-        <reactiveUi:RoutedViewHost x:Name="RootContentControl" Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
+        <reactiveUi:RoutedViewHost x:Name="RoutedHostControl"
+                                   Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
     </muxc:NavigationView>
 </Page>

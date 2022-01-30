@@ -37,11 +37,9 @@ namespace ReactiveUIUnoSample.Views
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty
             .Register(nameof(ViewModel), typeof(SecondViewModel), typeof(SecondView), null);
 
-        private DispatcherQueue m_mainThreadDispatcherQueue;
         public SecondView()
         {
             InitializeComponent();
-            m_mainThreadDispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
             this.WhenActivated(disposables =>
             {

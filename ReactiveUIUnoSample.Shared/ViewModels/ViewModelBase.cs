@@ -12,6 +12,8 @@ namespace ReactiveUIUnoSample.ViewModels
         /// A string token representing the current ViewModel, such as 'login' or 'user'. Can be null
         /// </summary>
         public string UrlPathSegment { get; }
+
+        public IScreenWithContract HostScreenWithContract { get; }
         /// <summary>
         /// Gets the IScreen that this ViewModel is currently being shown in. This is
         /// passed into the ViewModel in the Constructor and saved as a ReadOnly Property.
@@ -35,9 +37,11 @@ namespace ReactiveUIUnoSample.ViewModels
         /// <param name="hostScreen">The IScreen that this ViewModel is currently being shown in.</param>
         /// <param name="urlPathSegment">The string value for <see cref="UrlPathSegment"/>, which will be this value or, if this is null, the result of calling <see cref="GenerateStringForUrlPathSegment(int)"/> unless <paramref name="useNullUrlPathSegment"/> is true, in which case <see cref="UrlPathSegment"/> will be null.</param>
         /// <param name="useNullUrlPathSegment">Forces <see cref="UrlPathSegment"/> to be null if <paramref name="urlPathSegment"/> is null.</param>
-        public ViewModelBase(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false)
+        public ViewModelBase(IScreenWithContract hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false)
         {
             HostScreen = hostScreen;
+            HostScreenWithContract = hostScreen;
+            //hostScreen.Contract = null;
             UrlPathSegment = urlPathSegment ?? (useNullUrlPathSegment ? null : GenerateStringForUrlPathSegment());
         }
     }

@@ -12,10 +12,15 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Grid.Row="0"
-                x:Name="NextPageButton"
-                Content="Next"
-                Margin="4" />
+        <StackPanel Grid.Row="0"
+                    Margin="0">
+            <Button x:Name="NextPageButton"
+                    Content="Next"
+                    Margin="4" />
+            <Button x:Name="AlternateNextPageButton"
+                    Content="Alternate Next"
+                    Margin="4" />
+        </StackPanel>
         <StackPanel Grid.Row="1"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">

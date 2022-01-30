@@ -17,7 +17,13 @@ namespace ReactiveUIUnoSample.Interfaces
     /// NOTE: On WASM, if the user repeatedly presses the browser back button, this may not be called, especially if the 
     /// current page does not implement this but a previous page in the navigation stack does.
     /// NOTE: On iOS, this cannot be used to prevent backward navigation. See the summary section of <see cref="CallOnBackNavigation"/>
-    /// for suggested workarounds.
+    /// for suggested workarounds. NOTE: It's generally a bad idea to have multiple views for a view model that implements
+    /// this because either every view must be configured to work properly, including setting bindings for things it doesn't 
+    /// use, for everything <see cref="ICallOnBackNavigation.CallOnBackNavigation"/> does, or the view model needs to be tailored
+    /// to deal with each view that uses it in order to avoid trying to invoke a binding that doesn't exist on one or more of
+    /// the views. That said, you can use multiple views for a view model that implements this; you just need to be careful to
+    /// ensure that either the views or the view model handle the custom back navigation behavior in <see cref="ICallOnBackNavigation.CallOnBackNavigation"/>
+    /// appropriately.
     /// </summary>
     internal interface ICallOnBackNavigation
     {

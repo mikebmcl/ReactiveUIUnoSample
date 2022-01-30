@@ -55,6 +55,7 @@
 
         <!-- The RoutedViewHost is responsible for displaying all of the pages in the app. This is important to keep. -->
         <reactiveUi:RoutedViewHost x:Name="RoutedHostControl"
+                                   ViewContract="{x:Bind ViewModel.Contract, Mode=OneWay}"
                                    Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
     </muxc:NavigationView>
 </Page>

@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AtomicBoolean.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DecimalToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICallOnBackNavigation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IScreenWithContract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -33,6 +34,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\AlternateSecondView.xaml.cs">
+      <DependentUpon>AlternateSecondView.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\FirstView.xaml.cs">
       <DependentUpon>FirstView.xaml</DependentUpon>
@@ -47,6 +51,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\AboutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\AlternateSecondView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -16,12 +16,25 @@ namespace ReactiveUIUnoSample.ViewModels
 {
     public class SecondViewModel : DisplayViewModelBase, Interfaces.ICallOnBackNavigation
     {
-        public SecondViewModel(IScreen hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
+        public SecondViewModel(IScreenWithContract hostScreen, Func<object> createHeaderContent, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
         {
-            HeaderContent = new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } };
-            m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>();
+            HeaderContent = createHeaderContent();
+            if (hostScreen.Contract == SecondViewContractName)
+            {
+                // Note: We only want the confirm leave if we are being attached to SecondView; AlternateSecondView's constructor does not have the BindInteraction
+                //  that SecondView's ctor has so if we try to navigate back from this we'd get a ReactiveUI.UnhandledInteractionException'2  thrown that would
+                //  take down the whole program.
+                // Note: That it's not recommended to have multiple views for a view model that implements ICallOnBackNavigation. Nonetheless there might be scenarios
+                //  where it makes sense for you to do it and so we handle this here by only creating an Interaction<...> for m_confirmLeavePage when this is being
+                //  used for SecondView and we're doing a null check on this in the CallBackOnNavigation method below to allow pass through navigation instead
+                //  of implementing a pass-through interaction binding in AlternateSecondView's ctor. 
+                m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>();
+            }
             SkipConfirmLeave = false;
         }
+        public const string SecondViewContractName = nameof(Views.SecondView);
+        public const string AlternateSecondViewContractName = nameof(Views.AlternateSecondView);
+
         public override object HeaderContent { get; set; }
 
         private readonly Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object> m_confirmLeavePage;
@@ -53,7 +66,7 @@ namespace ReactiveUIUnoSample.ViewModels
         private readonly AtomicBoolean m_isNavigating = new AtomicBoolean();
         public bool CallOnBackNavigation()
         {
-            if (SkipConfirmLeave is true)
+            if (SkipConfirmLeave is true || m_confirmLeavePage is null)
             {
                 return true;
             }

@@ -24,4 +24,5 @@
     <UpToDateCheckInput Include="..\ReactiveUIUnoSample.Shared\**\*.xaml" />
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" />
+  <Import Project="..\ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems" Label="Shared" />
 </Project>

@@ -109,6 +109,7 @@
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" />
+  <Import Project="..\ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- <Target Name="Issue3897Workaround" Condition=" '$(ManagedDesignTimeBuild)' == 'True' " AfterTargets="_RemoveLegacyDesigner"> -->
   <!-- See https://github.com/unoplatform/uno/issues/3897 and https://github.com/xamarin/xamarin-android/issues/5069 for more details -->

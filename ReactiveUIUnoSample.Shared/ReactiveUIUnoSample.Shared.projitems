@@ -9,16 +9,6 @@
     <Import_RootNamespace>ReactiveUIUnoSample</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="$(MSBuildThisFileDirectory)App.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </ApplicationDefinition>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AtomicBoolean.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DecimalToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICallOnBackNavigation.cs" />

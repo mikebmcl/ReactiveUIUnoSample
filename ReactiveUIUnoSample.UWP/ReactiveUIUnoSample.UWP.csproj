@@ -163,6 +163,7 @@
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" />
+  <Import Project="..\ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

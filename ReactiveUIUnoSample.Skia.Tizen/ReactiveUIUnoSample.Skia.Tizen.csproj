@@ -40,4 +40,5 @@
     <PackageReference Include="Uno.UI.RemoteControl" Version="4.0.13" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" />
+  <Import Project="..\ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems" Label="Shared" />
 </Project>

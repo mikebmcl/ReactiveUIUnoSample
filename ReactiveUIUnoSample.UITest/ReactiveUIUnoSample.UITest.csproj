@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,15 +13,30 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="17.1.17" />
     <PackageReference Include="ReactiveUI.Testing" Version="17.1.17" />
-    <PackageReference Include="Uno.UITest.Helpers" Version="1.1.0-dev.32" />
-    <PackageReference Include="Xamarin.UITest" Version="3.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.Uno" Version="17.1.17" />
+    <PackageReference Include="Uno.Core" Version="4.0.1" />
+    <PackageReference Include="Uno.Core.Build" Version="4.0.1" />
+    <PackageReference Include="Uno.Microsoft.Toolkit.Uwp" Version="7.1.11" />
+    <PackageReference Include="Uno.Microsoft.Toolkit.Uwp.UI.Controls.Primitives" Version="7.1.11" />
+    <PackageReference Include="Uno.UI" Version="4.0.13" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Windows.Foundation.UniversalApiContract">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\10.0.18362.0\Windows.Foundation.UniversalApiContract\8.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
-    </Reference>
+    <UpToDateCheckInput Include="..\ReactiveUIUnoSample.Shared\**\*.xaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Uno.UITest.Helpers\Uno.UITest.Helpers.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" />
 
 </Project>

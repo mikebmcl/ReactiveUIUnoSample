@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<IsTestProject>false</IsTestProject>
+		<GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageProjectUrl>https://github.com/nventive/Uno.UITest</PackageProjectUrl>
+		<PackageIconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</PackageIconUrl>
+		<Description>
+			This package provides a set of high level helpers for the Uno.UITest framework.
+
+			This framework can be used to test Uno PlatformWebAssembly apps through the use
+			of Selenuim, Xamarin.iOS and Xamarin.Android applications through Xamarin.UITest
+			and Microsoft AppCenter.
+		</Description>
+		<Copyright>Copyright (C) 2015-2019 nventive inc. - all rights reserved</Copyright>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Helpers\XamarinHelpers.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="IFluentInterface" Version="2.1.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="NUnit" Version="3.13.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Uno.UITest.Puppeteer\Uno.UITest.Selenium.csproj" />
+		<ProjectReference Include="..\uno.uitest\Uno.UITest.csproj" />
+	</ItemGroup>
+
+</Project>

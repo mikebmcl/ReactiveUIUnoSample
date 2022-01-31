@@ -111,6 +111,7 @@ namespace ReactiveUIUnoSample.ViewModels
 
         public MainViewModel(NavigationView navigationView)
         {
+            m_schedulerProvider = new SchedulerProvider();
             m_navigationView = navigationView;
             m_navigationView.BackRequested += NavigationView_BackRequested;
             m_navigationView.ItemInvoked += NavigationView_ItemInvoked;
@@ -146,7 +147,7 @@ namespace ReactiveUIUnoSample.ViewModels
             // are limited (e.g. if your app should just swap between pages or if you want to give the user the option to go back to the "home" page without navigating
             // back through all the previous pages).
 
-            Router.Navigate.Execute(new FirstViewModel(this));
+            Router.Navigate.Execute(new FirstViewModel(this, m_schedulerProvider));
 
             // The following is some special code needed to let us handle things like pressing the browser back button in WASM or the system back button in Android
             // This is based off of https://platform.uno/docs/articles/features/native-frame-nav.html with modifications due to our use of ReactiveUI rather than
@@ -213,6 +214,8 @@ namespace ReactiveUIUnoSample.ViewModels
             Locator.CurrentMutable.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
         }
 
+        private ISchedulerProvider m_schedulerProvider;
+
         // The Router associated with this Screen.
         // Required by the IScreen interface.
         public RoutingState Router { get; } = new RoutingState();
@@ -245,7 +248,7 @@ namespace ReactiveUIUnoSample.ViewModels
             switch (item.Tag)
             {
                 case "about":
-                    return new AboutViewModel(this);
+                    return new AboutViewModel(this, m_schedulerProvider);
                 default:
                     return null;
             }

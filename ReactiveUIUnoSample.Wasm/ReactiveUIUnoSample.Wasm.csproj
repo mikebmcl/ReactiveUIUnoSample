@@ -56,4 +56,8 @@
     <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="3.1.3" />
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" Condition="Exists('..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems')" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug' or '$(IsUiAutomationMappingEnabled)'=='True'">
+    <IsUiAutomationMappingEnabled>True</IsUiAutomationMappingEnabled>
+    <DefineConstants>$(DefineConstants);USE_UITESTS</DefineConstants>
+  </PropertyGroup>
 </Project>

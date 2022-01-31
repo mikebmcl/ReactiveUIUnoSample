@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:ReactiveUIUnoSample.Views"
+    xmlns:vms="using:ReactiveUIUnoSample.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -19,6 +19,7 @@
                     Margin="4" />
             <Button x:Name="AlternateNextPageButton"
                     Content="Alternate Next"
+                    AutomationProperties.AutomationId="AlternateNextPageButton"
                     Margin="4" />
         </StackPanel>
         <StackPanel Grid.Row="1"
@@ -27,9 +28,9 @@
             <TextBlock Text="Hello, I'm first the view!" Margin="8" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Enter currency amount:" Margin="8" VerticalAlignment="Center" />
-                <TextBox x:Name="EnteredAmountTextBox" Height="35" Margin="8" />
+                <!-- Note: You need to make sure to assign a unique AutomationProperties.AutomationId value for each control you might want to test with unit testing. The compiler will not verify uniqueness for you so it's up to you. It is not recommended that you assign a value to this that is the same as the x:Name of a different control because it's possible that the x:Name for that control might end up becoming something the test framework finds when looking for the control. See generally: https://docs.microsoft.com/en-us/dotnet/framework/ui-automation/using-ui-automation-for-automated-testing . Also: https://platform.uno/blog/an-introduction-to-unit-testing-for-uno-platform-applications/ . Note that AutomationProperties.AutomationId is bindable, which can help a lot both with maintaining unique ids and with avoiding hard-coding ids in multiple places; here we use a static readonly property which we will also use in the unit test -->
+                <TextBox x:Name="EnteredAmountTextBox" Height="35" Margin="8" AutomationProperties.AutomationId="{x:Bind vms:FirstViewModel.EnteredAmountTextBoxAutomationId, Mode=OneTime}" />
             </StackPanel>
-            <!--<TextBlock Text="{x:Bind ViewModel.UrlPathSegment, Mode=OneWay}" />-->
         </StackPanel>
     </Grid>
 </Page>

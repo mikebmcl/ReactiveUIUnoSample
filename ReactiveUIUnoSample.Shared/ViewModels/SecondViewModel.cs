@@ -16,7 +16,7 @@ namespace ReactiveUIUnoSample.ViewModels
 {
     public class SecondViewModel : DisplayViewModelBase, Interfaces.ICallOnBackNavigation
     {
-        public SecondViewModel(IScreenWithContract hostScreen, Func<object> createHeaderContent, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
+        public SecondViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, Func<object> createHeaderContent, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             HeaderContent = createHeaderContent();
             if (hostScreen.Contract == SecondViewContractName)
@@ -73,7 +73,7 @@ namespace ReactiveUIUnoSample.ViewModels
             if (!m_isNavigating.Set(true))
             {
                 // Note: Without the call to Subscribe at the end, this code will never execute.
-                m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave", FinishInteraction: FinishCallOnNavigateBack, IsNavigating: m_isNavigating)).ObserveOn(RxApp.MainThreadScheduler).Subscribe();
+                m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave", FinishInteraction: FinishCallOnNavigateBack, IsNavigating: m_isNavigating)).ObserveOn(SchedulerProvider.MainThread).Subscribe();
             }
             return false;
         }

@@ -27,8 +27,8 @@ namespace ReactiveUIUnoSample
 
             this.WhenActivated(disposables =>
             {
-                this.OneWayBind(ViewModel, x => x.CurrentHeader, view => view.RootNavigationView.Header).DisposeWith(disposables);
-                this.OneWayBind(ViewModel, x => x.IsBackEnabled, view => view.RootNavigationView.IsBackEnabled).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, vm => vm.CurrentHeader, view => view.RootNavigationView.Header).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, vm => vm.IsBackEnabled, view => view.RootNavigationView.IsBackEnabled).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, vm => vm.RoutedHostPadding, view => view.RoutedHostControl.Padding).DisposeWith(disposables);
             });
         }

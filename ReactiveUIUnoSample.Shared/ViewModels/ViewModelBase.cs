@@ -1,8 +1,6 @@
 ﻿using ReactiveUI;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ReactiveUIUnoSample.ViewModels
 {
@@ -21,6 +19,12 @@ namespace ReactiveUIUnoSample.ViewModels
         public IScreen HostScreen { get; }
 
         /// <summary>
+        /// Use the appropriate thread scheduler from here rather than directly from, e.g., RxApp. This lets us do unit testing with ReactiveUI.UnitTesting - see:
+        /// http://introtorx.com/Content/v1.0.10621.0/16_TestingRx.html
+        /// </summary>
+        public ISchedulerProvider SchedulerProvider { get; }
+
+        /// <summary>
         /// Creates a string from a <see cref="Guid"/>. 
         /// </summary>
         /// <param name="desiredLength">The desired length of the returned string. Pass in 0 to get the maximum length (32)</param>
@@ -35,13 +39,14 @@ namespace ReactiveUIUnoSample.ViewModels
         /// <summary>
         /// </summary>
         /// <param name="hostScreen">The IScreen that this ViewModel is currently being shown in.</param>
+        /// <param name="schedulerProvider">The collection of schedulers to be used for any actions that need to be run on the UI thread, the current thread, or the thread pool.</param>
         /// <param name="urlPathSegment">The string value for <see cref="UrlPathSegment"/>, which will be this value or, if this is null, the result of calling <see cref="GenerateStringForUrlPathSegment(int)"/> unless <paramref name="useNullUrlPathSegment"/> is true, in which case <see cref="UrlPathSegment"/> will be null.</param>
         /// <param name="useNullUrlPathSegment">Forces <see cref="UrlPathSegment"/> to be null if <paramref name="urlPathSegment"/> is null.</param>
-        public ViewModelBase(IScreenWithContract hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false)
+        public ViewModelBase(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false)
         {
             HostScreen = hostScreen;
             HostScreenWithContract = hostScreen;
-            //hostScreen.Contract = null;
+            SchedulerProvider = schedulerProvider;
             UrlPathSegment = urlPathSegment ?? (useNullUrlPathSegment ? null : GenerateStringForUrlPathSegment());
         }
     }

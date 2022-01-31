@@ -10,7 +10,7 @@ namespace ReactiveUIUnoSample.ViewModels
 {
     public class AboutViewModel : DisplayViewModelBase
     {
-        public AboutViewModel(IScreenWithContract hostScreen, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, urlPathSegment, useNullUrlPathSegment)
+        public AboutViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             // Note: For UWP, Skia.Gtk, and Skia.Tizen these properties should be extracted from the App Manifest or hard-coded here.
             HeaderContent = "About";

@@ -40,10 +40,11 @@ namespace ReactiveUIUnoSample.Interfaces
         /// This method should not attempt call anything that needs to run on the UI thread as this will cause the application
         /// to silently crash on certain platforms. If you wish to display a <see cref="Popup"/>, a <see cref="ContentDialog"/>,
         /// etc., you should schedule them to run on a background thread, e.g. by using a non-awaited <see cref="Task.Run(System.Action)"/>
-        /// and ensure that anything that needs to run in on the UI thread inside that method is scheduled to run on the UI thread. An
-        /// example of how to do this using ReactiveUI's <see cref="ReactiveUI.RxApp.MainThreadScheduler"/> together with the 
+        /// and ensure that anything that needs to run in on the UI thread inside that method is scheduled to run on the UI thread. This 
+        /// should be done using the <see cref="ISchedulerProvider.MainThread"/> from the view model's 
+        /// <see cref="ViewModels.ViewModelBase.SchedulerProvider"/> together with the 
         /// <see cref="Observable.ObserveOn{TSource}(IObservable{TSource}, System.Reactive.Concurrency.IScheduler)"/> extension
-        /// method for <see cref="IObservable{T}"/> can be seen in <see cref="ViewModels.SecondViewModel.CallOnBackNavigation"/>.
+        /// method for <see cref="IObservable{T}"/>. An example can be seen in <see cref="ViewModels.SecondViewModel.CallOnBackNavigation"/>.
         /// 
         /// If you do use that method of displaying a popup/dialog, you should return false from this method and then have
         /// the background task initiate navigation back on the main thread if the user confirms that they would like to

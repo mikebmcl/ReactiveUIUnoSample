@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<IsTestProject>false</IsTestProject>
 		<GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
 	</PropertyGroup>
@@ -17,6 +17,7 @@
 			and Microsoft AppCenter.
 		</Description>
 		<Copyright>Copyright (C) 2015-2019 nventive inc. - all rights reserved</Copyright>
+		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>

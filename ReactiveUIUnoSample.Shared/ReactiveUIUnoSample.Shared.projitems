@@ -12,7 +12,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)AtomicBoolean.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DecimalToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICallOnBackNavigation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\INavigationViewProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISchedulerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NavigationViewProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SchedulerProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IScreenWithContract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainView.xaml.cs">

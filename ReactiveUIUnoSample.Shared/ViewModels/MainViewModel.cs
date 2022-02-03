@@ -11,6 +11,7 @@ using Microsoft.Toolkit.Uwp;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using ReactiveUIUnoSample.Interfaces;
 using ReactiveUIUnoSample.Views;
 
 using Splat;
@@ -51,7 +52,7 @@ namespace ReactiveUIUnoSample.ViewModels
                 if (provider != null)
                 {
                     m_unsubscriber?.Dispose();
-                    m_unsubscriber = provider.ObserveOn(RxApp.MainThreadScheduler).Subscribe(this);
+                    m_unsubscriber = provider.ObserveOn(m_mainViewModel.m_schedulerProvider.MainThread).Subscribe(this);
                 }
             }
 
@@ -84,43 +85,60 @@ namespace ReactiveUIUnoSample.ViewModels
 #endif
                 if (m_mainViewModel.Router.NavigationStack.Last() is DisplayViewModelBase displayViewModelBase)
                 {
-                    if (m_mainViewModel.CurrentHeader == null)
+                    if (m_mainViewModel.CurrentHeader is null && !m_mainViewModel.m_navigationView.IsTest)
                     {
                         m_mainViewModel.CurrentHeader = new ContentControl();
                     }
-                    if (displayViewModelBase.NoHeader)
+                    if (m_mainViewModel.CurrentHeader != null)
                     {
-                        m_mainViewModel.CurrentHeader.Content = null;
-                        return;
-                    }
-                    if (displayViewModelBase.HeaderContent is string headerString)
-                    {
-                        m_mainViewModel.CurrentHeader.Content = new TextBlock() { Text = headerString };
-                    }
-                    else
-                    {
-                        m_mainViewModel.CurrentHeader.Content = displayViewModelBase.HeaderContent;
+                        if (m_mainViewModel.CurrentHeader is ContentControl currentHeader)
+                        {
+                            if (displayViewModelBase.NoHeader)
+                            {
+                                currentHeader.Content = null;
+                                return;
+                            }
+                            if (displayViewModelBase.HeaderContent is string headerString)
+                            {
+                                currentHeader.Content = new TextBlock() { Text = headerString };
+                            }
+                            else
+                            {
+                                currentHeader.Content = displayViewModelBase.HeaderContent;
+                            }
+                        }
+                        else
+                        {
+                            m_mainViewModel.CurrentHeader = displayViewModelBase.HeaderContent;
+                        }
                     }
                 }
                 else
                 {
-                    m_mainViewModel.CurrentHeader.Content = null;
+                    if (m_mainViewModel.CurrentHeader is ContentControl currentHeader)
+                    {
+                        currentHeader.Content = null;
+                    }
+                    else
+                    {
+                        m_mainViewModel.CurrentHeader = null;
+                    }
                 }
             }
         }
 
-        public MainViewModel(NavigationView navigationView)
+        public MainViewModel(INavigationViewProvider navigationView, IMutableDependencyResolver mutableDependencyResolver, object initialHeader, ISchedulerProvider schedulerProvider)
         {
-            m_schedulerProvider = new SchedulerProvider();
+            m_schedulerProvider = schedulerProvider;
             m_navigationView = navigationView;
-            m_navigationView.BackRequested += NavigationView_BackRequested;
-            m_navigationView.ItemInvoked += NavigationView_ItemInvoked;
+            m_navigationView.SubscribeBackRequested(NavigationView_BackRequested);
+            m_navigationView.SubscribeItemInvoked(NavigationView_ItemInvoked);
             IsBackEnabled = false;
             RoutedHostPadding = new Thickness(4);
-            CurrentHeader = new ContentControl() { };
-
+            CurrentHeader = initialHeader;
+            Router = new RoutingState(schedulerProvider.MainThread);
             // Register all of our views and corresponding view models and contract strings
-            RegisterAllViews();
+            RegisterAllViews(mutableDependencyResolver);
 
             //
             // Routing state management
@@ -176,7 +194,7 @@ namespace ReactiveUIUnoSample.ViewModels
         /// If you really need to register views after navigation has begun, it seems like it can be done provided that you write and use a
         /// custom <see cref="IViewLocator"/> instead of the default.
         /// </summary>
-        private void RegisterAllViews()
+        private void RegisterAllViews(IMutableDependencyResolver mutableDependencyResolver)
         {
             // Router uses Splat.Locator to resolve views for
             // view models, so we need to register our views
@@ -186,7 +204,7 @@ namespace ReactiveUIUnoSample.ViewModels
             //Locator.CurrentMutable.Register(() => new FirstView(), typeof(IViewFor<FirstViewModel>));
 
             // Or you can register all of the views in this Assembly (Pages, UserControls, etc.) that implement IViewFor<T> like this:
-            // Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetCallingAssembly());
+            //Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetCallingAssembly());
 
             // Note: RegisterViewsForViewModels will not register any views that you have in a library since that would be a different Assembly; you would
             // need to call RegisterViewsForViewModels with a reference to the assembly for that library to also register those. Additionally,
@@ -208,17 +226,17 @@ namespace ReactiveUIUnoSample.ViewModels
             // the value of Contract when navigating back to a view; the value is only used to find and create the correct view. However you should store the values
             // in your saved state data if you are saving state in the event that the user navigated away from a page by accident on a platform where 
             // ICallOnBackNavigation might not be able to be used to successfully prevent back navigation where the user accidentally navigates back (iOS and WASM).
-            Locator.CurrentMutable.Register(() => new FirstView(), typeof(IViewFor<FirstViewModel>));
-            Locator.CurrentMutable.Register(() => new AboutView(), typeof(IViewFor<AboutViewModel>));
-            Locator.CurrentMutable.Register(() => new SecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.SecondViewContractName);
-            Locator.CurrentMutable.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
+            mutableDependencyResolver.Register(() => new FirstView(), typeof(IViewFor<FirstViewModel>));
+            mutableDependencyResolver.Register(() => new AboutView(), typeof(IViewFor<AboutViewModel>));
+            mutableDependencyResolver.Register(() => new SecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.SecondViewContractName);
+            mutableDependencyResolver.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
         }
 
         private ISchedulerProvider m_schedulerProvider;
 
         // The Router associated with this Screen.
         // Required by the IScreen interface.
-        public RoutingState Router { get; } = new RoutingState();
+        public RoutingState Router { get; }
 
         [Reactive]
         public string Contract { get; set; }
@@ -229,7 +247,7 @@ namespace ReactiveUIUnoSample.ViewModels
         {
             if (args.IsSettingsInvoked)
             {
-                //ContentFrame.Navigate(typeof(SettingsPage));
+                //Router.Navigate.Execute(new SettingsViewModel(this, m_schedulerProvider));
             }
             else
             {
@@ -254,10 +272,10 @@ namespace ReactiveUIUnoSample.ViewModels
             }
         }
 
-        private NavigationView m_navigationView;
+        private INavigationViewProvider m_navigationView;
 
         [Reactive]
-        public ContentControl CurrentHeader { get; set; }
+        public object CurrentHeader { get; set; }
 
         [Reactive]
         public bool IsBackEnabled { get; set; }

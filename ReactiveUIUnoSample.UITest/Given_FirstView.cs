@@ -18,6 +18,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Uno.UITest;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactiveUIUnoSample.UITest
 {
@@ -39,17 +40,16 @@ namespace ReactiveUIUnoSample.UITest
             Query enteredAmountTextBox = q => q.All().Marked("EnteredAmountTextBox");
             app.WaitForElement(enteredAmountTextBox);
             decimal value = 100000.32M;
-            app.Query(q => enteredAmountTextBox(q).SetDependencyPropertyValue("Text", value.ToString()));
+            app.Query(q => enteredAmountTextBox(q).SetDependencyPropertyValue(nameof(TextBox.Text), value.ToString()));
 
+            // This switches focus away from the text box so that the value conversion that is hooked up to it will run.
             app.EnterText(enteredAmountTextBox, OpenQA.Selenium.Keys.Tab);
-            //app.Query(q => enteredAmountTextBox(q).Invoke("Focus", arg1: FocusState.Unfocused));
-            //app.Tap("FirstViewAnnouncementTextBlock");
-            //app.EnterText(, value.ToString());
+
             app.Wait(1);
             // Take a screenshot and add it to the test results
             TakeScreenshot("successfulformatting");
             using var _ = new AssertionScope();
-            string result = app.Query(q => enteredAmountTextBox(q).GetDependencyPropertyValue("Text").Value<string>()).FirstOrDefault();
+            string result = app.Query(q => enteredAmountTextBox(q).GetDependencyPropertyValue(nameof(TextBox.Text)).Value<string>()).FirstOrDefault();
             result.Should().NotBeNullOrWhiteSpace("because conversion to a monetary value should have succeeded");
             var converter = new Converters.DecimalToStringBindingTypeConverter();
             if (!converter.TryConvert(value, typeof(string), null, out object expected) || !(expected is string))

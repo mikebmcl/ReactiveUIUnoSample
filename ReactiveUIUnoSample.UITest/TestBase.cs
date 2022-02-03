@@ -9,17 +9,17 @@ using Uno.UITests.Helpers;
 
 namespace ReactiveUIUnoSample.UITest
 {
+    /// <summary>
+    /// Use this as the base class for any tests that will be launching the app and using Uno.UITest to perform tests that involve entering data,
+    /// checking values after actions are performed, etc. Note that only WASM is supported because of technical limitations.
+    /// </summary>
     public class TestBase
     {
         private IApp _app;
 
         static TestBase()
         {
-            AppInitializer.TestEnvironment.AndroidAppName = Constants.AndroidAppName;
             AppInitializer.TestEnvironment.WebAssemblyDefaultUri = Constants.WebAssemblyDefaultUri;
-            AppInitializer.TestEnvironment.iOSAppName = Constants.iOSAppName;
-            AppInitializer.TestEnvironment.AndroidAppName = Constants.AndroidAppName;
-            AppInitializer.TestEnvironment.iOSDeviceNameOrId = Constants.iOSDeviceNameOrId;
             AppInitializer.TestEnvironment.CurrentPlatform = Constants.CurrentPlatform;
 
 #if DEBUG
@@ -28,7 +28,8 @@ namespace ReactiveUIUnoSample.UITest
 
             // Start the app only once, so the tests runs don't restart it
             // and gain some time for the tests.
-            AppInitializer.ColdStartApp();
+            // Note: This doesn't do anything on WASM and that is the only platform we are able to use for UI testing for technical reasons.
+            //AppInitializer.ColdStartApp();
         }
 
         protected IApp App

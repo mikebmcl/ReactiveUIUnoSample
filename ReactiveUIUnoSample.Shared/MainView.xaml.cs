@@ -3,6 +3,8 @@ using ReactiveUI;
 
 using ReactiveUIUnoSample.ViewModels;
 
+using Splat;
+
 using System.Reactive.Disposables;
 
 using Windows.UI.Xaml;
@@ -20,10 +22,13 @@ namespace ReactiveUIUnoSample
         public static readonly DependencyProperty ViewModelProperty = DependencyProperty
             .Register(nameof(ViewModel), typeof(MainViewModel), typeof(MainView), null);
 
+        private NavigationViewProvider m_navigationViewProvider;
+
         public MainView()
         {
             this.InitializeComponent();
-            ViewModel = new MainViewModel(RootNavigationView);
+            m_navigationViewProvider = new NavigationViewProvider(RootNavigationView);
+            ViewModel = new MainViewModel(m_navigationViewProvider, Locator.CurrentMutable, new ContentControl() { }, new SchedulerProvider());
 
             this.WhenActivated(disposables =>
             {

@@ -8,11 +8,9 @@ using ReactiveUIUnoSample.ViewModels;
 using Splat;
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
-namespace ReactiveUIUnoSample.UITest
+namespace ReactiveUIUnoSample.UnitTests
 {
     /// <summary>
     /// Use this as the base class for all tests of view models and anything else not dependant of the UI actually existing. This

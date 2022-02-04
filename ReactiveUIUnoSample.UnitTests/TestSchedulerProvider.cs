@@ -6,7 +6,7 @@ using System.Reactive.Concurrency;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReactiveUIUnoSample.UITest
+namespace ReactiveUIUnoSample.UnitTests
 {
     public class TestSchedulerProvider : ISchedulerProvider
     {

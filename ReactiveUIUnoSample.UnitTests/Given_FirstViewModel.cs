@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 using ReactiveUIUnoSample.ViewModels;
 
-namespace ReactiveUIUnoSample.UITest
+namespace ReactiveUIUnoSample.UnitTests
 {
     public class Given_FirstViewModel : ReactiveTestBase
     {

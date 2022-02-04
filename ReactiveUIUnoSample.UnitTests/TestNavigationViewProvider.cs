@@ -5,7 +5,7 @@ using System.Text;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 
-namespace ReactiveUIUnoSample.UITest
+namespace ReactiveUIUnoSample.UnitTests
 {
     internal class TestNavigationViewProvider : Interfaces.INavigationViewProvider
     {

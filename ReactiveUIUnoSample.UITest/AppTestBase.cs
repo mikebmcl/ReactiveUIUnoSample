@@ -23,13 +23,10 @@ namespace ReactiveUIUnoSample.UITest
             AppInitializer.TestEnvironment.CurrentPlatform = Constants.CurrentPlatform;
 
 #if DEBUG
+            // If you want to see what the tests are doing, keep this as false. If you're content to let them run without actually
+            // showing a browser window you can just comment it out (true is the default).
             AppInitializer.TestEnvironment.WebAssemblyHeadless = false;
 #endif
-
-            // Start the app only once, so the tests runs don't restart it
-            // and gain some time for the tests.
-            // Note: This doesn't do anything on WASM and that is the only platform we are able to use for UI testing for technical reasons.
-            //AppInitializer.ColdStartApp();
         }
 
         protected IApp App
@@ -41,17 +38,30 @@ namespace ReactiveUIUnoSample.UITest
                 Uno.UITest.Helpers.Queries.Helpers.App = value;
             }
         }
-
+        [OneTimeSetUp]
+        public void SetUpBeforeTestsBegin()
+        {
+            // DoMotClear is the default if no argument is supplied. It's specified here to let you know you can change it.
+            App = AppInitializer.AttachToApp(Uno.UITest.Helpers.AppDataMode.DoNotClear);
+        }
         [SetUp]
         public void SetUpTest()
         {
-            App = AppInitializer.AttachToApp();
         }
 
         [TearDown]
         public void TearDownTest()
         {
             TakeScreenshot("teardown");
+        }
+
+        [OneTimeTearDown]
+        public void TearDownAfterAllTests()
+        {
+            // Close out the application, making sure that the web driver gets terminated by disposing of it explicitly.
+            // Otherwise it might hang around running in the background on your computer.
+            App?.Dispose();
+            App = null;
         }
 
         public FileInfo TakeScreenshot(string stepName)
@@ -86,6 +96,5 @@ namespace ReactiveUIUnoSample.UITest
 
             return fileInfo;
         }
-
     }
 }

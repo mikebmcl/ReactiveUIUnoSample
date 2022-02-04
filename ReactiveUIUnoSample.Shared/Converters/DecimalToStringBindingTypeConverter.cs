@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 
 using System;
+using System.Globalization;
 
 namespace ReactiveUIUnoSample.Converters
 {
@@ -22,11 +23,16 @@ namespace ReactiveUIUnoSample.Converters
             return 0;
         }
 
+        /// <summary>
+        /// Defaults to <see cref="CultureInfo.CurrentUICulture"/>.
+        /// </summary>
+        public static CultureInfo CultureInfoForConversion { get; set; } = CultureInfo.CurrentUICulture;
+
         public bool TryConvert(object from, Type toType, object conversionHint, out object result)
         {
             if (from is decimal d && toType == typeof(string))
             {
-                result = d.ToString("C");
+                result = d.ToString("C", CultureInfoForConversion);
                 return true;
             }
             if (from is string s && toType == typeof(decimal))
@@ -36,7 +42,7 @@ namespace ReactiveUIUnoSample.Converters
                 // For more info, see:
                 // https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types?view=netframework-4.7.2#culture-sensitive-formatting-with-format-providers
                 // https://docs.microsoft.com/en-us/dotnet/core/extensions/globalization#numeric-values
-                if (decimal.TryParse(s, System.Globalization.NumberStyles.Currency, System.Globalization.CultureInfo.CurrentUICulture, out decimal val))
+                if (decimal.TryParse(s, NumberStyles.Currency, CultureInfoForConversion, out decimal val))
                 {
                     result = val;
                     return true;

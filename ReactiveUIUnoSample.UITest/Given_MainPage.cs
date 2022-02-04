@@ -12,7 +12,7 @@
 
 //namespace ReactiveUIUnoSample.UITest
 //{
-//    public class Given_MainPage : TestBase
+//    public class Given_MainPage : AppTestBase
 //    {
 //        [Test]
 //        public void When_SmokeTest()

@@ -4,10 +4,6 @@ using NUnit.Framework;
 
 using ReactiveUIUnoSample.ViewModels;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace ReactiveUIUnoSample.UITest
 {
     internal class Given_MainViewModel : ReactiveTestBase

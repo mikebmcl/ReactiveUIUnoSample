@@ -22,7 +22,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace ReactiveUIUnoSample.UITest
 {
-    public class Given_FirstView : TestBase
+    public class Given_FirstView : AppTestBase
     {
         // Note: Some testing tools will show you the results using the method name while others prefer a Description, so the Description should be set and both
         // should be descriptive of what the test is testing and the expected result. We're following the Given-When-Then test pattern

@@ -13,11 +13,11 @@ namespace ReactiveUIUnoSample.UITest
     /// Use this as the base class for any tests that will be launching the app and using Uno.UITest to perform tests that involve entering data,
     /// checking values after actions are performed, etc. Note that only WASM is supported because of technical limitations.
     /// </summary>
-    public class TestBase
+    public class AppTestBase
     {
         private IApp _app;
 
-        static TestBase()
+        static AppTestBase()
         {
             AppInitializer.TestEnvironment.WebAssemblyDefaultUri = Constants.WebAssemblyDefaultUri;
             AppInitializer.TestEnvironment.CurrentPlatform = Constants.CurrentPlatform;

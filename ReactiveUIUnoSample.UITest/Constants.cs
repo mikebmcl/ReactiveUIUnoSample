@@ -11,13 +11,18 @@ namespace ReactiveUIUnoSample.UITest
 {
     public class Constants
     {
-        public readonly static string WebAssemblyDefaultUri = "http://localhost:59036/";
+        public static readonly string WebAssemblyDefaultUri = "http://localhost:59036/";
 
-        public readonly static Platform CurrentPlatform = Platform.Browser;
+        public static readonly Platform CurrentPlatform = Platform.Browser;
 
         /// <summary>
-        /// Set this to the correct path of the directory that you put msedgedriver.exe in your system if you intend to use <see cref="Platform.Edge"/>.
+        /// Set this to the correct path of the directory that you put msedgedriver.exe in on your system if you want to use <see cref="Platform.Edge"/>.
         /// </summary>
-        public readonly static string EdgeDriverPath = @"C:\EdgeDriver";
+        public static readonly string EdgeDriverPath = @"C:\EdgeDriver";
+
+        /// <summary>
+        /// Set this to the correct path of the directory that you put geckodriver.exe in on your system if you want to use <see cref="Platform.Firefox"/>.
+        /// </summary>
+        public static readonly string GeckoDriverPath = @"C:\GeckoDriver";
     }
 }

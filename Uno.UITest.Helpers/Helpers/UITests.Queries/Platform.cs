@@ -30,7 +30,7 @@ namespace Uno.UITest.Helpers.Queries
         /// </summary>
         Edge,
         /// <summary>
-        /// Not yet implemented.
+        /// Uses Firefox with WASM via geckodriver.
         /// </summary>
         Firefox
     }

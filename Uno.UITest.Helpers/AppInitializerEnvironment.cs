@@ -52,6 +52,12 @@ namespace Uno.UITests.Helpers
         public string EdgeDriverPath { get; set; }
 
         /// <summary>
+        /// Defines the location of geckodriver, which is used to automate Firefox. Must be installed with the path to it set in this string in 
+        /// order to use <see cref="Platform.Firefox"/>. You can find it here: <see href="https://github.com/mozilla/geckodriver/releases/"/>
+        /// </summary>
+        public string GeckoDriverPath { get; set; }
+
+        /// <summary>
         /// Defines if the browser tests are running in chrome without a window.
         /// </summary>
         public bool WebAssemblyHeadless { get; set; } = true;

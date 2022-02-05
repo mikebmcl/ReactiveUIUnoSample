@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Remote;
 
@@ -168,6 +169,50 @@ namespace Uno.UITest.Selenium
             };
             _screenShotPath = screenShotPath;
         }
+
+        public SeleniumApp(FirefoxAppConfigurator config)
+        {
+            var targetUri = GetEnvironmentVariable("UNO_UITEST_TARGETURI", config.SiteUri.OriginalString);
+            var driverPath = GetEnvironmentVariable(UNO_UITEST_DRIVERPATH_FIREFOX, config.GeckoDriverPath);
+            var screenShotPath = GetEnvironmentVariable("UNO_UITEST_SCREENSHOT_PATH", config.InternalScreenShotsPath);
+            var firefoxBinPath = GetEnvironmentVariable("UNO_UITEST_EDGE_BINARY_PATH", config.InternalBrowserBinaryPath);
+
+            var options = new FirefoxOptions();
+
+            if (config.InternalHeadless)
+            {
+                options.AddArgument("-headless");
+            }
+
+            options.AddArgument($"-width {config.InternalWindowWidth}");
+            options.AddArgument($"-height {config.InternalWindowHeight}");
+
+            foreach (var arg in config.InternalSeleniumArgument)
+            {
+                options.AddArguments(arg);
+            }
+
+            if (!string.IsNullOrEmpty(firefoxBinPath))
+            {
+                options.BrowserExecutableLocation = firefoxBinPath;
+            }
+
+            options.SetLoggingPreference(LogType.Browser, LogLevel.All);
+
+            if (string.IsNullOrEmpty(driverPath))
+            {
+                throw new NotSupportedException($"The path to geckodriver.exe must be set either using {UNO_UITEST_DRIVERPATH_FIREFOX} as an environment variable or by setting the path via AppInitializer.TestEnvironment.GeckoDriverPath in order to use geckodriver (Firefox).");
+            }
+
+            _driver = new FirefoxDriver(driverPath, options)
+            {
+                Url = targetUri
+            };
+            _screenShotPath = screenShotPath;
+        }
+
+
+
 
         IQueryable<ILogEntry> IApp.GetSystemLogs(DateTime? afterDate)
             => _driver.Manage().Logs.GetLog(LogType.Browser)

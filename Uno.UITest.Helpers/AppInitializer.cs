@@ -159,6 +159,16 @@ namespace Uno.UITests.Helpers
                                 // Skip cold app start, there's no notion of reuse active browser yet.
                                 return null;
                             }
+                        case Platform.Firefox:
+                            if (alreadyRunningApp)
+                            {
+                                return CreateFirefoxBrowserApp(alreadyRunningApp);
+                            }
+                            else
+                            {
+                                // Skip cold app start, there's no notion of reuse active browser yet.
+                                return null;
+                            }
                         default:
                             throw new Exception($"Platform {localPlatform} is not enabled.");
                     }
@@ -270,6 +280,58 @@ namespace Uno.UITests.Helpers
                     configurator = configurator
                         .Headless(false)
                         .SeleniumArgument("--remote-debugging-port=9515");
+                }
+                else
+                {
+                    configurator = configurator
+                        .Headless(true);
+                }
+
+                _currentApp = configurator.ScreenShotsPath(TestContext.CurrentContext.TestDirectory)
+                    .StartApp();
+
+                return _currentApp;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        private static IApp CreateFirefoxBrowserApp(bool alreadyRunningApp)
+        {
+            if (_currentApp != null)
+            {
+                if (!alreadyRunningApp)
+                {
+                    _currentApp.Dispose();
+                }
+                else
+                {
+                    return _currentApp;
+                }
+            }
+
+            try
+            {
+                var configurator = Uno.UITest.Selenium.ConfigureApp
+                    .FirefoxWebAssembly
+                    .Uri(new Uri(TestEnvironment.WebAssemblyDefaultUri));
+
+
+                if (!string.IsNullOrEmpty(TestEnvironment.GeckoDriverPath))
+                {
+                    configurator = configurator.GeckoDriverLocation(
+                        Path.Combine(TestContext.CurrentContext.TestDirectory,
+                        TestEnvironment.GeckoDriverPath.Replace('\\', Path.DirectorySeparatorChar)));
+                }
+
+                if (!TestEnvironment.WebAssemblyHeadless)
+                {
+                    configurator = configurator
+                        .Headless(false);
+                    //.SeleniumArgument("--remote-debugging-port=4444");
                 }
                 else
                 {

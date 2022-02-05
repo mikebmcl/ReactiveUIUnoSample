@@ -22,8 +22,12 @@ namespace ReactiveUIUnoSample.UITest
             AppInitializer.TestEnvironment.WebAssemblyDefaultUri = Constants.WebAssemblyDefaultUri;
             AppInitializer.TestEnvironment.CurrentPlatform = Constants.CurrentPlatform;
             AppInitializer.TestEnvironment.EdgeDriverPath = Constants.EdgeDriverPath;
-            // This defaults to Browser which is equivalent to Chrome
-            AppInitializer.TestEnvironment.CurrentPlatform = Uno.UITest.Helpers.Queries.Platform.Edge;
+            AppInitializer.TestEnvironment.GeckoDriverPath = Constants.GeckoDriverPath;
+
+            // The CurrentPlatform defaults to Platform.Browser which is equivalent to Platform.Chrome. To use Edge or Firefox uncomment the appropriate line below. Only one Platform can be tested at a time so if you set CurrentPlatform multiple times you will get whatever the last value you set was.
+
+            //AppInitializer.TestEnvironment.CurrentPlatform = Uno.UITest.Helpers.Queries.Platform.Edge;
+            //AppInitializer.TestEnvironment.CurrentPlatform = Uno.UITest.Helpers.Queries.Platform.Firefox;
 #if DEBUG
             // If you want to see what the tests are doing, keep this as false. If you're content to let them run without actually
             // showing a browser window you can just comment it out (true is the default).

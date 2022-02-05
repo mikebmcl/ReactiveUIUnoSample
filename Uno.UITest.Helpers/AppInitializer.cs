@@ -16,320 +16,391 @@ using Uno.UITest.Helpers.Queries;
 
 namespace Uno.UITests.Helpers
 {
-	/// <summary>
-	/// A Uno.UITest initializer
-	/// </summary>
-	public class AppInitializer
-	{
-		/// <summary>
-		/// Name of the environment variable containing the running UI Test platform.
-		/// </summary>
-		public const string UNO_UITEST_PLATFORM = "UNO_UITEST_PLATFORM";
+    /// <summary>
+    /// A Uno.UITest initializer
+    /// </summary>
+    public class AppInitializer
+    {
+        /// <summary>
+        /// Name of the environment variable containing the running UI Test platform.
+        /// </summary>
+        public const string UNO_UITEST_PLATFORM = "UNO_UITEST_PLATFORM";
 
-		///// <summary>
-		///// Name of the environment variable containing the iOS App Bundle path
-		///// </summary>
-		//public const string UITEST_IOSBUNDLE_PATH = "UNO_UITEST_IOSBUNDLE_PATH";
+        ///// <summary>
+        ///// Name of the environment variable containing the iOS App Bundle path
+        ///// </summary>
+        //public const string UITEST_IOSBUNDLE_PATH = "UNO_UITEST_IOSBUNDLE_PATH";
 
-		///// <summary>
-		///// Name of the environment variable containing the iOS Device ID or name to use to run the UI Tests.
-		///// </summary>
-		//public const string UITEST_IOSDEVICE_ID = "UITEST_IOSDEVICE_ID";
+        ///// <summary>
+        ///// Name of the environment variable containing the iOS Device ID or name to use to run the UI Tests.
+        ///// </summary>
+        //public const string UITEST_IOSDEVICE_ID = "UITEST_IOSDEVICE_ID";
 
-		///// <summary>
-		///// Name of the environment variable containing the path of the APK to use when running android tests.
-		///// </summary>
-		//public const string UITEST_ANDROIDAPK_PATH = "UNO_UITEST_ANDROIDAPK_PATH";
+        ///// <summary>
+        ///// Name of the environment variable containing the path of the APK to use when running android tests.
+        ///// </summary>
+        //public const string UITEST_ANDROIDAPK_PATH = "UNO_UITEST_ANDROIDAPK_PATH";
 
-		/// <summary>
-		/// Name of the environment variable containing the path to use when creating screenshots.
-		/// </summary>
-		public const string UITEST_SCREENSHOT_PATH = "UNO_UITEST_SCREENSHOT_PATH";
+        /// <summary>
+        /// Name of the environment variable containing the path to use when creating screenshots.
+        /// </summary>
+        public const string UITEST_SCREENSHOT_PATH = "UNO_UITEST_SCREENSHOT_PATH";
 
-		public static AppInitializerEnvironment TestEnvironment { get; } = new AppInitializerEnvironment();
+        public static AppInitializerEnvironment TestEnvironment { get; } = new AppInitializerEnvironment();
 
-		private static IApp _currentApp;
+        private static IApp _currentApp;
 
-		/// <summary>
-		/// Cold starts the registered app.
-		/// </summary>
-		/// <remarks>This method is generally called from the type constructor of a test assembly.</remarks>
-		/// <returns>An <see cref="IApp"/> instance representing the running application.</returns>
-		public static IApp ColdStartApp(AppDataMode mode = AppDataMode.DoNotClear)
-		{
-			//var app = Xamarin.UITest.TestEnvironment.Platform == Xamarin.UITest.TestPlatform.Local
-			//			   ? StartApp(alreadyRunningApp: false, mode)
-			//			   : null;
+        /// <summary>
+        /// Cold starts the registered app.
+        /// </summary>
+        /// <remarks>This method is generally called from the type constructor of a test assembly.</remarks>
+        /// <returns>An <see cref="IApp"/> instance representing the running application.</returns>
+        public static IApp ColdStartApp(AppDataMode mode = AppDataMode.DoNotClear)
+        {
+            //var app = Xamarin.UITest.TestEnvironment.Platform == Xamarin.UITest.TestPlatform.Local
+            //			   ? StartApp(alreadyRunningApp: false, mode)
+            //			   : null;
 
-			//Uno.UITest.Helpers.Queries.Helpers.App = app;
+            //Uno.UITest.Helpers.Queries.Helpers.App = app;
 
-			//return app;
-			return null;
-		}
+            //return app;
+            return null;
+        }
 
-		/// <summary>
-		/// Attach to an already running application.
-		/// </summary>
-		/// <returns>An <see cref="IApp"/> instance representing the running application.</returns>
-		public static IApp AttachToApp(AppDataMode mode = AppDataMode.DoNotClear)
-		{
-			var app = StartApp(alreadyRunningApp: TestContext.CurrentContext.CurrentRepeatCount == 0, mode);
+        /// <summary>
+        /// Attach to an already running application.
+        /// </summary>
+        /// <returns>An <see cref="IApp"/> instance representing the running application.</returns>
+        public static IApp AttachToApp(AppDataMode mode = AppDataMode.DoNotClear)
+        {
+            var app = StartApp(alreadyRunningApp: TestContext.CurrentContext.CurrentRepeatCount == 0, mode);
 
-			Uno.UITest.Helpers.Queries.Helpers.App = app;
+            Uno.UITest.Helpers.Queries.Helpers.App = app;
 
-			return app;
-		}
+            return app;
+        }
 
-		/// <summary>
-		/// Provides the currently tested platform
-		/// </summary>
-		/// <returns></returns>
-		public static Platform GetLocalPlatform()
-		{
-			var uitestPlatform = Environment.GetEnvironmentVariable(UNO_UITEST_PLATFORM);
-			if(!Enum.TryParse(uitestPlatform, out Platform retVal))
-			{
-				retVal = TestEnvironment.CurrentPlatform;
-			}
+        /// <summary>
+        /// Provides the currently tested platform
+        /// </summary>
+        /// <returns></returns>
+        public static Platform GetLocalPlatform()
+        {
+            var uitestPlatform = Environment.GetEnvironmentVariable(UNO_UITEST_PLATFORM);
+            if (!Enum.TryParse(uitestPlatform, out Platform retVal))
+            {
+                retVal = TestEnvironment.CurrentPlatform;
+            }
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		private static IApp StartApp(bool alreadyRunningApp, AppDataMode mode)
-		{
-			var retries = 3;
+        private static IApp StartApp(bool alreadyRunningApp, AppDataMode mode)
+        {
+            var retries = 3;
 
-			do
-			{
-				try
-				{
-					Console.WriteLine($"Starting app (alreadyRunningApp: {alreadyRunningApp}, tries left: {retries})");
+            do
+            {
+                try
+                {
+                    Console.WriteLine($"Starting app (alreadyRunningApp: {alreadyRunningApp}, tries left: {retries})");
 
-					//switch(Xamarin.UITest.TestEnvironment.Platform)
-					//{
-					//	case Xamarin.UITest.TestPlatform.TestCloudiOS:
-					//		return Xamarin.UITest.ConfigureApp
-					//			.iOS
-					//			.StartApp(mode)
-					//			.ToUnoApp();
+                    //switch(Xamarin.UITest.TestEnvironment.Platform)
+                    //{
+                    //	case Xamarin.UITest.TestPlatform.TestCloudiOS:
+                    //		return Xamarin.UITest.ConfigureApp
+                    //			.iOS
+                    //			.StartApp(mode)
+                    //			.ToUnoApp();
 
-					//	case Xamarin.UITest.TestPlatform.TestCloudAndroid:
-					//		return Xamarin.UITest.ConfigureApp
-					//			.Android
-					//			.StartApp(mode)
-					//			.ToUnoApp();
+                    //	case Xamarin.UITest.TestPlatform.TestCloudAndroid:
+                    //		return Xamarin.UITest.ConfigureApp
+                    //			.Android
+                    //			.StartApp(mode)
+                    //			.ToUnoApp();
 
-					//	default:
-					var localPlatform = GetLocalPlatform();
-					switch(GetLocalPlatform())
-					{
-						//			case Platform.Android:
-						//				return CreateAndroidApp(alreadyRunningApp, mode);
+                    //	default:
+                    var localPlatform = GetLocalPlatform();
+                    switch (GetLocalPlatform())
+                    {
+                        //			case Platform.Android:
+                        //				return CreateAndroidApp(alreadyRunningApp, mode);
 
-						//			case Platform.iOS:
-						//				return CreateiOSApp(alreadyRunningApp, mode);
+                        //			case Platform.iOS:
+                        //				return CreateiOSApp(alreadyRunningApp, mode);
 
-						case Platform.Browser:
-							if(alreadyRunningApp)
-							{
-								return CreateBrowserApp(alreadyRunningApp);
-							}
-							else
-							{
-								// Skip cold app start, there's no notion of reuse active browser yet.
-								return null;
-							}
+                        case Platform.Browser:
+                            if (alreadyRunningApp)
+                            {
+                                return CreateBrowserApp(alreadyRunningApp);
+                            }
+                            else
+                            {
+                                // Skip cold app start, there's no notion of reuse active browser yet.
+                                return null;
+                            }
+                        case Platform.Chrome:
+                            if (alreadyRunningApp)
+                            {
+                                return CreateBrowserApp(alreadyRunningApp);
+                            }
+                            else
+                            {
+                                // Skip cold app start, there's no notion of reuse active browser yet.
+                                return null;
+                            }
+                        case Platform.Edge:
+                            if (alreadyRunningApp)
+                            {
+                                return CreateEdgeBrowserApp(alreadyRunningApp);
+                            }
+                            else
+                            {
+                                // Skip cold app start, there's no notion of reuse active browser yet.
+                                return null;
+                            }
+                        default:
+                            throw new Exception($"Platform {localPlatform} is not enabled.");
+                    }
+                    //}
+                }
+                catch (Exception e)
+                {
+                    if (--retries == 0)
+                    {
+                        throw;
+                    }
+                    else
+                    {
+                        alreadyRunningApp = false;
 
-						default:
-							throw new Exception($"Platform {localPlatform} is not enabled.");
-					}
-					//}
-				}
-				catch(Exception e)
-				{
-					if(--retries == 0)
-					{
-						throw;
-					}
-					else
-					{
-						alreadyRunningApp = false;
-
-						Console.WriteLine($"App start failed, retrying in 2 seconds with complete app restart ({e.Message})");
+                        Console.WriteLine($"App start failed, retrying in 2 seconds with complete app restart ({e.Message})");
 
 #if DEBUG
-						Console.WriteLine($"Exception: {e.Message}");
+                        Console.WriteLine($"Exception: {e.Message}");
 #endif
-					}
-				}
-			}
-			while(true);
-		}
+                    }
+                }
+            }
+            while (true);
+        }
 
-		private static IApp CreateBrowserApp(bool alreadyRunningApp)
-		{
-			if(_currentApp != null)
-			{
-				if(!alreadyRunningApp)
-				{
-					_currentApp.Dispose();
-				}
-				else
-				{
-					return _currentApp;
-				}
-			}
+        private static IApp CreateBrowserApp(bool alreadyRunningApp)
+        {
+            if (_currentApp != null)
+            {
+                if (!alreadyRunningApp)
+                {
+                    _currentApp.Dispose();
+                }
+                else
+                {
+                    return _currentApp;
+                }
+            }
 
-			try
-			{
-				var configurator = Uno.UITest.Selenium.ConfigureApp
-					.WebAssembly
-					.Uri(new Uri(TestEnvironment.WebAssemblyDefaultUri));
+            try
+            {
+                var configurator = Uno.UITest.Selenium.ConfigureApp
+                    .WebAssembly
+                    .Uri(new Uri(TestEnvironment.WebAssemblyDefaultUri));
 
 
-				if(!string.IsNullOrEmpty(TestEnvironment.ChromeDriverPath))
-				{
-					configurator = configurator.ChromeDriverLocation(
-						Path.Combine(TestContext.CurrentContext.TestDirectory,
-						TestEnvironment.ChromeDriverPath.Replace('\\', Path.DirectorySeparatorChar)));
-				}
+                if (!string.IsNullOrEmpty(TestEnvironment.ChromeDriverPath))
+                {
+                    configurator = configurator.ChromeDriverLocation(
+                        Path.Combine(TestContext.CurrentContext.TestDirectory,
+                        TestEnvironment.ChromeDriverPath.Replace('\\', Path.DirectorySeparatorChar)));
+                }
 
-				if(!TestEnvironment.WebAssemblyHeadless)
-				{
-					configurator = configurator
-						.Headless(false)
-						.SeleniumArgument("--remote-debugging-port=9222");
-				}
-				else
-				{
-					configurator = configurator
-						.Headless(true);
-				}
+                if (!TestEnvironment.WebAssemblyHeadless)
+                {
+                    configurator = configurator
+                        .Headless(false)
+                        .SeleniumArgument("--remote-debugging-port=9222");
+                }
+                else
+                {
+                    configurator = configurator
+                        .Headless(true);
+                }
 
-				_currentApp = configurator.ScreenShotsPath(TestContext.CurrentContext.TestDirectory)
-					.StartApp();
+                _currentApp = configurator.ScreenShotsPath(TestContext.CurrentContext.TestDirectory)
+                    .StartApp();
 
-				return _currentApp;
-			}
-			catch(Exception ex)
-			{
-				Console.Error.WriteLine(ex.Message);
-				throw;
-			}
-		}
+                return _currentApp;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                throw;
+            }
+        }
 
-		//private static IApp CreateAndroidApp(bool alreadyRunningApp, AppDataMode mode)
-		//{
-		//	if(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANDROID_HOME")))
-		//	{
-		//		Console.WriteLine("Providing default ANDROID_HOME and JAVA_HOME variables, because ANDROID_HOME could not be found.");
+        private static IApp CreateEdgeBrowserApp(bool alreadyRunningApp)
+        {
+            if (_currentApp != null)
+            {
+                if (!alreadyRunningApp)
+                {
+                    _currentApp.Dispose();
+                }
+                else
+                {
+                    return _currentApp;
+                }
+            }
 
-		//		// To set in case of Xamarin.UITest errors
-		//		//
-		//		Environment.SetEnvironmentVariable("ANDROID_HOME", @"C:\Program Files (x86)\Android\android-sdk");
-		//		Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\Jdk\microsoft_dist_openjdk_1.8.0.25");
-		//	}
+            try
+            {
+                var configurator = Uno.UITest.Selenium.ConfigureApp
+                    .EdgeWebAssembly
+                    .Uri(new Uri(TestEnvironment.WebAssemblyDefaultUri));
 
-		//	var androidConfig = Xamarin.UITest.ConfigureApp
-		//		.Android
-		//		.Debug()
-		//		.LogDirectory(Environment.GetEnvironmentVariable(UITEST_SCREENSHOT_PATH))
-		//		.EnableLocalScreenshots();
 
-		//	if(GetAndroidApkPath() is string bundlePath)
-		//	{
-		//		androidConfig = androidConfig.ApkFile(bundlePath);
-		//	}
-		//	else
-		//	{
-		//		androidConfig = androidConfig.InstalledApp(TestEnvironment.AndroidAppName);
-		//	}
+                if (!string.IsNullOrEmpty(TestEnvironment.EdgeDriverPath))
+                {
+                    configurator = configurator.EdgeDriverLocation(
+                        Path.Combine(TestContext.CurrentContext.TestDirectory,
+                        TestEnvironment.EdgeDriverPath.Replace('\\', Path.DirectorySeparatorChar)));
+                }
 
-		//	var app = alreadyRunningApp
-		//		? androidConfig.ConnectToApp()
-		//		: androidConfig.StartApp(mode);
+                if (!TestEnvironment.WebAssemblyHeadless)
+                {
+                    configurator = configurator
+                        .Headless(false)
+                        .SeleniumArgument("--remote-debugging-port=9515");
+                }
+                else
+                {
+                    configurator = configurator
+                        .Headless(true);
+                }
 
-		//	return app.ToUnoApp();
-		//}
+                _currentApp = configurator.ScreenShotsPath(TestContext.CurrentContext.TestDirectory)
+                    .StartApp();
 
-		//private static IApp CreateiOSApp(bool alreadyRunningApp, AppDataMode mode)
-		//{
-		//	var iOSConfig = Xamarin.UITest.ConfigureApp
-		//		.iOS
-		//		.Debug()
-		//		.DeviceIdentifier(GetiOSDeviceId())
-		//		.LogDirectory(Environment.GetEnvironmentVariable(UITEST_SCREENSHOT_PATH))
-		//		.EnableLocalScreenshots();
+                return _currentApp;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                throw;
+            }
+        }
 
-		//	if(GetiOSAppBundlePath() is string bundlePath)
-		//	{
-		//		Console.WriteLine($"Using AppBundle Path: {bundlePath}");
-		//		iOSConfig = iOSConfig.AppBundle(bundlePath);
-		//	}
-		//	else
-		//	{
-		//		Console.WriteLine($"Using Installed App: {TestEnvironment.iOSAppName}");
-		//		iOSConfig = iOSConfig.InstalledApp(TestEnvironment.iOSAppName);
-		//	}
+        //private static IApp CreateAndroidApp(bool alreadyRunningApp, AppDataMode mode)
+        //{
+        //	if(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ANDROID_HOME")))
+        //	{
+        //		Console.WriteLine("Providing default ANDROID_HOME and JAVA_HOME variables, because ANDROID_HOME could not be found.");
 
-		//	var app = alreadyRunningApp
-		//		? iOSConfig.ConnectToApp()
-		//		: iOSConfig.StartApp(mode);
+        //		// To set in case of Xamarin.UITest errors
+        //		//
+        //		Environment.SetEnvironmentVariable("ANDROID_HOME", @"C:\Program Files (x86)\Android\android-sdk");
+        //		Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\Jdk\microsoft_dist_openjdk_1.8.0.25");
+        //	}
 
-		//	return app.ToUnoApp();
-		//}
+        //	var androidConfig = Xamarin.UITest.ConfigureApp
+        //		.Android
+        //		.Debug()
+        //		.LogDirectory(Environment.GetEnvironmentVariable(UITEST_SCREENSHOT_PATH))
+        //		.EnableLocalScreenshots();
 
-		//private static string GetiOSDeviceId()
-		//{
-		//	var environmentDeviceId = Environment.GetEnvironmentVariable(UITEST_IOSDEVICE_ID) ?? "";
+        //	if(GetAndroidApkPath() is string bundlePath)
+        //	{
+        //		androidConfig = androidConfig.ApkFile(bundlePath);
+        //	}
+        //	else
+        //	{
+        //		androidConfig = androidConfig.InstalledApp(TestEnvironment.AndroidAppName);
+        //	}
 
-		//	if(!Guid.TryParse(environmentDeviceId, out var deviceId))
-		//	{
-		//		var deviceName = !string.IsNullOrEmpty(environmentDeviceId) ? environmentDeviceId : TestEnvironment.iOSDeviceNameOrId;
+        //	var app = alreadyRunningApp
+        //		? androidConfig.ConnectToApp()
+        //		: androidConfig.StartApp(mode);
 
-		//		Process process = new Process();
-		//		process.StartInfo.FileName = "xcrun";
-		//		process.StartInfo.Arguments = $"simctl list devices -j \"{deviceName}\" available";
-		//		process.StartInfo.UseShellExecute = false;
-		//		process.StartInfo.RedirectStandardOutput = true;
-		//		process.StartInfo.RedirectStandardError = true;
-		//		process.Start();
+        //	return app.ToUnoApp();
+        //}
 
-		//		var deviceList = JsonConvert.DeserializeObject(process.StandardOutput.ReadToEnd()) as JObject;
+        //private static IApp CreateiOSApp(bool alreadyRunningApp, AppDataMode mode)
+        //{
+        //	var iOSConfig = Xamarin.UITest.ConfigureApp
+        //		.iOS
+        //		.Debug()
+        //		.DeviceIdentifier(GetiOSDeviceId())
+        //		.LogDirectory(Environment.GetEnvironmentVariable(UITEST_SCREENSHOT_PATH))
+        //		.EnableLocalScreenshots();
 
-		//		if(deviceList != null
-		//			&& deviceList["devices"] is JObject systems)
-		//		{
-		//			foreach(var system in systems.Values())
-		//			{
-		//				if(system is JArray devices)
-		//				{
-		//					foreach(var device in devices)
-		//					{
-		//						if(device is JObject dev)
-		//						{
-		//							return device["udid"].ToString();
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
+        //	if(GetiOSAppBundlePath() is string bundlePath)
+        //	{
+        //		Console.WriteLine($"Using AppBundle Path: {bundlePath}");
+        //		iOSConfig = iOSConfig.AppBundle(bundlePath);
+        //	}
+        //	else
+        //	{
+        //		Console.WriteLine($"Using Installed App: {TestEnvironment.iOSAppName}");
+        //		iOSConfig = iOSConfig.InstalledApp(TestEnvironment.iOSAppName);
+        //	}
 
-		//		process.WaitForExit();
-		//	}
+        //	var app = alreadyRunningApp
+        //		? iOSConfig.ConnectToApp()
+        //		: iOSConfig.StartApp(mode);
 
-		//	return environmentDeviceId;
-		//}
-		//private static string GetAndroidApkPath()
-		//{
-		//	var value = Environment.GetEnvironmentVariable(UITEST_ANDROIDAPK_PATH);
-		//	return string.IsNullOrWhiteSpace(value) ? null : value;
-		//}
+        //	return app.ToUnoApp();
+        //}
 
-		//private static string GetiOSAppBundlePath()
-		//{
-		//	var value = Environment.GetEnvironmentVariable(UITEST_IOSBUNDLE_PATH);
-		//	return string.IsNullOrWhiteSpace(value) ? null : value;
-		//}
-	}
+        //private static string GetiOSDeviceId()
+        //{
+        //	var environmentDeviceId = Environment.GetEnvironmentVariable(UITEST_IOSDEVICE_ID) ?? "";
+
+        //	if(!Guid.TryParse(environmentDeviceId, out var deviceId))
+        //	{
+        //		var deviceName = !string.IsNullOrEmpty(environmentDeviceId) ? environmentDeviceId : TestEnvironment.iOSDeviceNameOrId;
+
+        //		Process process = new Process();
+        //		process.StartInfo.FileName = "xcrun";
+        //		process.StartInfo.Arguments = $"simctl list devices -j \"{deviceName}\" available";
+        //		process.StartInfo.UseShellExecute = false;
+        //		process.StartInfo.RedirectStandardOutput = true;
+        //		process.StartInfo.RedirectStandardError = true;
+        //		process.Start();
+
+        //		var deviceList = JsonConvert.DeserializeObject(process.StandardOutput.ReadToEnd()) as JObject;
+
+        //		if(deviceList != null
+        //			&& deviceList["devices"] is JObject systems)
+        //		{
+        //			foreach(var system in systems.Values())
+        //			{
+        //				if(system is JArray devices)
+        //				{
+        //					foreach(var device in devices)
+        //					{
+        //						if(device is JObject dev)
+        //						{
+        //							return device["udid"].ToString();
+        //						}
+        //					}
+        //				}
+        //			}
+        //		}
+
+        //		process.WaitForExit();
+        //	}
+
+        //	return environmentDeviceId;
+        //}
+        //private static string GetAndroidApkPath()
+        //{
+        //	var value = Environment.GetEnvironmentVariable(UITEST_ANDROIDAPK_PATH);
+        //	return string.IsNullOrWhiteSpace(value) ? null : value;
+        //}
+
+        //private static string GetiOSAppBundlePath()
+        //{
+        //	var value = Environment.GetEnvironmentVariable(UITEST_IOSBUNDLE_PATH);
+        //	return string.IsNullOrWhiteSpace(value) ? null : value;
+        //}
+    }
 }

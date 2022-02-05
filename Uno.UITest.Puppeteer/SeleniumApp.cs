@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Remote;
 
@@ -22,6 +23,8 @@ namespace Uno.UITest.Selenium
     public partial class SeleniumApp : IApp
     {
         private const string UNO_UITEST_DRIVERPATH_CHROME = "UNO_UITEST_DRIVERPATH_CHROME";
+        private const string UNO_UITEST_DRIVERPATH_EDGE = "UNO_UITEST_DRIVERPATH_EDGE";
+        private const string UNO_UITEST_DRIVERPATH_FIREFOX = "UNO_UITEST_DRIVERPATH_FIREFOX";
 
 
         private readonly WebDriver _driver;
@@ -104,6 +107,66 @@ namespace Uno.UITest.Selenium
             //    };
             //    _screenShotPath = screenShotPath;
             //}
+        }
+
+        public SeleniumApp(EdgeAppConfigurator config)
+        {
+            var targetUri = GetEnvironmentVariable("UNO_UITEST_TARGETURI", config.SiteUri.OriginalString);
+            var driverPath = GetEnvironmentVariable(UNO_UITEST_DRIVERPATH_EDGE, config.EdgeDriverPath);
+            var screenShotPath = GetEnvironmentVariable("UNO_UITEST_SCREENSHOT_PATH", config.InternalScreenShotsPath);
+            var edgeBinPath = GetEnvironmentVariable("UNO_UITEST_EDGE_BINARY_PATH", config.InternalBrowserBinaryPath);
+
+            var options = new EdgeOptions();
+
+            if (config.InternalHeadless)
+            {
+                options.AddArguments("no-sandbox");
+                //options.AddArguments("disable-dev-shm-usage");
+                options.AddArgument("headless");
+            }
+
+            options.AddArgument($"window-size={config.InternalWindowWidth}x{config.InternalWindowHeight}");
+
+            //// Untested
+            //if (config.InternalDetectDockerEnvironment)
+            //{
+            //    if (File.Exists("/.dockerenv"))
+            //    {
+            //        //// When running under docker, ports bindings may not work properly
+            //        //// as the current local host may not be detected properly by the web driver
+            //        //// causing errors like this one:
+            //        ////
+            //        //// [SEVERE]: bind() returned an error, errno=99: Cannot assign requested address (99)
+            //        ////
+            //        //// When InternalDetectDockerEnvironment is set, tell the daemon to listen on
+            //        //// all available interfaces
+            //        //Console.WriteLine($"Container mode enabled, adding whitelisted-ips");
+            //        //options.AddArguments("--whitelisted-ips");
+            //    }
+            //}
+
+            foreach (var arg in config.InternalSeleniumArgument)
+            {
+                options.AddArguments(arg);
+            }
+
+            if (!string.IsNullOrEmpty(edgeBinPath))
+            {
+                options.BinaryLocation = edgeBinPath;
+            }
+
+            options.SetLoggingPreference(LogType.Browser, LogLevel.All);
+
+            if (string.IsNullOrEmpty(driverPath))
+            {
+                throw new NotSupportedException($"The path to EdgeDriver.exe must be set either using {UNO_UITEST_DRIVERPATH_EDGE} as an environment variable or by setting the path via AppInitializer.TestEnvironment.EdgeDriverPath in order to use EdgeDriver.");
+            }
+
+            _driver = new EdgeDriver(driverPath, options)
+            {
+                Url = targetUri
+            };
+            _screenShotPath = screenShotPath;
         }
 
         IQueryable<ILogEntry> IApp.GetSystemLogs(DateTime? afterDate)

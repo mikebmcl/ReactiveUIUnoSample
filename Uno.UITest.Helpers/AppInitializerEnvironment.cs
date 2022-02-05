@@ -46,6 +46,12 @@ namespace Uno.UITests.Helpers
         public string ChromeDriverPath { get; set; }
 
         /// <summary>
+        /// Defines the location of Microsoft Edge Driver. Must be installed with the path to it set in this string in order to use <see cref="Platform.Edge"/>.
+        /// You can find it here: <see href="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/"/>
+        /// </summary>
+        public string EdgeDriverPath { get; set; }
+
+        /// <summary>
         /// Defines if the browser tests are running in chrome without a window.
         /// </summary>
         public bool WebAssemblyHeadless { get; set; } = true;

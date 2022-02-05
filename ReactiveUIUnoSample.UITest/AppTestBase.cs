@@ -21,7 +21,9 @@ namespace ReactiveUIUnoSample.UITest
         {
             AppInitializer.TestEnvironment.WebAssemblyDefaultUri = Constants.WebAssemblyDefaultUri;
             AppInitializer.TestEnvironment.CurrentPlatform = Constants.CurrentPlatform;
-
+            AppInitializer.TestEnvironment.EdgeDriverPath = Constants.EdgeDriverPath;
+            // This defaults to Browser which is equivalent to Chrome
+            AppInitializer.TestEnvironment.CurrentPlatform = Uno.UITest.Helpers.Queries.Platform.Edge;
 #if DEBUG
             // If you want to see what the tests are doing, keep this as false. If you're content to let them run without actually
             // showing a browser window you can just comment it out (true is the default).

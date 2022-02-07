@@ -11,6 +11,10 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Microsoft.Toolkit.Uwp;
+using System.Reactive.Concurrency;
+
+using Microsoft.Extensions.Logging;
+using Uno.Extensions;
 
 namespace ReactiveUIUnoSample.ViewModels
 {
@@ -28,7 +32,7 @@ namespace ReactiveUIUnoSample.ViewModels
                 //  where it makes sense for you to do it and so we handle this here by only creating an Interaction<...> for m_confirmLeavePage when this is being
                 //  used for SecondView and we're doing a null check on this in the CallBackOnNavigation method below to allow pass through navigation instead
                 //  of implementing a pass-through interaction binding in AlternateSecondView's ctor. 
-                m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>();
+                m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>(schedulerProvider.CurrentThread);
             }
             SkipConfirmLeave = false;
         }
@@ -73,6 +77,9 @@ namespace ReactiveUIUnoSample.ViewModels
             if (!m_isNavigating.Set(true))
             {
                 // Note: Without the call to Subscribe at the end, this code will never execute.
+                // Note: You don't need to worry about this leaking despite Subscribe() returning an IDisposable. The WhenActivated
+                //  in the SecondView ctor ensures that everything is disconnected so that the GC will take care of it. Also, Android
+                //  will not dismiss the dialog properly if you try to get a reference to this and dispose it from here.
                 m_confirmLeavePage.Handle((Title: "Confirm Quit", Text: "Are you sure you want to leave before the test is finished?", Stay: "Stay", Leave: "Leave", FinishInteraction: FinishCallOnNavigateBack, IsNavigating: m_isNavigating)).ObserveOn(SchedulerProvider.MainThread).Subscribe();
             }
             return false;

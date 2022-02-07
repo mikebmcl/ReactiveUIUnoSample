@@ -193,9 +193,14 @@ namespace ReactiveUIUnoSample
 
                 // Debug JS interop
                 // builder.AddFilter("Uno.Foundation.WebAssemblyRuntime", LogLevel.Debug );
+
+#if DEBUG
+                //// If you want to see all LogLevel.Debug debug output in your log
+                //builder.AddFilter((l) => l == LogLevel.Debug);
+#endif
             });
 
-            //global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = factory;
+            global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory = factory;
         }
     }
 }

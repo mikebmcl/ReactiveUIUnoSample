@@ -1,19 +1,17 @@
 ﻿using ReactiveUI;
-using ReactiveUIUnoSample.ViewModels;
+
+using ReactiveUIUnoSample.ViewModels.Testing;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,30 +20,47 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-using Microsoft.Toolkit.Extensions;
-using Microsoft.Toolkit.Uwp;
-using Microsoft.Extensions.Logging;
-using Uno.Extensions;
-
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace ReactiveUIUnoSample.Views
+namespace ReactiveUIUnoSample.Views.Testing
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    [ViewContract(SecondViewModel.SecondViewContractName)]
-    public sealed partial class SecondView : Page, IViewFor<SecondViewModel>
+    public sealed partial class TwoLineTestView : Page, IViewFor<ViewModels.Testing.TwoLineTestViewModel>
     {
-        public static readonly DependencyProperty ViewModelProperty = DependencyProperty
-            .Register(nameof(ViewModel), typeof(SecondViewModel), typeof(SecondView), null);
+        // Add the following interface to the class
+        // , IViewFor<TwoLineTestViewModel>
 
-        public SecondView()
+        public static readonly DependencyProperty ViewModelProperty =
+                DependencyProperty.Register(nameof(ViewModel), typeof(TwoLineTestViewModel),
+            typeof(TwoLineTestView), new PropertyMetadata(default(TwoLineTestViewModel)));
+
+        public TwoLineTestViewModel ViewModel
         {
-            InitializeComponent();
+            get => (TwoLineTestViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
 
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TwoLineTestViewModel)value;
+        }
+        private ReactiveUI.Uno.BooleanToVisibilityTypeConverter _booleanToVisibilityTypeConverter =
+            new ReactiveUI.Uno.BooleanToVisibilityTypeConverter();
+
+        public TwoLineTestView()
+        {
+            this.InitializeComponent();
+            // This goes in the constructor. It should be used for various types of bindings that need to be disposed of
+            // See: https://www.reactiveui.net/docs/handbook/when-activated/ and https://www.reactiveui.net/docs/handbook/data-binding/
             this.WhenActivated(disposables =>
             {
+                //this.Bind(ViewModel, vm => vm.CurrentTestItem.Answers, view => view.AnswersListBox.ItemsSource).DisposeWith(disposables);
+                //this.Bind(ViewModel, vm => vm.CurrentTestItem.SelectedItem, view => view.AnswersListBox.SelectedItem).DisposeWith(disposables);
+                //this.BindCommand(ViewModel, vm => vm.NextPageCommand, view => view.NextPageButton).DisposeWith(disposables);
+
                 this.BindInteraction(ViewModel, vm => vm.ConfirmLeavePage, async ic =>
                 {
                     try
@@ -81,21 +96,7 @@ namespace ReactiveUIUnoSample.Views
                         ic.Input.IsNavigating.ForceToFalse();
                     }
                 }).DisposeWith(disposables);
-
-                this.Bind(ViewModel, x => x.SkipConfirmLeave, view => view.SkipConfirmLeaveCheckBox.IsChecked).DisposeWith(disposables);
             });
-        }
-
-        public SecondViewModel ViewModel
-        {
-            get => (SecondViewModel)GetValue(ViewModelProperty);
-            set => SetValue(ViewModelProperty, value);
-        }
-
-        object IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = (SecondViewModel)value;
         }
     }
 }

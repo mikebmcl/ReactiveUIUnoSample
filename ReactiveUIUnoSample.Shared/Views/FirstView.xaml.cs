@@ -36,6 +36,7 @@ namespace ReactiveUIUnoSample.Views
                 this.Bind(ViewModel, vm => vm.EnteredAmount, view => view.EnteredAmountTextBox.Text, Observable.FromEventPattern(EnteredAmountTextBox, nameof(TextBox.LostFocus)), null, m_decimalToStringBindingTypeConverter, m_decimalToStringBindingTypeConverter).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.NextPageCommand, view => view.NextPageButton).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.AlternateNextPageCommand, view => view.AlternateNextPageButton).DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.TemperatureConversionsMainViewCommand, view => view.TemperatureConversionsMainViewButton).DisposeWith(disposables);
             });
         }
 

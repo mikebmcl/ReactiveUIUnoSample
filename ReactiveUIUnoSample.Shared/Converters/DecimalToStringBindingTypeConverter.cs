@@ -6,7 +6,7 @@ using System.Globalization;
 namespace ReactiveUIUnoSample.Converters
 {
     // Rather than IValueConverter, it's better to use IBindingTypeConverter with ReactiveUI since that lets us take advantage
-    // of the power binding mechanisms that ReactiveUI provides. It also doesn't require instantiating it in the XAML itself; it
+    // of the powerful binding mechanisms that ReactiveUI provides. It also doesn't require instantiating it in the XAML itself; it
     // is just used in the code-behind, which can have some performance benefits. We're using this in FirstViewModel. We could also
     // register it globally and it would then automatically be used for all value conversions for the types it supports. We're just
     // using it locally in FirstViewModel since we might want to use a different converter as the default for decimal <-> string instead

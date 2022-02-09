@@ -1,0 +1,67 @@
+﻿<Page
+    x:Class="ReactiveUIUnoSample.Views.Testing.TwoLineTestResultsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ReactiveUIUnoSample.Views.Testing"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Vertical">
+                <TextBlock x:Name="HasRightAnswersTextBlock" Visibility="{Binding HasRightAnswers, Converter={StaticResource BoolToVisConv}}" HorizontalTextAlignment="Center" Style="{ThemeResource SansBodyMediumTextBlockStyle}">
+                    <TextBlock.Inlines>
+                        <Run Text="You got " />
+                        <Run Text="{Binding PercentCorrect}" />
+                        <Run Text=" Correct!'}" />
+                    </TextBlock.Inlines>
+                </TextBlock>
+                <TextBlock x:Name="NoRightAnswerTextBlock"  Visibility="{Binding AllWrong, Converter={StaticResource BoolToVisConv}}" Text="You got 0% Correct. Keep trying, you can do it!" HorizontalTextAlignment="Center" Style="{ThemeResource SansBodyMediumTextBlockStyle}" />
+                <Rectangle Style="{StaticResource HorizontalAccentDividerBarRectangleStyle}" Margin="0,5" />
+            </StackPanel>
+            <StackPanel x:Name="WrongAnswersSubHeaderStackPanel" Grid.Row="1" Visibility="{Binding HasWrongAnswers, Converter={StaticResource BoolToVisConv}}" Margin="0,0,0,30" Orientation="Vertical">
+                <TextBlock x:Name="WrongAnswersSubHeaderTextBlock" HorizontalAlignment="Center" Text="You got the following items incorrect:" Style="{ThemeResource BodyTextBlockStyle}" />
+            </StackPanel>
+            <ItemsControl x:Name="WrongAnswersItemsControl" Grid.Row="2" Visibility="{Binding HasWrongAnswers, Converter={StaticResource BoolToVisConv}}" ItemsSource="{Binding UserWasWrong}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="5" Padding="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Question:" Style="{ThemeResource SansBodyMediumTextBlockStyle}" />
+                            <TextBlock Grid.Row="1" Text="{Binding TestItem.FirstLine}" Style="{ThemeResource SansBodyMediumTextBlockStyle}" />
+                            <TextBlock Grid.Row="2" Text="{Binding TestItem.SecondLine}" Style="{ThemeResource SansBodyMediumTextBlockStyle}" />
+
+                            <TextBlock Grid.Row="3" Margin="0,5,0,0" Foreground="{ThemeResource SystemFillColorCriticalBrush}" Style="{ThemeResource SansBodyTextBlockStyle}">
+                                <TextBlock.Inlines>
+                                    <Run Text="Your answer: " />
+                                    <Run Text="{Binding WrongAnswer}" />
+                                </TextBlock.Inlines>
+                            </TextBlock>
+                            <TextBlock Grid.Row="4" Padding="10" Foreground="{ThemeResource SystemFillColorSuccessBrush}" Style="{ThemeResource SansBodyTextBlockStyle}">
+                                <TextBlock.Inlines>
+                                    <Run Text="Correct answer: " />
+                                    <Run Text="{Binding TestItem.CorrectAnswer.Text}" />
+                                </TextBlock.Inlines>
+                            </TextBlock>
+                            <Button Grid.Row="5" Visibility="{Binding TestItem.HasCorrectAnswerFrameworkElement, Converter={StaticResource BoolToVisConv}}" Content="See Details" Command="{Binding TestItem.ViewCorrectAnswerFrameworkElementCommand}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -1,10 +1,11 @@
 ﻿using ReactiveUI;
 
 using System;
+using System.ComponentModel;
 
 namespace ReactiveUIUnoSample.ViewModels
 {
-    public abstract class ViewModelBase : ReactiveObject, IRoutableViewModel
+    public abstract class ViewModelBase : ReactiveObject, IRoutableViewModel, INotifyPropertyChanged
     {
         /// <summary>
         /// A string token representing the current ViewModel, such as 'login' or 'user'. Can be null
@@ -34,6 +35,11 @@ namespace ReactiveUIUnoSample.ViewModels
             desiredLength = desiredLength == 0 ? 32 : desiredLength;
             desiredLength = Math.Min(32, Math.Max(5, desiredLength));
             return Guid.NewGuid().ToString().Replace("-", "").Substring(0, desiredLength);
+        }
+
+        protected void RaisePropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+        {
+            (this as IReactiveObject).RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

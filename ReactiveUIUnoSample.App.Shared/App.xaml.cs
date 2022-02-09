@@ -46,6 +46,8 @@ namespace ReactiveUIUnoSample
 
             this.InitializeComponent();
 
+            DiagnosticsHelpers.TerminateApplication = Application.Current.Exit;
+
 #if HAS_UNO || NETFX_CORE
             this.Suspending += OnSuspending;
 #endif

@@ -1,6 +1,8 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using ReactiveUIUnoSample.ViewModels.UnitConversions;
+
 using Splat;
 
 using System.Windows.Input;
@@ -27,6 +29,11 @@ namespace ReactiveUIUnoSample.ViewModels
                 HostScreenWithContract.Contract = SecondViewModel.AlternateSecondViewContractName;
                 return HostScreen.Router.Navigate.Execute(new SecondViewModel(HostScreenWithContract, SchedulerProvider, () => new ContentControl() { Content = new TextBlock() { Text = "Alternate Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } }));
             });
+            TemperatureConversionsMainViewCommand = ReactiveCommand.CreateFromObservable(() =>
+                {
+                    //HostScreenWithContract.Contract = UnitConversionsViewModel.TemperatureConversionsMainViewContract;
+                    return HostScreen.Router.Navigate.Execute(new UnitConversionsViewModel(HostScreenWithContract, SchedulerProvider));
+                });
         }
         public static string EnteredAmountTextBoxAutomationId => "EnteredAmountTextBox";
 
@@ -39,5 +46,7 @@ namespace ReactiveUIUnoSample.ViewModels
         public ICommand NextPageCommand { get; set; }
 
         public ICommand AlternateNextPageCommand { get; set; }
+
+        public ICommand TemperatureConversionsMainViewCommand { get; set; }
     }
 }

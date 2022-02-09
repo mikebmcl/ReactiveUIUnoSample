@@ -26,6 +26,7 @@ namespace ReactiveUIUnoSample.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
+    [ViewContract(SecondViewModel.AlternateSecondViewContractName)]
     public sealed partial class AlternateSecondView : Page, IViewFor<SecondViewModel>
     {
         public static readonly DependencyProperty ViewModelProperty =

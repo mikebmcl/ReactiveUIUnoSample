@@ -100,7 +100,11 @@ namespace ReactiveUIUnoSample
         /// </summary>
         public void ForceToFalse()
         {
-            _ = Interlocked.Exchange(ref m_boolValue, m_falseValue);
+            int existingValue = Interlocked.Exchange(ref m_boolValue, m_falseValue);
+            if (existingValue != m_falseValue)
+            {
+                m_valueChangedWeakEventHandlerEventManager.RaiseEvent(this, nameof(ValueChanged));
+            }
         }
 
         /// <summary>
@@ -111,9 +115,34 @@ namespace ReactiveUIUnoSample
         /// <returns>The previous value.</returns>
         public bool Set(bool value)
         {
-            return value
+            bool previousValue = Get();
+            bool updatedValue = value
                 ? Interlocked.CompareExchange(ref m_boolValue, m_trueValue, m_falseValue) == m_trueValue
                 : Interlocked.CompareExchange(ref m_boolValue, m_falseValue, m_trueValue) == m_trueValue;
+            if (previousValue != updatedValue)
+            {
+                m_valueChangedWeakEventHandlerEventManager.RaiseEvent(this, nameof(ValueChanged));
+            }
+            return updatedValue;
+        }
+
+        /// <summary>
+        /// Used to manage subscriptions
+        /// </summary>
+        private readonly WeakEventHandlerEventManager m_valueChangedWeakEventHandlerEventManager = new WeakEventHandlerEventManager();
+        /// <summary>
+        /// Informs you that the value changed. It may have already changed by the time event handlers are called so this is
+        /// primarily intended for situations where you want to update a Command's CanExecute using a <see cref="ReactiveUI.ReactiveCommand"/>
+        /// that includes the ability to change its CanExecute using a WhenAny where the handler for this changes a property on the
+        /// view model. NOTE: This is managed using an event manager that tracks subscribers using <see cref="WeakReference"/>-based references.
+        /// While it's good practice to always unsubscribe from events, in this case you do not need to worry about it keeping the subscriber 
+        /// alive if you can't unsubscribe without creating code that would be unreasonably complex (and thus difficult to understand, test, 
+        /// and maintain).
+        /// </summary>
+        public event EventHandler ValueChanged
+        {
+            add { m_valueChangedWeakEventHandlerEventManager.AddHandler(value, nameof(ValueChanged)); }
+            remove { m_valueChangedWeakEventHandlerEventManager.RemoveHandler(value, nameof(ValueChanged)); }
         }
     }
 }

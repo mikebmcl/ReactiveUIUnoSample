@@ -21,6 +21,9 @@
                     Content="Alternate Next"
                     AutomationProperties.AutomationId="AlternateNextPageButton"
                     Margin="4" />
+            <Button x:Name="TemperatureConversionsMainViewButton"
+                    Content="Temperature Conversions"
+                    Margin="4" />
         </StackPanel>
         <StackPanel Grid.Row="1"
                     HorizontalAlignment="Stretch"

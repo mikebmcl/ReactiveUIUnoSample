@@ -12,6 +12,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using ReactiveUIUnoSample.Interfaces;
+using ReactiveUIUnoSample.ViewModels.UnitConversions;
 using ReactiveUIUnoSample.Views;
 
 using Splat;
@@ -164,8 +165,9 @@ namespace ReactiveUIUnoSample.ViewModels
             // addition to navigating. It can be used at any time, not just when the app starts running, but because it clears the whole stack the use cases for it
             // are limited (e.g. if your app should just swap between pages or if you want to give the user the option to go back to the "home" page without navigating
             // back through all the previous pages).
-
-            Router.Navigate.Execute(new FirstViewModel(this, m_schedulerProvider));
+            //Contract = UnitConversionsViewModel.TemperatureConversionsMainViewContract;
+            Router.Navigate.Execute(new UnitConversionsViewModel(this, m_schedulerProvider));
+            //Router.Navigate.Execute(new FirstViewModel(this, m_schedulerProvider));
 
             // The following is some special code needed to let us handle things like pressing the browser back button in WASM or the system back button in Android
             // This is based off of https://platform.uno/docs/articles/features/native-frame-nav.html with modifications due to our use of ReactiveUI rather than
@@ -215,21 +217,55 @@ namespace ReactiveUIUnoSample.ViewModels
             // Note: It's worthwhile to read through this to learn some of the intricacies and issues you might come up
             // against: https://www.reactiveui.net/docs/handbook/routing/ e.g. the bit about using Interactions rather than navigation for popups.
 
-            // Lastly, we're using Splat for dependency resolving because it doesn't require any additional setup or additional packages, but you can use a number of
+            // Lastly, we're using Splat for view resolving because it doesn't require any additional setup or additional packages, but you can use a number of
             // other dependency resolvers instead if their functionality better fits your needs. For a list of them along with details about how to set them up to be
             // used with ReactiveUI, see: https://www.reactiveui.net/api/splat/imutabledependencyresolver/ 
 
             // We're opting to register individually like this because we're making use of our IScreenWithContract interface to allow navigating
-            // to multiple views that share the same view model. Note that if you use contract names you must use them with all views you register for the
-            // view model and must ensure that you set the IScreenWithContract.Contract property to a valid contract name for the view model before navigation.
-            // It is safe to navigte to a view model that has no contract name even if the Contract property has a value. You do not need to worry about restoring
-            // the value of Contract when navigating back to a view; the value is only used to find and create the correct view. However you should store the values
-            // in your saved state data if you are saving state in the event that the user navigated away from a page by accident on a platform where 
-            // ICallOnBackNavigation might not be able to be used to successfully prevent back navigation where the user accidentally navigates back (iOS and WASM).
+            // to multiple views that share the same view model.
+            // Note that if you use contract names you should use them with all views you register for that view model. You can have one of those views be registered
+            // with no contract (null and empty count as no contract, but whitespace is considered a distinct string rather than no contract), but that is not
+            // recommended. Locator will let you register multiple views for the same view model with the same contract string (or no contract string). Whichever
+            // was registered last is the one that will be resolved. So if you make a mistake during registering, you could end up with unexpected behavior.
+            //
+            // If Locator can't find a view associated with a specific contract for the view model it's trying to resolve then it will try to fall back to a view
+            // that was registered with no contract. If it finds one it will go to that. If there is no view for that view model that was registered without a
+            // contract, it will throw an exception. So by registering all of them with contracts, you will avoid the unintended side effect of having it "fallback"
+            // to a view that isn't the one you intended. It's also fairly easy to write a UI test that verifies that navigation throws when trying to navigate to a
+            // view model that should throw if no contract string or an invalid one is set compared to writing tests to try to check to see if you actually got the
+            // view you wanted (e.g. by checking to see if certain elements are there that shouldn't be there or vice-versa).
+            //
+            // You can decorate your view classes (in their code behind file) with a ReactiveUI.ViewContractAttribute attribute to specify a contract string. If you
+            // do that for all of the views that share a view model, you can use the RegisterViewsForViewModels(...) method of registration above and all of the
+            // contracts will be properly registered. However, that attribute will have no effect if you register views manually with Register(...) as found below.
+            // So even if you have that attribute, you still need to specify the contract as an argument to Register if you switch to using individual registration.
+            // If you forget to add that attribute to a view then it will unintentionally become the fallback view. If you accidentally register multiple views using
+            // the same contract string, then whichever one came last when Locator was iterating through all of the views will be the one that is associated with that
+            // contract at runtime. This is also true for manual registration, though in that case you know the order of registration so it might be a bit easier to
+            // figure out why you are getting a certain view by checking to see if that view is the last one that was registered for that view model.
+            //
+            // If you have a view model that is only associated with one view then it doesn't need a contract string and trying to navigate to it when the contract
+            // string has a value will succeed (because of the fallback lookup described above). But you should strongly consider having all of your view-view models
+            // use contract strings, even those that only have one view. It eases testing and will make it easier in the future if you decide you want a second view
+            // for that view model. You will already have a contract string for the existing view with all of the code that navigates to it setup to use that so you
+            // won't need to go through and add a contract string everywhere that navigates to it or otherwise tries to resolve a view for it. Also, adding a contract
+            // string is a breaking change because you no longer have the fallback behavior and need to change all of the code that used to navigate without a contract
+            // to navigate with a contract. If the code is used outside of your project in some way, either now or in the future, adding a contract string would be
+            // significantly more problematic because everyone else would also need to make those changes and write tests, etc.
+            //
+            // However, you MUST use a view without a contract for the view model that is navigated to first (in the constructor of this class). If you try to use a
+            // contract, you will get an exception saying that it could not find a view for the view model (despite registering everything correctly). Other than
+            // that, you should strongly consider always using contracts for your views.
+            //
+            // You do not need to worry about restoring the value of Contract when navigating back to a view; the value is only used to find and create the correct
+            // view when navigating fprwards. However you should store the contract strings in your saved state data if you are saving state. That way you can return
+            // the user to the page they were on in the event that they navigated away from a page by accident on a platform where ICallOnBackNavigation either cannot
+            // or might not be able to be used to confirm that the user meant to leave a page where they haven't finished doing something (creating a new account, going through the checkout process if they are buying something, completing a test they have started, and other activities that are only partially completed). You cannot prevent back navigation on iOS and if the user presses the browser back button multiple times in quick succession on WASM, they will navigate back (and possibly completely out of the app) before the ICallOnBackNavigation callback is called.
             mutableDependencyResolver.Register(() => new FirstView(), typeof(IViewFor<FirstViewModel>));
             mutableDependencyResolver.Register(() => new AboutView(), typeof(IViewFor<AboutViewModel>));
             mutableDependencyResolver.Register(() => new SecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.SecondViewContractName);
             mutableDependencyResolver.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
+            mutableDependencyResolver.Register(() => new TemperatureConversionsMainView(), typeof(IViewFor<ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel>));//, ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel.TemperatureConversionsMainViewContract);
         }
 
         private ISchedulerProvider m_schedulerProvider;

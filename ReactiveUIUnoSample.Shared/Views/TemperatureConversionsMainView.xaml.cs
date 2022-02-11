@@ -56,7 +56,7 @@ namespace ReactiveUIUnoSample.Views
             {
                 this.Bind(ViewModel, vm => vm.TempEntryOneText, view => view.TempEntryOneTextBox.Text, Observable.FromEventPattern(TempEntryOneTextBox, nameof(TextBox.TextChanged))).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, vm => vm.TempEntryTwoText, view => view.TempEntryTwoTextBox.Text).DisposeWith(disposables);
-                this.OneWayBind(ViewModel, vm => vm.TemperatureConversions, view => view.TemperaturePickerItemsComboBox.ItemsSource);
+                this.OneWayBind(ViewModel, vm => vm.ConversionDirections, view => view.TemperaturePickerItemsComboBox.ItemsSource);
                 this.Bind(ViewModel, vm => vm.SelectedTemperatureConversion, view => view.TemperaturePickerItemsComboBox.SelectedItem).DisposeWith(disposables);
 
                 this.OneWayBind(ViewModel, vm => vm.TemperatureTestingVM.TestTypes, view => view.TestTypeComboBox.ItemsSource).DisposeWith(disposables);
@@ -65,7 +65,7 @@ namespace ReactiveUIUnoSample.Views
                 this.OneWayBind(ViewModel, vm => vm.TestDifficulties, view => view.TestDifficultyComboBox.ItemsSource).DisposeWith(disposables);
                 this.Bind(ViewModel, vm => vm.TemperatureTestingVM.SelectedDifficulty, view => view.TestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
 
-                //this.BindCommand(ViewModel, vm => vm.TemperatureTestingVM.RunTestCommand, view => view.TestTemperatureConversionButton).DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.TemperatureTestingVM.RunTestCommand, view => view.TestTemperatureConversionButton).DisposeWith(disposables);
             });
         }
     }

@@ -1,6 +1,6 @@
 ﻿using ReactiveUI.Fody.Helpers;
 
-using ReactiveUIUnoSample.Interfaces;
+using ReactiveUIUnoSample.Interfaces.Testing;
 
 using System;
 using System.Collections.Generic;

@@ -2,6 +2,7 @@
 using ReactiveUI.Fody.Helpers;
 
 using ReactiveUIUnoSample.Interfaces;
+using ReactiveUIUnoSample.Interfaces.Testing;
 using ReactiveUIUnoSample.ViewModels;
 
 using System;
@@ -117,29 +118,31 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         public bool ShowSecondLine { get; set; }
         public string ShowSecondLinePrompt { get; set; }
 
-        private ITwoLineTestItem m_currentTestItem = default;
-        public ITwoLineTestItem CurrentTestItem
-        {
-            get => m_currentTestItem;
-            set
-            {
-                if (m_currentTestItem != value)
-                {
-                    //if (m_currentTestItem != null)
-                    //{
-                    //    m_currentTestItem.PropertyChanged -= TestItemChangedEventHandler;
-                    //}
-                    //m_currentTestItem = value;
-                    //if (m_currentTestItem != null)
-                    //{
-                    //    m_currentTestItem.PropertyChanged += TestItemChangedEventHandler;
-                    //}
-                    RaisePropertyChanged();
-                    RaisePropertyChanged(nameof(ShowSecondLine));
-                }
-            }
-        }
+        //private ITwoLineTestItem m_currentTestItem = default;
+        [Reactive]
+        public ITwoLineTestItem CurrentTestItem { get; set; }
+        //{
+        //    get => m_currentTestItem;
+        //    set
+        //    {
+        //        if (m_currentTestItem != value)
+        //        {
+        //            //if (m_currentTestItem != null)
+        //            //{
+        //            //    m_currentTestItem.PropertyChanged -= TestItemChangedEventHandler;
+        //            //}
+        //            //m_currentTestItem = value;
+        //            //if (m_currentTestItem != null)
+        //            //{
+        //            //    m_currentTestItem.PropertyChanged += TestItemChangedEventHandler;
+        //            //}
+        //            RaisePropertyChanged();
+        //            RaisePropertyChanged(nameof(ShowSecondLine));
+        //        }
+        //    }
+        //}
 
+        [Reactive]
         public List<ITwoLineTestItem> TestItems { get; set; }
         public List<ITwoLineTestItem> UserWasCorrect { get; set; } = new List<ITwoLineTestItem>();
         public List<ITwoLineTestWrongAnswer> UserWasWrong { get; set; } = new List<ITwoLineTestWrongAnswer>();
@@ -172,27 +175,23 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         public static string NextText { get; } = "Next";
         public static string FinishText { get; } = "Finish";
 
-        private string m_checkAndNextButtonText = "";
-        public string CheckAndNextButtonText
-        {
-            get => m_checkAndNextButtonText;
-            set
-            {
-                if (m_checkAndNextButtonText != value)
-                {
-                    m_checkAndNextButtonText = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        ////[Reactive]
+        //public string CheckAnswerText => CheckText;
+        [Reactive]
+        public string ResultText { get; set; }
 
-        public ICommand CheckAndNextButtonCommand { get; set; }
+        [Reactive]
+        public string CheckAnswerButtonText { get; set; }
+        [Reactive]
+        public string NextFinishButtonTest { get; set; }
+
+        public ICommand CheckAnswerCommand { get; set; }
+        public ICommand NextFinishCommand { get; set; }
 
         private const string m_resultTextEmpty = " ";
         private const string m_resultTextCorrect = "Correct!";
         private const string m_resultTextWrongBeginning = "Sorry";
         private const string m_resultTextWrongEnd = "was the wrong answer. See above for the correct answer.";
-        private string m_checkResultText = m_resultTextEmpty;
 
         private string m_disableOneWrongAnswerText = "Remove a Wrong Answer"; // Give Me A Hint
         public string DisableOneWrongAnswerText
@@ -208,22 +207,19 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             }
         }
 
-        private bool m_canDisableOneWrongAnswer = true;
-        public bool CanDisableOneWrongAnswer
-        {
-            get => m_canDisableOneWrongAnswer;
-            set
-            {
-                if (m_canDisableOneWrongAnswer != value)
-                {
-                    m_canDisableOneWrongAnswer = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-        [Reactive]
-        public string CheckResultText { get; set; }
+        //private bool m_canDisableOneWrongAnswer = true;
+        //public bool CanDisableOneWrongAnswer
+        //{
+        //    get => m_canDisableOneWrongAnswer;
+        //    set
+        //    {
+        //        if (m_canDisableOneWrongAnswer != value)
+        //        {
+        //            m_canDisableOneWrongAnswer = value;
+        //            RaisePropertyChanged();
+        //        }
+        //    }
+        //}
 
         [Reactive]
         public bool? CheckedAnswerIsCorrect { get; set; }
@@ -234,7 +230,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         }
         private void CheckCommandExecute()
         {
-            CanDisableOneWrongAnswer = false;
+            //CanDisableOneWrongAnswer = false;
             // Perform validation, show user correct answer, update Progress entry to note if they were right or wrong and update its last tested date.
 
             bool userIsCorrect = CurrentTestItem.UserAnswerIsCorrect();
@@ -245,7 +241,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             if (userIsCorrect)
             {
                 UserWasCorrect.Add(CurrentTestItem);
-                CheckResultText = m_resultTextCorrect;
+                ResultText = m_resultTextCorrect;
                 CheckedAnswerIsCorrect = true;
                 //CheckResultBGColor = m_resultCorrectBGColor;
                 //CheckResultTextColor = m_resultCorrectTextColor;
@@ -254,7 +250,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             {
                 string userAnswer = CurrentTestItem.UserAnswer();
                 UserWasWrong.Add(new TwoLineTestWrongAnswer(CurrentTestItem, userAnswer));
-                CheckResultText = $"{m_resultTextWrongBeginning} '{userAnswer}' {m_resultTextWrongEnd}";
+                ResultText = $"{m_resultTextWrongBeginning} '{userAnswer}' {m_resultTextWrongEnd}";
                 CheckedAnswerIsCorrect = false;
                 //IThreeStateTestAnswer correctItem = CurrentTestItem.Answers.First((item) => item.Text == CurrentTestItem.CorrectAnswer.Text);
                 //CurrentTestItem.SelectedItem = correctItem;
@@ -265,33 +261,38 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
             if (CurrentTestItemIndex + 1 == TestItems.Count)
             {
-                CheckAndNextButtonText = FinishText;
+                NextFinishButtonTest = FinishText;
                 //CheckAndNextButtonCommand = new CommandHandler(FinishCommandExecute);
             }
-            else
-            {
-                CheckAndNextButtonText = NextText;
-                //CheckAndNextButtonCommand = new CommandHandler(NextCommandExecute);
-            }
+            //else
+            //{
+            //    CheckAndNextButtonText = NextText;
+            //    //CheckAndNextButtonCommand = new CommandHandler(NextCommandExecute);
+            //}
         }
 
-        private void NextCommandExecute()
+        private async Task NextCommandExecute()
         {
-            CheckResultText = m_resultTextEmpty;
+            ResultText = m_resultTextEmpty;
             CheckedAnswerIsCorrect = null;
             //CheckResultBGColor = m_resultEmptyBGColor;
             //CheckResultTextColor = m_resultEmptyTextColor;
 
+            if (CurrentTestItemIndex + 1 == TestItems.Count)
+            {
+                await FinishCommandExecuteInternal();
+                return;
+            }
             CurrentTestItemIndex++;
             CurrentTestItem = TestItems[CurrentTestItemIndex];
-            CheckAndNextButtonText = CheckText;
-            CanDisableOneWrongAnswer = true;
+            EnabledAnswersCount = CurrentTestItem.Answers.Count;
+            //NextFinishButtonTest = FinishText;
+            //CheckAndNextButtonText = CheckText;
+            //CanDisableOneWrongAnswer = true;
         }
 
-        private async void FinishCommandExecute()
-        {
-            await FinishCommandExecuteInternal();
-        }
+        //public readonly WeakReference<Windows.UI.Xaml.Controls.ListView> AnswersListViewWeakRef = new WeakReference<Windows.UI.Xaml.Controls.ListView>(null);
+
         private async Task FinishCommandExecuteInternal()
         {
             SkipConfirmLeave = true;
@@ -315,10 +316,61 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             await HostScreenWithContract.Router.Navigate.Execute(vm);
         }
 
+        [Reactive]
+        private int EnabledAnswersCount { get; set; }
+
+        /// <summary>
+        /// If there are at more than this many enabled answers, <see cref="DisableOneWrongAnswerCommand"/> can execute.
+        /// </summary>
+        private const int _canDisableAnswersAboveCount = 2;
+        public ICommand DisableOneWrongAnswerCommand { get; set; }
+        protected void DisableOneWrongAnswerCommandExecute()
+        {
+            if (CurrentTestItem == null)
+            {
+                DiagnosticsHelpers.ReportProblem($"Unexpected null {nameof(CurrentTestItem)}.", LogLevel.Debug, this.Log());
+                return;
+            }
+            Random random = new Random();
+            int count = CurrentTestItem.Answers.Count(tsta => tsta.IsEnabled) - 1; // - 1 because we don't want to disable the correct one
+            count = random.Next(count);
+            for (int i = 0; i < count + 1; i++)
+            {
+                while (!CurrentTestItem.Answers[i].IsEnabled || CurrentTestItem.Answers[i] == CurrentTestItem.CorrectAnswer)
+                {
+                    // Skip the correct answer and the already disabled answers; reflect that we skipped by incrementing i and count since i and count were a correct or disabled answer
+                    i++;
+                    count++;
+                }
+                if (i == count)
+                {
+                    IThreeStateTestAnswer answer = CurrentTestItem.Answers[i];
+                    answer.IsEnabled = false;
+                    EnabledAnswersCount -= 1;
+                    //answer.ButtonState = ThreeStateButtonState.Disabled;
+                    if (answer.IsSelected)
+                    {
+                        answer.IsSelected = false;
+                        CurrentTestItem.SelectedItem = null;
+                    }
+                    //if (AnswersListViewWeakRef.TryGetTarget(out Windows.UI.Xaml.Controls.ListView listView))
+                    //{
+                    //    Windows.UI.Xaml.DependencyObject container = listView.ContainerFromIndex(i);
+                    //    if (container is Windows.UI.Xaml.Controls.ListViewItem viewItem)
+                    //    {
+                    //        viewItem.IsHitTestVisible = false;
+                    //        viewItem.IsEnabled = false;
+                    //    }
+                    //}
+                    break;
+                }
+            }
+        }
+
         public string Title { get; set; }
         public override object HeaderContent { get; set; }
 
-        private string _secondLineSettingsKey;
+        private readonly string _secondLineSettingsKey;
 
         public TwoLineTestViewModel(string showSecondLinePreferencesKey, bool showSecondLineDefault, string showSecondLinePrompt, bool hasSecondLine, IList<ITwoLineTestItem> testItems, IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
@@ -332,8 +384,15 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             //});
 
             TestItems = new List<ITwoLineTestItem>(testItems);
-            CheckAndNextButtonText = CheckText;
+            //CheckAndNextButtonText = CheckText;
+            ResultText = m_resultTextEmpty;
+            CheckAnswerButtonText = CheckText;
+            NextFinishButtonTest = NextText;
             CurrentTestItemIndex = 0;
+            CheckAnswerCommand = ReactiveCommand.Create(CheckCommandExecute, this.WhenAnyValue(x => x.CurrentTestItem, x => x.CurrentTestItem.SelectedItem, x => x.CheckedAnswerIsCorrect, (item, selectedAnswer, checkedIsCorrect) => item != null && selectedAnswer != null && selectedAnswer?.IsEnabled is true && checkedIsCorrect == null).ObserveOn(SchedulerProvider.MainThread));
+            // Need to explicitly specify the generics for WhenAnyValue here because of an ambiguity issue between overloads
+            NextFinishCommand = ReactiveCommand.Create(NextCommandExecute, this.WhenAnyValue<TwoLineTestViewModel, bool, bool?>(x => x.CheckedAnswerIsCorrect, (checkedIsCorrect) => checkedIsCorrect != null).ObserveOn(SchedulerProvider.MainThread));
+
             HasSecondLine = hasSecondLine;
             if (hasSecondLine)
             {
@@ -377,6 +436,8 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             }
 
             CurrentTestItem = TestItems[CurrentTestItemIndex];
+            EnabledAnswersCount = CurrentTestItem.Answers.Count;
+            DisableOneWrongAnswerCommand = ReactiveCommand.Create(DisableOneWrongAnswerCommandExecute, this.WhenAnyValue(x => x.EnabledAnswersCount, (currentlyEnabledCount) => currentlyEnabledCount > _canDisableAnswersAboveCount).ObserveOn(SchedulerProvider.MainThread));
 
             TestIsReady = true;
         }

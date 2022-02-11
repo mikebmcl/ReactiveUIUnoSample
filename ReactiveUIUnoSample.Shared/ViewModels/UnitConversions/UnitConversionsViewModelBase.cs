@@ -18,28 +18,19 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
             //TemperaturePickerItems = m_temperaturePickerItems;
         }
 
+
+        protected const string m_fahrenheitToCelsius = "F to C";
+        protected const string m_celsiusToFahrenheit = "C to F";
         private static readonly List<TestDifficultyValueDisplayPair> m_testDifficulties = new List<TestDifficultyValueDisplayPair>(new TestDifficultyValueDisplayPair[] { new TestDifficultyValueDisplayPair(TestDifficulty.Easy, "Easy"), new TestDifficultyValueDisplayPair(TestDifficulty.Medium, "Medium"), new TestDifficultyValueDisplayPair(TestDifficulty.Hard, "Hard") });
         public List<TestDifficultyValueDisplayPair> TestDifficulties => m_testDifficulties;
 
-        //// Temperature
-        //public static TemperatureConversionDirection TemperatureStringToTemperatureConversionDirection(string value, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0)
-        //{
-        //    switch (value)
-        //    {
-        //        case m_celsiusToFahrenheit:
-        //            return TemperatureConversionDirection.CelsiusToFahrenheit;
-        //        case m_fahrenheitToCelsius:
-        //            return TemperatureConversionDirection.FahrenheitToCelsius;
-        //        default:
-        //            DiagnosticsHelpers.ReportProblem($"Unexpected string value {value ?? "(null)"}.", LogLevel.Error, null, callerMemberName: callerMemberName, callerFilePath: callerFilePath, callerLineNumber: callerLineNumber);
-        //            return TemperatureConversionDirection.Invalid;
-        //    }
-        //}
-        protected const string m_fahrenheitToCelsius = "F to C";
-        protected const string m_celsiusToFahrenheit = "C to F";
-        //protected List<string> m_temperaturePickerItems = new List<string> { m_celsiusToFahrenheit, m_fahrenheitToCelsius };
-        //[Reactive]
-        //public List<string> TemperaturePickerItems { get; set; }
+        private static readonly List<ValueDisplayGenericPair<TemperatureConversionDirection>> _conversionDirections = new List<ValueDisplayGenericPair<TemperatureConversionDirection>>(new ValueDisplayGenericPair<TemperatureConversionDirection>[]
+        {
+            new ValueDisplayGenericPair<TemperatureConversionDirection>(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
+            , new ValueDisplayGenericPair<TemperatureConversionDirection>(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
+        });
+
+        public IReadOnlyList<ValueDisplayGenericPair<TemperatureConversionDirection>> ConversionDirections => _conversionDirections;
 
         public static double GetUniqueOffset(Random random, int adjustedDifferencePlusOne, HashSet<int> existingQuestionOffsets, double testValueOffsetFromMinimum)
         {

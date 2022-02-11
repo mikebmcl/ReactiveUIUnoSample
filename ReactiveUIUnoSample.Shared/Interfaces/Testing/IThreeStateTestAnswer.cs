@@ -1,4 +1,4 @@
-﻿namespace ReactiveUIUnoSample.Interfaces
+﻿namespace ReactiveUIUnoSample.Interfaces.Testing
 {
     public interface IThreeStateTestAnswer
     {

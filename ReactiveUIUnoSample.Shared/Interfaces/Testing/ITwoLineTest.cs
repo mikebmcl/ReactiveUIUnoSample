@@ -1,11 +1,7 @@
-﻿using ReactiveUIUnoSample.ViewModels;
-
+﻿
 using System.Windows.Input;
 
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
-
-namespace ReactiveUIUnoSample.Interfaces
+namespace ReactiveUIUnoSample.Interfaces.Testing
 {
     public interface ITwoLineTest
     {
@@ -22,12 +18,12 @@ namespace ReactiveUIUnoSample.Interfaces
         string ShowSecondLinePrompt { get; set; }
         bool TestIsReady { get; set; }
         ITwoLineTestItem CurrentTestItem { get; set; }
-        string CheckResultText { get; set; }
+        string ResultText { get; set; }
         //Brush CheckResultBackgroundBrush { get; set; }
         //Brush CheckResultForegroundBrush { get; set; }
-        string CheckAndNextButtonText { get; set; }
+        string CheckAnswerButtonText { get; set; }
         string DisableOneWrongAnswerText { get; set; }
-        bool CanDisableOneWrongAnswer { get; set; }
-        ICommand CheckAndNextButtonCommand { get; set; }
+        ICommand DisableOneWrongAnswerCommand { get; set; }
+        ICommand CheckAnswerCommand { get; set; }
     }
 }

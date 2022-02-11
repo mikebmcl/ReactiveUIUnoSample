@@ -1,10 +1,12 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
-using ReactiveUIUnoSample.Interfaces;
+using ReactiveUIUnoSample.Interfaces.Testing;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 using Windows.UI.Xaml;
@@ -30,27 +32,28 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             return SelectedItem.Text == CorrectAnswer.Text;
         }
 
-        private IThreeStateTestAnswer m_selectedItem = null;
-        public IThreeStateTestAnswer SelectedItem
-        {
-            get => m_selectedItem;
-            set
-            {
-                if (m_selectedItem != value)
-                {
-                    if (m_selectedItem != null)
-                    {
-                        m_selectedItem.IsSelected = false;
-                    }
-                    if (value != null)
-                    {
-                        value.IsSelected = true;
-                    }
-                    m_selectedItem = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        //private IThreeStateTestAnswer m_selectedItem = null;
+        [Reactive]
+        public IThreeStateTestAnswer SelectedItem { get; set; }
+        //{
+        //    get => m_selectedItem;
+        //    set
+        //    {
+        //        if (m_selectedItem != value)
+        //        {
+        //            if (m_selectedItem != null)
+        //            {
+        //                m_selectedItem.IsSelected = false;
+        //            }
+        //            if (value != null)
+        //            {
+        //                value.IsSelected = true;
+        //            }
+        //            m_selectedItem = value;
+        //            RaisePropertyChanged();
+        //        }
+        //    }
+        //}
 
         protected bool SetAnswerStateCanExecute(string answer)
         {
@@ -84,67 +87,21 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                     //ChangeCommandCanExecute(tsta.PressCommand);
                 }
             }
+            if (SelectedItem != null)
+            {
+                SelectedItem.IsSelected = false;
+            }
+            if (selected != null)
+            {
+                selected.IsSelected = true;
+            }
             SelectedItem = selected;
         }
 
-        private IList<IThreeStateTestAnswer> m_answers = new List<IThreeStateTestAnswer>();
-        public IList<IThreeStateTestAnswer> Answers
-        {
-            get => m_answers;
-            set
-            {
-                if (m_answers != value)
-                {
-                    m_answers = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        [Reactive]
+        public IList<IThreeStateTestAnswer> Answers { get; set; }
 
         public IThreeStateTestAnswer CorrectAnswer { get; set; }
-
-        public ICommand DisableOneWrongAnswerCommand { get; set; }
-        protected bool DisableOneWrongAnswerCommandCanExecute(object obj)
-        {
-            return Answers.Count(tsta => tsta.IsEnabled) > 2;
-        }
-        protected void DisableOneWrongAnswerCommandExecute(object obj)
-        {
-            Random random = new Random();
-            int count = Answers.Count(tsta => tsta.IsEnabled) - 1; // - 1 because we don't want to disable the correct one
-            count = random.Next(count);
-            for (int i = 0; i < count + 1; i++)
-            {
-                while (!Answers[i].IsEnabled || Answers[i] == CorrectAnswer)
-                {
-                    // Skip the correct answer and the already disabled answers; reflect that we skipped by incrementing i and count since i and count were a correct or disabled answer
-                    i++;
-                    count++;
-                }
-                if (i == count)
-                {
-                    IThreeStateTestAnswer answer = Answers[i];
-                    answer.IsEnabled = false;
-                    //answer.ButtonState = ThreeStateButtonState.Disabled;
-                    if (answer.IsSelected)
-                    {
-                        answer.IsSelected = false;
-                        SelectedItem = null;
-                    }
-                    if (obj is ListView listView)
-                    {
-                        DependencyObject container = listView.ContainerFromIndex(i);
-                        if (container is ListViewItem viewItem)
-                        {
-                            viewItem.IsHitTestVisible = false;
-                            viewItem.IsEnabled = false;
-                        }
-                    }
-                    break;
-                }
-            }
-            //ChangeCommandCanExecute(DisableOneWrongAnswerCommand);
-        }
 
         public FrameworkElement CorrectAnswerFrameworkElement { get; }
         public ICommand ViewCorrectAnswerFrameworkElementCommand { get; set; }
@@ -174,17 +131,20 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         {
             FirstLine = question;
             SecondLine = secondLine;
-            //foreach (string item in answers)
-            //{
-            //    Answers.Add(new ButtonViewModel(item, new CommandHandler(() => SetAnswerStateExecute(item), () => SetAnswerStateCanExecute(item))));
-            //}
+            int enabledAnswersCount = 0;
+            Answers = new List<IThreeStateTestAnswer>();
+            foreach (string item in answers)
+            {
+                enabledAnswersCount++;
+                Answers.Add(new ButtonViewModel(item, ReactiveCommand.Create<string>(SetAnswerStateExecute, this.WhenAny(x => x.Answers, (an) => an?.Value.FirstOrDefault(v => v.Text == item)?.IsEnabled is true).ObserveOn(SchedulerProvider.MainThread))));
+                //new CommandHandler(() => SetAnswerStateExecute(item), () => SetAnswerStateCanExecute(item))));
+            }
             CorrectAnswer = Answers.First(tsta => tsta.Text == correctAnswer);
-            //DisableOneWrongAnswerCommand = new CommandHandler(DisableOneWrongAnswerCommandExecute, DisableOneWrongAnswerCommandCanExecute);
+
             CorrectAnswerFrameworkElement = correctAnswerContentView;
             //TestingProgress = testingProgress;
             RaisePropertyChanged(nameof(HasCorrectAnswerFrameworkElement));
             RaisePropertyChanged(nameof(NoCorrectAnswerFrameworkElement));
-            //IsKana = isKana;
             //ViewCorrectAnswerFrameworkElementCommand = new CommandHandler(ViewCorrectAnswerFrameworkElementCommandExecute, ViewCorrectAnswerFrameworkElementCommandCanExecute);
         }
     }

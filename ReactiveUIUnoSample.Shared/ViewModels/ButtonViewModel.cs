@@ -1,13 +1,14 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
-using ReactiveUIUnoSample.Interfaces;
+using ReactiveUIUnoSample.Interfaces.Testing;
 
 using System.Windows.Input;
 
 namespace ReactiveUIUnoSample.ViewModels
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class ButtonViewModel : IThreeStateTestAnswer
+    public class ButtonViewModel : ReactiveObject, IThreeStateTestAnswer
     {
         [Reactive]
         public bool IsEnabled { get; set; }

@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 using Windows.UI.Xaml;
 
-namespace ReactiveUIUnoSample.Interfaces
+namespace ReactiveUIUnoSample.Interfaces.Testing
 {
     /// <summary>
     /// Provides an abstracted representation of all data needed for a test item that can be used to populate a <see cref="ITwoLineTest"/> in order to use <see cref="VocabTestContentPage"/>.
@@ -20,7 +20,6 @@ namespace ReactiveUIUnoSample.Interfaces
 
         IList<IThreeStateTestAnswer> Answers { get; set; }
         IThreeStateTestAnswer CorrectAnswer { get; set; }
-        ICommand DisableOneWrongAnswerCommand { get; set; }
         string UserAnswer();
         bool UserAnswerIsCorrect();
         FrameworkElement CorrectAnswerFrameworkElement { get; }

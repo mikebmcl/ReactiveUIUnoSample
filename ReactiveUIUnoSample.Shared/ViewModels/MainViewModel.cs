@@ -265,7 +265,9 @@ namespace ReactiveUIUnoSample.ViewModels
             mutableDependencyResolver.Register(() => new AboutView(), typeof(IViewFor<AboutViewModel>));
             mutableDependencyResolver.Register(() => new SecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.SecondViewContractName);
             mutableDependencyResolver.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
-            mutableDependencyResolver.Register(() => new TemperatureConversionsMainView(), typeof(IViewFor<ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel>));//, ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel.TemperatureConversionsMainViewContract);
+            mutableDependencyResolver.Register(() => new TemperatureConversionsMainView(), typeof(IViewFor<ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel>));
+            mutableDependencyResolver.Register(() => new Views.Testing.TwoLineTestView(), typeof(IViewFor<ViewModels.Testing.TwoLineTestViewModel>));
+            mutableDependencyResolver.Register(() => new Views.Testing.TwoLineTestResultsView(), typeof(IViewFor<ViewModels.Testing.TwoLineTestResultsViewModel>));
         }
 
         private ISchedulerProvider m_schedulerProvider;

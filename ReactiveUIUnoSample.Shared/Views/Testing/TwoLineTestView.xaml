@@ -10,7 +10,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <ScrollViewer>
-        <Grid x:Name="TestRootGrid" Visibility="{Binding TestIsReady, Converter={StaticResource BoolToVisConv}}">
+        <Grid x:Name="TestRootGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -20,29 +20,34 @@
             </Grid.RowDefinitions>
 
             <StackPanel Margin="8" HorizontalAlignment="Center" Orientation="Vertical">
-                <TextBlock Text="{Binding CurrentTestItem.FirstLine}" Style="{ThemeResource SansBodyMediumTextBlockStyle}" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
-                <TextBlock Visibility="{Binding ShowSecondLine}" Text="{Binding CurrentTestItem.SecondLine}" Style="{ThemeResource SansBodyTextBlockStyle}" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
+                <TextBlock x:Name="CurrentTestItemFirstLineTextBlock" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
+                <TextBlock Visibility="{x:Bind ViewModel.ShowSecondLine}" Text="{x:Bind ViewModel.CurrentTestItem.SecondLine}" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
             </StackPanel>
 
-            <ListView x:Name="AnswersListBox" Grid.Row="1" Margin="8" SelectionMode="Single" DisplayMemberPath="Text">
+            <ListView x:Name="AnswersListBox" Grid.Row="1" Margin="8" SelectionMode="Single">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="Margin" Value="4" />
                     </Style>
                 </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="vms:ButtonViewModel">
+                        <ListViewItem Content="{x:Bind Text}" IsEnabled="{x:Bind IsEnabled, Mode=OneWay}" IsSelected="{x:Bind IsSelected, Mode=TwoWay}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
 
             <Border Grid.Row="2" Margin="8" Padding="4">
-                <TextBlock x:Name="CheckResultTextBlock" Text="{Binding CheckResultText}" HorizontalAlignment="Stretch" HorizontalTextAlignment="Center" />
+                <TextBlock x:Name="ResultTextBlock" HorizontalAlignment="Stretch" HorizontalTextAlignment="Center" />
             </Border>
-            <Button x:Name="DisableOneWrongAnswerButton" Grid.Row="3" Margin="10" Content="{Binding DisableOneWrongAnswerText}" Command="{Binding CurrentTestItem.DisableOneWrongAnswerCommand}" CommandParameter="{Binding ElementName=AnswersListBox}" IsEnabled="{Binding CanDisableOneWrongAnswer}" />
+            <Button x:Name="DisableOneWrongAnswerButton" Grid.Row="3" Margin="10" />
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="CheckAnswerButton" Grid.Column="0" Margin="8,8,4,8" Content="{Binding CheckAndNextButtonText}" Command="{Binding CheckAndNextButtonCommand}" />
-                <Button x:Name="NextButton" Grid.Column="0" Margin="4,8,8,8" Content="{Binding CheckAndNextButtonText}" Command="{Binding CheckAndNextButtonCommand}" />
+                <Button x:Name="CheckAnswerButton" Grid.Column="0" Margin="8,8,4,8" />
+                <Button x:Name="NextFinishButton" Grid.Column="1" Margin="4,8,8,8" />
             </Grid>
         </Grid>
     </ScrollViewer>

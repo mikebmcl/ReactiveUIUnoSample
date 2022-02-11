@@ -1,4 +1,4 @@
-﻿using ReactiveUIUnoSample.Interfaces;
+﻿using ReactiveUIUnoSample.Interfaces.Testing;
 
 using System.Collections.Generic;
 

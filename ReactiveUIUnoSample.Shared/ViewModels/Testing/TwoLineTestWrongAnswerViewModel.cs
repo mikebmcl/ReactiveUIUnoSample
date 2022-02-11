@@ -1,4 +1,4 @@
-﻿using ReactiveUIUnoSample.Interfaces;
+﻿using ReactiveUIUnoSample.Interfaces.Testing;
 
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {

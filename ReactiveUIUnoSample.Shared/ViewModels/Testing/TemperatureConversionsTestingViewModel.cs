@@ -47,52 +47,55 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         [Reactive]
         public string MaximumTemperature { get; set; }
 
-        private ValueDisplayGenericPair<Enum> m_selectedTestType;
-        public ValueDisplayGenericPair<Enum> SelectedTestType
-        {
-            get => m_selectedTestType;
-            set
-            {
-                if (m_selectedTestType != value)
-                {
-                    m_selectedTestType = value;
-                    if (value is ValueDisplayGenericPair<Enum> testType)
-                    {
-                        if (testType.Value is TemperatureConversionDirection.FahrenheitToCelsius)
-                        {
-                            MinimumTemperature = m_minimumFahrenheitTemperatureDefaultValue;
-                            MaximumTemperature = m_maximumFahrenheitTemperatureDefaultValue;
-                        }
-                        else
-                        {
-                            MinimumTemperature = m_minimumCelsiusTemperatureDefaultValue;
-                            MaximumTemperature = m_maximumCelsiusTemperatureDefaultValue;
-                        }
-                    }
-                    RaisePropertyChanged();
-                    //ChangeCommandCanExecute(RunTestCommand);
-                }
-            }
-        }
+        //private object m_selectedTestType;
+        [Reactive]
+        public object SelectedTestType { get; set; }
+        //{
+        //    get => m_selectedTestType;
+        //    set
+        //    {
+        //        if (m_selectedTestType != value)
+        //        {
+        //            m_selectedTestType = value;
+        //            if (value is ValueDisplayGenericPair<Enum> testType)
+        //            {
+        //                if (testType.Value is TemperatureConversionDirection.FahrenheitToCelsius)
+        //                {
+        //                    MinimumTemperature = m_minimumFahrenheitTemperatureDefaultValue;
+        //                    MaximumTemperature = m_maximumFahrenheitTemperatureDefaultValue;
+        //                }
+        //                else
+        //                {
+        //                    MinimumTemperature = m_minimumCelsiusTemperatureDefaultValue;
+        //                    MaximumTemperature = m_maximumCelsiusTemperatureDefaultValue;
+        //                }
+        //            }
+        //            RaisePropertyChanged();
+        //            //ChangeCommandCanExecute(RunTestCommand);
+        //        }
+        //    }
+        //}
+
         public IList<ValueDisplayGenericPair<Enum>> TestTypes => new List<ValueDisplayGenericPair<Enum>>(new ValueDisplayGenericPair<Enum>[]
         {
             new ValueDisplayGenericPair<Enum>(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
             , new ValueDisplayGenericPair<Enum>(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
         });
 
-        private TestDifficultyValueDisplayPair m_selectedDifficulty;
-        public TestDifficultyValueDisplayPair SelectedDifficulty
-        {
-            get => m_selectedDifficulty;
-            set
-            {
-                if (m_selectedDifficulty != value)
-                {
-                    m_selectedDifficulty = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        //private object m_selectedDifficulty;
+        [Reactive]
+        public object SelectedDifficulty { get; set; }
+        //{
+        //    get => m_selectedDifficulty;
+        //    set
+        //    {
+        //        if (m_selectedDifficulty != value)
+        //        {
+        //            m_selectedDifficulty = value;
+        //            RaisePropertyChanged();
+        //        }
+        //    }
+        //}
 
         public override object HeaderContent { get; set; }
 
@@ -106,24 +109,53 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         /// </summary>
         [Reactive]
         private bool RunTestCommandIsExecutingValue { get; set; }
+        private void RunTestCommandIsExecutingValueChangedHandler(object sender, EventArgs args)
+        {
+            // We're using this as part of calculating the proper value of the RunTestCommand's CanExecute method.
+            RunTestCommandIsExecutingValue = m_runTestCommandIsExecuting.Get();
+        }
         private IObservable<IRoutableViewModel> RunTestCommandExecute()
         {
-            if (m_runTestCommandIsExecuting.Set(true))
-            {
-                return null;
-            }
             try
             {
-                if (!(m_selectedTestType?.Value is TemperatureConversionDirection testType) || testType == TemperatureConversionDirection.Invalid)
+                if (m_runTestCommandIsExecuting.Set(true))
                 {
-                    throw new InvalidOperationException($"While trying to get the Value of {nameof(m_selectedTestType)}, got '{m_selectedTestType?.Value.ToString() ?? "(null)"}'.");
+                    throw new InvalidOperationException($"Navigation is already occurring.");
                 }
-                TestDifficulty difficulty = m_selectedDifficulty?.Value ?? TestDifficulty.Invalid;
+                var m_selectedTestType = SelectedTestType;
+                if (!(m_selectedTestType is ValueDisplayGenericPair<Enum> selectedTestType))
+                {
+                    throw new InvalidCastException($"Expected {nameof(m_selectedTestType)} to be of type {nameof(ValueDisplayGenericPair<Enum>)} but instead it is of type '{m_selectedTestType?.GetType().FullName ?? "(null)"}'.");
+                }
+                if (!(selectedTestType.Value is TemperatureConversionDirection testType))
+                {
+                    throw new InvalidCastException($"Expected {nameof(m_selectedTestType)} to be of type {nameof(ValueDisplayGenericPair<Enum>)} with the contained Enum to be of type {nameof(TemperatureConversionDirection)} but instead it is of type '{selectedTestType.Value?.GetType().FullName ?? "(null)"}'.");
+                }
+                if (testType == TemperatureConversionDirection.Invalid)
+                {
+                    throw new InvalidOperationException($"While trying to get the Value of {nameof(m_selectedTestType)}, it contained a {nameof(TemperatureConversionDirection)} value of '{testType}', which is invalid for test type.");
+                }
+
+                //TestDifficulty difficulty = m_selectedDifficulty?.Value ?? TestDifficulty.Invalid;
+                //if (difficulty == TestDifficulty.Invalid)
+                //{
+                //    throw new InvalidOperationException($"While trying to get the {nameof(TestDifficultyValueDisplayPair.Value)} of {nameof(m_selectedDifficulty)}, got '{m_selectedDifficulty?.Value.ToString() ?? "(null)"}'.");
+                //}
+                var m_selectedDifficulty = SelectedDifficulty;
+                if (!(m_selectedDifficulty is TestDifficultyValueDisplayPair selectedDifficulty))
+                {
+                    throw new InvalidCastException($"Expected {nameof(m_selectedDifficulty)} to be of type {nameof(TestDifficultyValueDisplayPair)} but instead it is of type '{m_selectedDifficulty?.GetType().FullName ?? "(null)"}'.");
+                }
+                var difficulty = selectedDifficulty.Value;
                 if (difficulty == TestDifficulty.Invalid)
                 {
-                    throw new InvalidOperationException($"While trying to get the {nameof(TestDifficultyValueDisplayPair.Value)} of {nameof(m_selectedDifficulty)}, got '{m_selectedDifficulty?.Value.ToString() ?? "(null)"}'.");
+                    throw new InvalidOperationException($"While trying to get the Value of {nameof(m_selectedDifficulty)}, it contained a {nameof(TestDifficulty)} value of '{difficulty}', which is invalid for test difficulty.");
                 }
+
                 int numQuestions = int.Parse(m_numberOfQuestionsDefaultValue, NumberStyles.Integer, CultureInfo.InvariantCulture);
+#if DEBUG
+                numQuestions = 2;
+#endif
                 if (numQuestions < 1)
                 {
                     numQuestions = 1;
@@ -343,12 +375,27 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             }
         }
 
-        private void RunTestCommandIsExecutingValueChangedHandler(object sender, EventArgs args)
+        private bool RunTestCommandCanExecuteSelector(IObservedChange<TemperatureConversionsTestingViewModel, object> testType, IObservedChange<TemperatureConversionsTestingViewModel, object> difficultyObj, IObservedChange<TemperatureConversionsTestingViewModel, bool> runTestCommandIsExecutingValue)
         {
-            // We're using this as part of calculating the proper value of the RunTestCommand's CanExecute method.
-            RunTestCommandIsExecutingValue = m_runTestCommandIsExecuting.Get();
+            var isRunningValue = runTestCommandIsExecutingValue?.GetValue();
+            return isRunningValue is false &&
+                    testType?.GetValue() != null &&
+                    difficultyObj?.GetValue() != null;
         }
-
+        private IObservable<bool> RunTestCommandCanExecute()
+        {
+            return this.WhenAny(
+                    x => x.SelectedTestType,
+                    x => x.SelectedDifficulty,
+                    x => x.RunTestCommandIsExecutingValue,
+                    RunTestCommandCanExecuteSelector
+                    //(testType, difficultyObj, runTestCommandIsExecutingValue) =>
+                    //runTestCommandIsExecutingValue?.Value is false &&
+                    //testType?.Value != null &&
+                    //difficultyObj?.Value != null
+                    /*&& difficultyObj.Value is ValueDisplayGenericPair<TestDifficulty> difficulty && difficulty.Value != TestDifficulty.Invalid*/
+                    );
+        }
         public TemperatureConversionsTestingViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             // Note: It's safe to not unsubscribe from this event because it does not hold a hard reference to this object, it's subscribing to an event on an object
@@ -356,8 +403,12 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             // platforms cannot guarantee that custom back handlers will always run) barring creating some really horrible code that would involve other classes.
             m_runTestCommandIsExecuting.ValueChanged += RunTestCommandIsExecutingValueChangedHandler;
 
-            //RunTestCommand = ReactiveCommand.CreateFromObservable(() => RunTestCommandExecute(), this.WhenAny(x => SelectedTestType, x => SelectedDifficulty, x => RunTestCommandIsExecutingValue, (testType, difficulty, runtTestCommandIsExecuting) => !RunTestCommandIsExecutingValue && testType != null && difficulty != null && difficulty.Value != null && difficulty.Value.Value != TestDifficulty.Invalid).ObserveOn(SchedulerProvider.MainThread), SchedulerProvider.MainThread);
-            //RunTestCommand = new CommandHandler(RunTestCommandExecute, RunTestCommandCanExecute);
+            RunTestCommand = ReactiveCommand.CreateFromObservable(() =>
+            RunTestCommandExecute()
+            , RunTestCommandCanExecute().ObserveOn(SchedulerProvider.MainThread)
+            //, null
+                    , SchedulerProvider.MainThread
+                    );
         }
     }
 }

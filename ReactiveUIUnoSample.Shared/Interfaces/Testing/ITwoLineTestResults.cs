@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace ReactiveUIUnoSample.Interfaces
+namespace ReactiveUIUnoSample.Interfaces.Testing
 {
     public interface ITwoLineTestResults
     {

@@ -263,6 +263,7 @@ namespace ReactiveUIUnoSample.ViewModels
             // or might not be able to be used to confirm that the user meant to leave a page where they haven't finished doing something (creating a new account, going through the checkout process if they are buying something, completing a test they have started, and other activities that are only partially completed). You cannot prevent back navigation on iOS and if the user presses the browser back button multiple times in quick succession on WASM, they will navigate back (and possibly completely out of the app) before the ICallOnBackNavigation callback is called.
             mutableDependencyResolver.Register(() => new FirstView(), typeof(IViewFor<FirstViewModel>));
             mutableDependencyResolver.Register(() => new AboutView(), typeof(IViewFor<AboutViewModel>));
+            mutableDependencyResolver.Register(() => new SILOpenFontLicense1_1View(), typeof(IViewFor<SILOpenFontLicense1_1ViewModel>));
             mutableDependencyResolver.Register(() => new SecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.SecondViewContractName);
             mutableDependencyResolver.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
             mutableDependencyResolver.Register(() => new TemperatureConversionsMainView(), typeof(IViewFor<ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel>));

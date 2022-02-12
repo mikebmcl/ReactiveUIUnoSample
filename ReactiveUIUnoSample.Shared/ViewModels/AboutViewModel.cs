@@ -3,6 +3,7 @@ using ReactiveUI.Fody.Helpers;
 
 using System;
 using System.Reflection;
+using System.Windows.Input;
 
 using Windows.System;
 
@@ -58,6 +59,7 @@ namespace ReactiveUIUnoSample.ViewModels
             }
             //}?? assembly.GetName()?.Version?.ToString(3) ?? "";
             AppVersionText = appVersionText;
+            ViewSILLicensePageCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new SILOpenFontLicense1_1ViewModel(HostScreenWithContract, SchedulerProvider)));
         }
 
         [Reactive]
@@ -70,5 +72,11 @@ namespace ReactiveUIUnoSample.ViewModels
         public string AppVersionText { get; set; }
 
         public override object HeaderContent { get; set; }
+
+        public ICommand ViewSILLicensePageCommand { get; set; }
+
+        public string NotoSILLicenseLinkAddress => "https://scripts.sil.org/OFL";
+
+        public string NotoCopyrightStatementLinkAddress => "http://www.google.com/get/noto";
     }
 }

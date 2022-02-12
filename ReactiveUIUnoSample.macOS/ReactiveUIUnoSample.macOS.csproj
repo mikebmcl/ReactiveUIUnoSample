@@ -113,6 +113,38 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <BundleResource Include="..\Fonts\NotoSans\NotoSans-Bold.ttf">
+      <Link>Resources\Fonts\NotoSans-Bold.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSans\NotoSans-BoldItalic.ttf">
+      <Link>Resources\Fonts\NotoSans-BoldItalic.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSans\NotoSans-Italic.ttf">
+      <Link>Resources\Fonts\NotoSans-Italic.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSans\NotoSans-Regular.ttf">
+      <Link>Resources\Fonts\NotoSans-Regular.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSerif\NotoSerif-Bold.ttf">
+      <Link>Resources\Fonts\NotoSerif-Bold.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSerif\NotoSerif-BoldItalic.ttf">
+      <Link>Resources\Fonts\NotoSerif-BoldItalic.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSerif\NotoSerif-Italic.ttf">
+      <Link>Resources\Fonts\NotoSerif-Italic.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="..\Fonts\NotoSerif\NotoSerif-Regular.ttf">
+      <Link>Resources\Fonts\NotoSerif-Regular.ttf</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
   </ItemGroup>

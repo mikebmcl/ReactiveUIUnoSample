@@ -93,6 +93,30 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Fonts\uno-fluentui-assets.ttf" />
+    <AndroidAsset Include="..\Fonts\NotoSans\NotoSans-Bold.ttf">
+      <Link>Assets\Fonts\NotoSans-Bold.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSans\NotoSans-BoldItalic.ttf">
+      <Link>Assets\Fonts\NotoSans-BoldItalic.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSans\NotoSans-Italic.ttf">
+      <Link>Assets\Fonts\NotoSans-Italic.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSans\NotoSans-Regular.ttf">
+      <Link>Assets\Fonts\NotoSans-Regular.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSerif\NotoSerif-Bold.ttf">
+      <Link>Assets\Fonts\NotoSerif-Bold.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSerif\NotoSerif-BoldItalic.ttf">
+      <Link>Assets\Fonts\NotoSerif-BoldItalic.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSerif\NotoSerif-Italic.ttf">
+      <Link>Assets\Fonts\NotoSerif-Italic.ttf</Link>
+    </AndroidAsset>
+    <AndroidAsset Include="..\Fonts\NotoSerif\NotoSerif-Regular.ttf">
+      <Link>Assets\Fonts\NotoSerif-Regular.ttf</Link>
+    </AndroidAsset>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>

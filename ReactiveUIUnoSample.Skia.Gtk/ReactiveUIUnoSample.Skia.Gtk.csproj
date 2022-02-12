@@ -17,6 +17,16 @@
     <UpToDateCheckInput Include="..\ReactiveUIUnoSample.Shared\**\*.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Fonts\NotoSans\NotoSans-Bold.ttf" Link="Assets\Fonts\NotoSans-Bold.ttf" />
+    <Content Include="..\Fonts\NotoSans\NotoSans-BoldItalic.ttf" Link="Assets\Fonts\NotoSans-BoldItalic.ttf" />
+    <Content Include="..\Fonts\NotoSans\NotoSans-Italic.ttf" Link="Assets\Fonts\NotoSans-Italic.ttf" />
+    <Content Include="..\Fonts\NotoSans\NotoSans-Regular.ttf" Link="Assets\Fonts\NotoSans-Regular.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-Bold.ttf" Link="Assets\Fonts\NotoSerif-Bold.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-BoldItalic.ttf" Link="Assets\Fonts\NotoSerif-BoldItalic.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-Italic.ttf" Link="Assets\Fonts\NotoSerif-Italic.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-Regular.ttf" Link="Assets\Fonts\NotoSerif-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.1.4">

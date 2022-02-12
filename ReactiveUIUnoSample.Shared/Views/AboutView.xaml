@@ -5,16 +5,60 @@
     xmlns:local="using:ReactiveUIUnoSample.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:skia="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel Margin="8">
-        <TextBlock x:Name="AppProductNameTextBlock"
-                   Margin="8"
-                   Style="{ThemeResource SubtitleTextBlockStyle}" />
-        <TextBlock x:Name="AppCopyrightTextBlock"
-                   Margin="8" />
-        <TextBlock x:Name="AppVersionTextBlock"
-                   Margin="8" />
-    </StackPanel>
+    <!-- Skia doesn't currently support wrapping in TextBlock so we allow horizontal scrolling in Skia as a workaround. -->
+    <ScrollViewer
+        skia:HorizontalScrollBarVisibility="Auto"
+        >
+        <StackPanel Margin="8">
+            <TextBlock x:Name="AppProductNameTextBlock"
+                       Margin="8"
+                       Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock x:Name="AppCopyrightTextBlock"
+                       Margin="8" />
+            <TextBlock x:Name="AppVersionTextBlock"
+                       Margin="8" />
+            <Rectangle Margin="0,5" Style="{ThemeResource HorizontalAccentDividerBarRectangleStyle}" />
+            <StackPanel>
+                <TextBlock>
+                    <Run Text="The Noto Serif font software is Copyright (c) 2012 Google Inc. (" />
+                    <Hyperlink NavigateUri="{x:Bind ViewModel.NotoCopyrightStatementLinkAddress}">
+                        <Run Text="{x:Bind ViewModel.NotoCopyrightStatementLinkAddress}" />
+                    </Hyperlink>
+                    <Run Text=")." />
+                </TextBlock>
+                <TextBlock Text="This Font Software is licensed under the SIL Open Font License, Version 1.1." />
+                <TextBlock>
+                    <Run Text="This license can be viewed by pressing the button below, and is also available with a FAQ at: " />
+                    <Hyperlink NavigateUri="{x:Bind ViewModel.NotoSILLicenseLinkAddress}">
+                        <Run Text="{x:Bind ViewModel.NotoSILLicenseLinkAddress}" />
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock Text="Noto is a trademark of Google Inc." />
+                <Button x:Name="NotoSerifViewSILLicensePageButton" Content="View SIL Open Font License Ver. 1.1" Margin="0,5" />
+            </StackPanel>
+            <Rectangle Margin="0,5" Style="{ThemeResource HorizontalAccentDividerBarRectangleStyle}" />
+            <StackPanel>
+                <TextBlock>
+                    <Run Text="The Noto Sans font software is Copyright (c) 2012, 2015 Google Inc. (" />
+                    <Hyperlink NavigateUri="{x:Bind ViewModel.NotoCopyrightStatementLinkAddress}">
+                        <Run Text="{x:Bind ViewModel.NotoCopyrightStatementLinkAddress}" />
+                    </Hyperlink>
+                    <Run Text=")." />
+                </TextBlock>
+                <TextBlock Text="This Font Software is licensed under the SIL Open Font License, Version 1.1." />
+                <TextBlock>
+                    <Run Text="This license can be viewed by pressing the button below, and is also available with a FAQ at: " />
+                    <Hyperlink NavigateUri="{x:Bind ViewModel.NotoSILLicenseLinkAddress}">
+                        <Run Text="{x:Bind ViewModel.NotoSILLicenseLinkAddress}" />
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock Text="Noto is a trademark of Google Inc." />
+                <Button x:Name="NotoSansViewSILLicensePageButton" Content="View SIL Open Font License Ver. 1.1" Margin="0,5" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

@@ -55,6 +55,8 @@ namespace ReactiveUIUnoSample.Views
                 this.OneWayBind(ViewModel, x => x.AppProductNameText, view => view.AppProductNameTextBlock.Text).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, x => x.AppCopyrightText, view => view.AppCopyrightTextBlock.Text).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, x => x.AppVersionText, view => view.AppVersionTextBlock.Text).DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.ViewSILLicensePageCommand, view => view.NotoSerifViewSILLicensePageButton).DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.ViewSILLicensePageCommand, view => view.NotoSansViewSILLicensePageButton).DisposeWith(disposables);
             });
         }
     }

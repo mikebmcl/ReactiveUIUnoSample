@@ -42,6 +42,14 @@
 	<key>UIAppFonts</key>
 	<array>
 	  <string>Fonts/uno-fluentui-assets.ttf</string>
+	  <string>Fonts/NotoSans-Bold.ttf</string>
+	  <string>Fonts/NotoSans-BoldItalic.ttf</string>
+	  <string>Fonts/NotoSans-Italic.ttf</string>
+	  <string>Fonts/NotoSans-Regular.ttf</string>
+	  <string>Fonts/NotoSerif-Bold.ttf</string>
+	  <string>Fonts/NotoSerif-BoldItalic.ttf</string>
+	  <string>Fonts/NotoSerif-Italic.ttf</string>
+	  <string>Fonts/NotoSerif-Regular.ttf</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

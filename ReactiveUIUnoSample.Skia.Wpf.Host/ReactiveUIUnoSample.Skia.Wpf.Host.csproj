@@ -16,6 +16,14 @@
     <PackageReference Include="Uno.UI.RemoteControl" Version="4.0.13" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\Fonts\NotoSans\NotoSans-Bold.ttf" Link="Assets\Fonts\NotoSans-Bold.ttf" />
+    <Content Include="..\Fonts\NotoSans\NotoSans-BoldItalic.ttf" Link="Assets\Fonts\NotoSans-BoldItalic.ttf" />
+    <Content Include="..\Fonts\NotoSans\NotoSans-Italic.ttf" Link="Assets\Fonts\NotoSans-Italic.ttf" />
+    <Content Include="..\Fonts\NotoSans\NotoSans-Regular.ttf" Link="Assets\Fonts\NotoSans-Regular.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-Bold.ttf" Link="Assets\Fonts\NotoSerif-Bold.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-BoldItalic.ttf" Link="Assets\Fonts\NotoSerif-BoldItalic.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-Italic.ttf" Link="Assets\Fonts\NotoSerif-Italic.ttf" />
+    <Content Include="..\Fonts\NotoSerif\NotoSerif-Regular.ttf" Link="Assets\Fonts\NotoSerif-Regular.ttf" />
     <Content Include="Assets\Fonts\uno-fluentui-assets.ttf" />
   </ItemGroup>
   <ItemGroup>

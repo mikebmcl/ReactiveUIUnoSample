@@ -50,6 +50,7 @@ namespace ReactiveUIUnoSample.Views.Testing
             // See: https://www.reactiveui.net/docs/handbook/when-activated/ and https://www.reactiveui.net/docs/handbook/data-binding/
             this.WhenActivated(disposables =>
             {
+                this.Bind(ViewModel, vm => vm.UserWasWrong, view => view.WrongAnswersItemsControl.ItemsSource).DisposeWith(disposables);
                 //this.Bind(ViewModel, vm => vm.EnteredAmount, view => view.EnteredAmountTextBox.Text, Observable.FromEventPattern(EnteredAmountTextBox, nameof(TextBox.LostFocus)), null, m_decimalToStringBindingTypeConverter, m_decimalToStringBindingTypeConverter).DisposeWith(disposables);
 
                 //this.BindCommand(ViewModel, vm => vm.NextPageCommand, view => view.NextPageButton).DisposeWith(disposables);

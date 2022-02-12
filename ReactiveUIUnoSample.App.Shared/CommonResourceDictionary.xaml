@@ -1,0 +1,226 @@
+﻿ <ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans</x:String>
+    <x:String x:Key="NotoSerif">ms-appx:///Assets/Fonts/NotoSerif-Regular.ttf#Noto Serif</x:String>
+
+    <!-- To use these bold fonts you also need to set FontWeight="Bold" -->
+    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans"</x:String>
+    <x:String x:Key="NotoSerifBold">ms-appx:///Assets/Fonts/NotoSerif-Bold.ttf#Noto Serif</x:String>
+
+    <!-- To use this italic font you also need to set FontStyle="Italic" -->
+    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans</x:String>
+    <x:String x:Key="NotoSerifItalic">ms-appx:///Assets/Fonts/NotoSerif-Italic.ttf#Noto Serif</x:String>
+
+    <!-- To use these bold fonts you also need to set FontWeight="Bold" and FontStyle="Italic" -->
+    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans"</x:String>
+    <x:String x:Key="NotoSerifBoldItalic">ms-appx:///Assets/Fonts/NotoSerif-BoldItalic.ttf#Noto Serif</x:String>
+
+    <Style TargetType="ContentControl">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="UserControl">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="RadioButton">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+     <Style TargetType="ListViewItem">
+         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+     </Style>
+
+    <Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style x:Key="SansCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style x:Key="SansBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style x:Key="SansBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SansBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SansSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style x:Key="SansTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style x:Key="SansTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+
+    <Style x:Key="SansBoldCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SansBoldBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SansBoldBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SansBoldBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SansBoldSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SansBoldTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SansBoldTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style x:Key="SerifCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+    </Style>
+    <Style x:Key="SerifBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+    </Style>
+    <Style x:Key="SerifBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SerifBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SerifSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+    </Style>
+    <Style x:Key="SerifTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+    </Style>
+    <Style x:Key="SerifTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
+    </Style>
+
+    <Style x:Key="SerifBoldCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SerifBoldBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SerifBoldBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SerifBoldBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SerifBoldSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SerifBoldTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="SerifBoldTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style x:Key="GentiumPlusCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource GentiumPlus}" />
+    </Style>
+    <Style x:Key="GentiumPlusBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource GentiumPlus}" />
+    </Style>
+    <Style x:Key="GentiumPlusBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource GentiumPlus}" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+
+    <Style x:Key="FASolidIconsCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource FASolidIcons}" />
+    </Style>
+    <Style x:Key="FASolidIconsBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource FASolidIcons}" />
+    </Style>
+    <Style x:Key="FASolidIconsBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource FASolidIcons}" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="FASolidIconsButtonStyle" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource FASolidIcons}" />
+    </Style>
+
+    <Style x:Key="BorderRegularStyle" TargetType="Border">
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource ControlStrongStrokeColorDefault}" />
+    </Style>
+    <Style x:Key="HorizontalRegularDividerBarRectangleStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{StaticResource ControlStrongStrokeColorDefault}" />
+        <Setter Property="Height" Value="2" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="VerticalRegularDividerBarRectangleStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{StaticResource ControlStrongStrokeColorDefault}" />
+        <Setter Property="Width" Value="2" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="BorderAccentStyle" TargetType="Border">
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource AccentFillColorSelectedTextBackgroundBrush}" />
+    </Style>
+    <Style x:Key="HorizontalAccentDividerBarRectangleStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{StaticResource SystemAccentColor}" />
+        <Setter Property="Height" Value="2" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="VerticalAccentDividerBarRectangleStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{StaticResource SystemAccentColor}" />
+        <Setter Property="Width" Value="2" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="HorizontalSubtleDividerBarRectangleStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{StaticResource DividerStrokeColorDefault}" />
+        <Setter Property="Height" Value="2" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style x:Key="VerticalSubtleDividerBarRectangleStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{StaticResource DividerStrokeColorDefault}" />
+        <Setter Property="Width" Value="2" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+    </Style>
+</ResourceDictionary>

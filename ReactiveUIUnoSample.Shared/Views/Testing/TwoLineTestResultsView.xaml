@@ -30,7 +30,7 @@
             <StackPanel x:Name="WrongAnswersSubHeaderStackPanel" Grid.Row="1" Margin="0,0,0,30" Orientation="Vertical">
                 <TextBlock x:Name="WrongAnswersSubHeaderTextBlock" HorizontalAlignment="Center" Text="You got the following items incorrect:" />
             </StackPanel>
-            <ItemsControl x:Name="WrongAnswersItemsControl" Grid.Row="2" ItemsSource="{x:Bind ViewModel.UserWasWrong}">
+            <ItemsControl x:Name="WrongAnswersItemsControl" Grid.Row="2">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="ifacetest:ITwoLineTestWrongAnswer">
                         <Grid Margin="5" Padding="5">

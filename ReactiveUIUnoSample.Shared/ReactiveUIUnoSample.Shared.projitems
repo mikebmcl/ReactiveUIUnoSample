@@ -17,6 +17,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TemperatureConversionStringToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TestHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ValueDisplayGenericPair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SILOpenFontLicense1_1ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\SILOpenFontLicense1_1View.xaml.cs">
+      <DependentUpon>SILOpenFontLicense1_1View.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\TemperatureConversionsMainView.xaml.cs">
       <DependentUpon>TemperatureConversionsMainView.xaml</DependentUpon>
     </Compile>
@@ -90,6 +94,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\SecondView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\SILOpenFontLicense1_1View.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

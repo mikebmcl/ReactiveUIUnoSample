@@ -41,7 +41,43 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.UITest.Helpers", "Uno.U
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.UITest.Selenium", "Uno.UITest.Puppeteer\Uno.UITest.Selenium.csproj", "{8A083C30-B26E-42CD-A5FA-4EB32E32EF66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUIUnoSample.UnitTests", "ReactiveUIUnoSample.UnitTests\ReactiveUIUnoSample.UnitTests.csproj", "{8CCF5633-C09A-47E5-97C7-1D18D0F89F11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUIUnoSample.UnitTests", "ReactiveUIUnoSample.UnitTests\ReactiveUIUnoSample.UnitTests.csproj", "{8CCF5633-C09A-47E5-97C7-1D18D0F89F11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fonts", "Fonts", "{0D3507F0-FA5B-4CEB-934A-944CC3224CAF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotoSans", "NotoSans", "{88D3291C-1E00-4B2D-BA45-0C40D17E2717}"
+	ProjectSection(SolutionItems) = preProject
+		Fonts\NotoSans\NotoSans-Bold.ttf = Fonts\NotoSans\NotoSans-Bold.ttf
+		Fonts\NotoSans\NotoSans-Bold.woff2 = Fonts\NotoSans\NotoSans-Bold.woff2
+		Fonts\NotoSans\NotoSans-Bold.woff2.base64 = Fonts\NotoSans\NotoSans-Bold.woff2.base64
+		Fonts\NotoSans\NotoSans-BoldItalic.ttf = Fonts\NotoSans\NotoSans-BoldItalic.ttf
+		Fonts\NotoSans\NotoSans-BoldItalic.woff2 = Fonts\NotoSans\NotoSans-BoldItalic.woff2
+		Fonts\NotoSans\NotoSans-BoldItalic.woff2.base64 = Fonts\NotoSans\NotoSans-BoldItalic.woff2.base64
+		Fonts\NotoSans\NotoSans-Italic.ttf = Fonts\NotoSans\NotoSans-Italic.ttf
+		Fonts\NotoSans\NotoSans-Italic.woff2 = Fonts\NotoSans\NotoSans-Italic.woff2
+		Fonts\NotoSans\NotoSans-Italic.woff2.base64 = Fonts\NotoSans\NotoSans-Italic.woff2.base64
+		Fonts\NotoSans\NotoSans-Regular.ttf = Fonts\NotoSans\NotoSans-Regular.ttf
+		Fonts\NotoSans\NotoSans-Regular.woff2 = Fonts\NotoSans\NotoSans-Regular.woff2
+		Fonts\NotoSans\NotoSans-Regular.woff2.base64 = Fonts\NotoSans\NotoSans-Regular.woff2.base64
+		Fonts\NotoSans\OFL.txt = Fonts\NotoSans\OFL.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotoSerif", "NotoSerif", "{5FBC1B94-9EE1-48AD-8B22-C0A6ECB190C0}"
+	ProjectSection(SolutionItems) = preProject
+		Fonts\NotoSerif\NotoSerif-Bold.ttf = Fonts\NotoSerif\NotoSerif-Bold.ttf
+		Fonts\NotoSerif\NotoSerif-Bold.woff2 = Fonts\NotoSerif\NotoSerif-Bold.woff2
+		Fonts\NotoSerif\NotoSerif-Bold.woff2.base64 = Fonts\NotoSerif\NotoSerif-Bold.woff2.base64
+		Fonts\NotoSerif\NotoSerif-BoldItalic.ttf = Fonts\NotoSerif\NotoSerif-BoldItalic.ttf
+		Fonts\NotoSerif\NotoSerif-BoldItalic.woff2 = Fonts\NotoSerif\NotoSerif-BoldItalic.woff2
+		Fonts\NotoSerif\NotoSerif-BoldItalic.woff2.base64 = Fonts\NotoSerif\NotoSerif-BoldItalic.woff2.base64
+		Fonts\NotoSerif\NotoSerif-Italic.ttf = Fonts\NotoSerif\NotoSerif-Italic.ttf
+		Fonts\NotoSerif\NotoSerif-Italic.woff2 = Fonts\NotoSerif\NotoSerif-Italic.woff2
+		Fonts\NotoSerif\NotoSerif-Italic.woff2.base64 = Fonts\NotoSerif\NotoSerif-Italic.woff2.base64
+		Fonts\NotoSerif\NotoSerif-Regular.ttf = Fonts\NotoSerif\NotoSerif-Regular.ttf
+		Fonts\NotoSerif\NotoSerif-Regular.woff2 = Fonts\NotoSerif\NotoSerif-Regular.woff2
+		Fonts\NotoSerif\NotoSerif-Regular.woff2.base64 = Fonts\NotoSerif\NotoSerif-Regular.woff2.base64
+		Fonts\NotoSerif\OFL.txt = Fonts\NotoSerif\OFL.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -951,6 +987,8 @@ Global
 		{8E5D9F42-3569-49F5-9D82-AF9A82BE76D5} = {27FD840B-E49C-4AF2-BB4B-277CF7C843D1}
 		{21701239-EF57-40B2-904D-D8223A8A2436} = {27FD840B-E49C-4AF2-BB4B-277CF7C843D1}
 		{85149910-5AD2-42A0-88B2-5DB4A65DB481} = {27FD840B-E49C-4AF2-BB4B-277CF7C843D1}
+		{88D3291C-1E00-4B2D-BA45-0C40D17E2717} = {0D3507F0-FA5B-4CEB-934A-944CC3224CAF}
+		{5FBC1B94-9EE1-48AD-8B22-C0A6ECB190C0} = {0D3507F0-FA5B-4CEB-934A-944CC3224CAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9B23692-A3D2-425B-AF4E-FA579E220A24}

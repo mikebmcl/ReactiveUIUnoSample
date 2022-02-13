@@ -1,20 +1,21 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans</x:String>
-    <x:String x:Key="NotoSerif">ms-appx:///Assets/Fonts/NotoSerif-Regular.ttf#Noto Serif</x:String>
+    <!-- Note that we are including a fallback to the generic styles 'sans-serif' and 'serif' here. This way if there's some problem with the font or it cannot be used, the system will know to fallback to a default font that matches our general intention rather than picking a font without any hint about what might be appropriate. -->
+    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSerif">ms-appx:///Assets/Fonts/NotoSerif-Regular.ttf#Noto Serif,serif</x:String>
 
     <!-- To use these bold fonts you also need to set FontWeight="Bold" -->
-    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans</x:String>
-    <x:String x:Key="NotoSerifBold">ms-appx:///Assets/Fonts/NotoSerif-Bold.ttf#Noto Serif</x:String>
+    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSerifBold">ms-appx:///Assets/Fonts/NotoSerif-Bold.ttf#Noto Serif,serif</x:String>
 
     <!-- To use this italic font you also need to set FontStyle="Italic" -->
-    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans</x:String>
-    <x:String x:Key="NotoSerifItalic">ms-appx:///Assets/Fonts/NotoSerif-Italic.ttf#Noto Serif</x:String>
+    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSerifItalic">ms-appx:///Assets/Fonts/NotoSerif-Italic.ttf#Noto Serif,serif</x:String>
 
     <!-- To use these bold fonts you also need to set FontWeight="Bold" and FontStyle="Italic" -->
-    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans</x:String>
-    <x:String x:Key="NotoSerifBoldItalic">ms-appx:///Assets/Fonts/NotoSerif-BoldItalic.ttf#Noto Serif</x:String>
+    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSerifBoldItalic">ms-appx:///Assets/Fonts/NotoSerif-BoldItalic.ttf#Noto Serif,serif</x:String>
 
     <!-- Defaults -->
     <Style TargetType="ContentControl">
@@ -47,6 +48,8 @@
     </Style>
 
     <!-- Styles with named keys -->
+
+    <!-- Sans styles -->
     <Style x:Key="SansCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
@@ -71,6 +74,7 @@
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
 
+    <!-- Sans Bold styles -->
     <Style x:Key="SansBoldCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
         <Setter Property="FontWeight" Value="Bold" />
@@ -82,11 +86,6 @@
     <Style x:Key="SansBoldBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSansBold}" />
         <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="FontSize" Value="16" />
-    </Style>
-    <Style x:Key="SansItalicBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
-        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
-        <Setter Property="FontStyle" Value="Italic" />
         <Setter Property="FontSize" Value="16" />
     </Style>
     <Style x:Key="SansBoldBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
@@ -107,6 +106,77 @@
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
+    <!-- Sans Italic styles -->
+    <Style x:Key="SansItalicCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansItalicBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansItalicBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SansItalicBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SansItalicSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansItalicTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansItalicTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+
+    <!-- Sans Bold Italic styles -->
+    <Style x:Key="SansBoldItalicCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansBoldItalicBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansBoldItalicBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SansBoldItalicBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SansBoldItalicSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansBoldItalicTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SansBoldItalicTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSansBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+
+    <!-- Serif syles -->
     <Style x:Key="SerifCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
     </Style>
@@ -131,6 +201,7 @@
         <Setter Property="FontFamily" Value="{StaticResource NotoSerif}" />
     </Style>
 
+    <!-- Serif Bold syles -->
     <Style x:Key="SerifBoldCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
         <Setter Property="FontWeight" Value="Bold" />
@@ -161,6 +232,78 @@
         <Setter Property="FontFamily" Value="{StaticResource NotoSerifBold}" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
+
+    <!-- Serif Italic syles -->
+    <Style x:Key="SerifItalicCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifItalicBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifItalicBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SerifItalicBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SerifItalicSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifItalicTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifItalicTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifItalic}" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+
+    <!-- Serif Bold Italic styles -->
+    <Style x:Key="SerifBoldItalicCaptionTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifBoldItalicBodyTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifBoldItalicBodyMediumTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style x:Key="SerifBoldItalicBodyLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+    <Style x:Key="SerifBoldItalicSubtitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifBoldItalicTitleTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+    <Style x:Key="SerifBoldItalicTitleLargeTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleLargeTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSerifBoldItalic}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontStyle" Value="Italic" />
+    </Style>
+
 
     <Style x:Key="BorderRegularStyle" TargetType="Border">
         <Setter Property="Margin" Value="4" />

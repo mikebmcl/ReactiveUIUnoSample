@@ -15,7 +15,63 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <!--<TextBlock Grid.Row="0" Text="Temperatures" Style="{StaticResource SansTitleTextBlockStyle}" />-->
+            <!-- Note: The following is a demonstration of various considerations regarding fonts. The notes about each are in their AutomationProperties.Name because everything in Grid.Row 0 (i.e. the StackPanel and all of the TextBlocks it contains) has nothing to do with the app itself. It is useful from a learning and an experimenting point of view to have it here. By putting the "comments" in their AutomationProperties.Name properties, it vastly simplifies commenting and uncommenting since nested comments aren't supported in any XML-based markup. The proper use of AutomationProperties.Name is to describe the control for users who are using the app with the assistance of screen reading technology. For a TextBlock, the Text itself is normally sufficiently descriptive (screen readers get the same text values that are displayed on the screen when the app is running so you don't need to worry about the fact that you will probably be using data-binding for the text of most controls). But you can override it with AutomationProperties.Name if more information is needed than the text by itself conveys. And you can bind the value for AutomationProperties.Name rather than hard-coding it. This is useful in various ways, but especially in terms of localizing your app for speakers of various languages and for users who speak the same language (though perhaps with slightly different dialects) but live in cultures where other differences exist such as currency, number formatting, different vocabulary for things that are essentially equivalent (attorney vs. solicitor + barrister), and other globalization considerations. -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demostrating use of a bold sans-serif font using a custom ThemeResource TextBlock Style. Note: The Style uses a FontSize of 16 which is why the remaining examples explicitly set the FontSize property to 16. This is in most cases the best way to do things. By using styles that are defined at the application level (App.xaml and any resource dictionaries included in it) and used in a consistent way (e.g. everything that's a 'sub-header' from a design point of view gets the same style), it will be much easier to create, modify, and maintain a consistent look and feel for your app. The remaining TextBlocks are, in this regard, horrible. However for this specific use they are actually preferred. These aren't meant for actual use in the app. They are simply a demonstration that explains various aspects of and potential problems with the various ways to specify fonts when styling. By putting the raw strings in the controls here we avoid the need to constantly switch back and forth between this page and the resource dictiomary. We also avoid filling up the resource dictionary with the various bad practices and erroneous values that are intentionally used here."
+                           Style="{ThemeResource SansBoldBodyMediumTextBlockStyle}" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a ThemeResource to provide the FontFamily string."
+                           FontFamily="{ThemeResource NotoSansBold}"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a ThemeResource to provide the FontFamily string where the FontWeight property has mistakenly not been set to Bold."
+                           FontFamily="{ThemeResource NotoSansBold}"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a hard-coded FontFamily string."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a hard-coded FontFamily string where the FontWeight property has mistakenly not been set to Bold."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a hard-coded FontFamily string that includes a fallback font of the same family but a different weight (regular). The first font in the string exists in this case so the fallback is not used."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans,ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a regular sans-serif font using a hard-coded FontFamily string that is of the same font family as the other examples that is set to use a FontWeight of Bold. In the case of this font family, the result should generally appear to be bold compared to not having FontWeight set to Bold but less bold than using the font family's bold font."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a regular sans-serif font using a hard-coded FontFamily string that is of the same font family as the other examples. The FontWeight property is not set and so it has the default value of Normal (regular and normal are different names that both equate to the same font weight; the different names are a result of legacy naming conventions). This is example exists here to show the difference between this regular version with a Normal font weight and with a Bold FontWeight as in the previous example. The previous example should appear bold compared to this."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a hard-coded FontFamily string that intentionally includes errors that cause it to refer to a font that does not exist. It includes a generic fallback family value that is the same typeface style (sans-serif) as our preferred font."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Boldx.ttf#Noto Sansx,sans-serif"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a bold sans-serif font using a hard-coded FontFamily string that intentionally includes errors that cause it to refer to a font that does not exist. It does not include a generic fallback family value (it includes no fallback at all). Without the generic fallback, if all other specified fonts are not found then the platform will use its default font. This could differ significantly from what you wanted. This is especially true on WASM, where the chosen font will depend on some combination of the client OS and the browser (it might depend on either or both). As an example, on Windows 11 using Chrome, I ended up getting Times New Roman, which is a serif font."
+                           FontFamily="ms-appx:///Assets/Fonts/NotoSans-Boldx.ttf#Noto Sansx"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating use of a hard-coded font that isn't part of the project. This is generally a bad idea unless you are sure that the font will be available on all of the platforms your app is targetting. Segoe UI is only available on Windows so having it be the only font listed creates the same problems we've already discussed concerning not knowing what font you will end up with on other platforms. Similarly, the San Francisco typeface, which includes SF Pro Text, SF Pro Display, SF Mono, and New York Medium (New York * are the serif companions of the sans-serif San Francisco fonts), can only be used on Apple platforms. If you wanted to add a bit of native UI feel, including the desired variants of these fonts and other platform-specific fonts in the comma separated font list format seen earlier, with suitable fallbacks for other platforms is something to consider. The trade off is that the fonts have different metrics and so you will need to pay much closer attention to make sure that all of the text in your app is layed out in a usable and aesthetically pleasing manner."
+                           FontFamily="Segoe UI"
+                           FontWeight="Bold"
+                           FontSize="16" />
+                <TextBlock Text="Temperatures"
+                           AutomationProperties.Name="Temperatures text demonstrating no FontFamily. This results in the platform using its default font. If you do not want to include a font with your app and do not want to try to specify specific fonts, you should still consider at least specifying a generic style such as serif or sans-serif so that you will have some degree of stylistic similarity across the various platforms. The best place to do this is in the Theme resource dictionaries because you can set a default style for each of the control types that will apply to all pages in the platform unless the pages or the controls within them specify something that overrides the default value. A default style is just a Style that has no Key value assigned to it. You cannot have multipe defaults for the same control in a single Xaml scope but you can set default styles within nested scopes that partially or completely override the default styles outside of that scope. For example, App.xaml's ResourceDictionary (including any that are part of it either by being in its MergedDictionaries or its ThemeDictionaries) create the application-wide scope. From there, the pages each have their own scope and the controls within a page each have their own scope and the controls within the controls... . So each page (views as we call them) can override the application's default styles with its own default styles (leaving intact any values inherited from the app's styles that it doesn't change) and the controls within the page can specify their own default styles for controls contained within them, and so on. It's best to do as much of the styling as possible in the theme dictionaries incorporated into the application's ResourceDictionary, especially anything related to colors. Something that looks good in the theme you happen to be using when testing might not look so good when you switch to a different theme. There is also consideration to be given to accessibility to make sure that your app is usable by the large number of people who use high contrast mode and those who have any of the various types of color blindness and color vision deficiency. It is also much easier for you since you (or your designer/design team) will, with rare exception, only need to make styling changes in that one centralized location rather than digging through all of the Xaml files in the app and modifying each control one by one."
+                           FontWeight="Bold"
+                           FontSize="16" />
+            </StackPanel>
             <Grid Grid.Row="1" Margin="0,0,0,6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

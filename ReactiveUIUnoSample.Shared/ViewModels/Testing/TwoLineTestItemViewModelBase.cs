@@ -108,24 +108,24 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         public bool HasCorrectAnswerFrameworkElement => CorrectAnswerFrameworkElement != null;
         public bool NoCorrectAnswerFrameworkElement => CorrectAnswerFrameworkElement == null;
 
-        private bool ViewCorrectAnswerFrameworkElementCommandCanExecute()
-        {
-            return CorrectAnswerFrameworkElement != null;
-        }
-        private async void ViewCorrectAnswerFrameworkElementCommandExecute()
-        {
-            //await RootPage.Current.PushContent(CorrectAnswerFrameworkElement);
-            //if (CorrectAnswerFrameworkElement is ScrollViewer scrollViewer)
-            //{
-            //    Views.ContentViewPresenterContentPage page = new Views.ContentViewPresenterContentPage(CorrectAnswerFrameworkElement, FirstLine);
-            //    await App.Navigation.PushAsync(page);
-            //}
-            //else
-            //{
-            //    Views.ContentViewPresenterContentPage page = new Views.ContentViewPresenterContentPage(new Views.EmbedContentViewInScrollViewContentView(CorrectAnswerFrameworkElement), FirstLine);
-            //    await App.Navigation.PushAsync(page);
-            //}
-        }
+        //private bool ViewCorrectAnswerFrameworkElementCommandCanExecute()
+        //{
+        //    return CorrectAnswerFrameworkElement != null;
+        //}
+        //private async void ViewCorrectAnswerFrameworkElementCommandExecute()
+        //{
+        //    //await RootPage.Current.PushContent(CorrectAnswerFrameworkElement);
+        //    //if (CorrectAnswerFrameworkElement is ScrollViewer scrollViewer)
+        //    //{
+        //    //    Views.ContentViewPresenterContentPage page = new Views.ContentViewPresenterContentPage(CorrectAnswerFrameworkElement, FirstLine);
+        //    //    await App.Navigation.PushAsync(page);
+        //    //}
+        //    //else
+        //    //{
+        //    //    Views.ContentViewPresenterContentPage page = new Views.ContentViewPresenterContentPage(new Views.EmbedContentViewInScrollViewContentView(CorrectAnswerFrameworkElement), FirstLine);
+        //    //    await App.Navigation.PushAsync(page);
+        //    //}
+        //}
 
         protected TwoLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, string secondLine, IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {

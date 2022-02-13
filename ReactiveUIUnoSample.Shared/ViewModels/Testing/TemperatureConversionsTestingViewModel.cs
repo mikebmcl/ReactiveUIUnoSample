@@ -367,7 +367,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             catch (Exception ex)
             {
                 DiagnosticsHelpers.ReportProblem($"Exception when trying to create and run a temperature conversion test. Details to follow.", LogLevel.Error, this.Log(), ex);
-                throw ex;
+                throw;
             }
             finally
             {

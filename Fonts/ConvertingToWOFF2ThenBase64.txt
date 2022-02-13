@@ -1,0 +1,61 @@
+Note: There are other ways of doing this that do not require access to WSL, Linux, or Darwin (macOS). This is just the way I used.
+
+To generate WOFF2 fonts from TTF (OTF) fonts I used a bash terminal using WSL (Windows Subsystem for Linux). Any GNU/Linux or 
+similar OS or VM should work fine however I have only tested it using WSL2 with OpenSUSE Leap (15.3).
+
+You need to make sure you have 'woff2_compress' installed either by installing a package that provides it or by woff2_compress
+building it yourself from https://github.com/google/woff2 . I built it; I do not think I was able to find a package that
+contained the program when I first tried to find it a while ago but there might be one.
+
+You also need to make sure you have 'base64' installed. You likely already do because it is provided as part of the GNU Core Utilities 
+(more info: https://www.gnu.org/software/coreutils/ ). If not I would recommend installing a package that provides it rather than building
+it yourself if possible since there are a number of program that are part of GNU Coreutils that would also likely be installed on your
+system already and you do not want to run into problems as a result of that.
+
+Lastly, I am assuming that you are using 'bash' as your shell and that these two programs are found in your path. If not, make sure to add
+whatever qualification needed to ensure run the program or to add its location to your path (be very careful if you decide to permanently
+add the relevant director(y|ies) to your path since its easy to break things in possibly unrecoverable ways if you do that incorrectly).
+
+Now we are ready.
+
+Let's assume you have a font file name 'a.ttf' in the current directory. Run the following command: 
+
+woff2_compress a.ttf
+
+This will produce a new file 'a.woff2' (note that a.ttf will continue to exist, unchanged).
+
+Then run the following command after checking the documentation to verify the existence and behavior of the -w switch (see below):
+
+base64 -w 0 a.woff2 > a.woff2.base64
+
+This will produce a new file 'a.woff2.base64' which will the result of converting the contents of 'a.woff2' to a base64 string suitable
+for using in an Uno WASM project's 'Fonts.css' file. By default the 'base64' command will add a new line after every 76 characters. By using
+the argument '-w 0' we are telling it to never produce a line break. Check the documentation to be sure that your version of 'base64' supports
+the -w switch and that it does what I have just described when passing it 0 as the value before running the command. If it doesn't have it or
+some equivalent then you will need to go through the output file and remove all of the new lines so that it is a single line; do not remove any
+characters or it will be invalid and at best will fail to load properly leaving you with a fallback font chosen by the platform unless you
+specified fallback fonts (which is generally a good thing to do even without this potential issue).
+
+Note that you do not need to use .base64 as the file extension for the resulting string; I just find it convenient.
+
+Once you have the WOFF2 fonts converted to base64 strings, proceed to add the fonts to Fonts.css in the WASM project, following the example
+of the existing font(s) that are in there already.
+
+Keep in mind that because the fonts are all preloaded in WASM for platform related issues, every font you add will increase the initial
+loading time of the app (especially on first run when it doesn't have anything cached locally yet). Beyond the Uno symbol font, this app
+really only benefits from having NotoSans-Regular and possibly NotoSans-Bold (though it could get imitation bold by just using the regular
+version and setting its FontWeight to Bold; it doesn't look as good but it's something to consider if the app's performance is a problem or if
+it is using up too much storage space or memory). But in this case, this is a sample that is meant to be educational (and thus to include some
+extra features such as additional fonts to experiment with). It also is something that is a simple but useful app in its own right, once the
+excess bits are removed. Too often in my career I've come across samples that don't actually do anything other than demonstrate one feature in
+a single screen. The usual result is something that in theory shows how something is used but fails to show how it should actually be integrated
+into a real program that needs to do things like navigate between pages, save and retrieve data, etc. And so many samples are often just tech
+demos that aren't helpful if you want to know how to use something rather than simply seeing it in action. This sample doesn't cover everything
+amd it undoubtedly has problems and limitations (it doesn't take advantage of lazy loading and various other techniques that a production app
+meant to be accessed by more than a few users at a time should be using for example). But hopefully it is useful as an example of an app
+that actually uses these technologies to accomplish something that is at least modestly complex.
+
+Also, you can write some simple one line bash commands to automate converting multiple files. Or you can use some other programming language.
+I decided not to include any such examples because typically you'll only ever be converting a few font files and because using someone else's
+shell scripts that haven't been turned into proper programs with lots of error checking and accident prevention mechanisms is a dangerous
+activity to engage in given how powerful unix shells are and how easily a slight change can turn a time saving trick into something horrible.

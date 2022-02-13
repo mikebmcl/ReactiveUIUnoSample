@@ -28,45 +28,9 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 
         [Reactive]
         public string TempPickerTitle { get; set; }
-        //{
-        //    get => m_tempPickerTitle;
-        //    set
-        //    {
-        //        if (m_tempPickerTitle != value)
-        //        {
-        //            m_tempPickerTitle = value;
-        //            RaisePropertyChanged();
-        //        }
-        //    }
-        //}
-        //private string m_tempPickerSelectedItem;
-        //public string TempPickerSelectedItem
-        //{
-        //    get => m_tempPickerSelectedItem;
-        //    set
-        //    {
-        //        if (m_tempPickerSelectedItem != value)
-        //        {
-        //            m_tempPickerSelectedItem = value;
-        //            UpdateTempEntryTextTwo();
-        //        }
-        //    }
-        //}
 
-        //private IUnitConversionsTesting m_temperatureTestingVM;
         [Reactive]
         public TemperatureConversionsTestingViewModel TemperatureTestingVM { get; set; }
-        //{
-        //    get => m_temperatureTestingVM;
-        //    set
-        //    {
-        //        if (m_temperatureTestingVM != value)
-        //        {
-        //            m_temperatureTestingVM = value;
-        //            RaisePropertyChanged();
-        //        }
-        //    }
-        //}
 
         private string m_title = "Temperature Conversions!";
         public string Title
@@ -76,12 +40,15 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 
         public override object HeaderContent { get; set; } = "Temperature Conversions";
 
+        public System.Windows.Input.ICommand NavigateToFirstViewCommand { get; set; }
+
         public UnitConversionsViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             TempEntryOneText = "0";
             TempPickerTitle = "Temperature";
             SelectedTemperatureConversion = ConversionDirections[0];
             TemperatureTestingVM = new TemperatureConversionsTestingViewModel(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment);
+            NavigateToFirstViewCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider)));
             this.WhenAnyValue(x => x.TempEntryOneText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
             {
                 string strToConvert = value;

@@ -123,7 +123,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
-                <Button x:Name="TestTemperatureConversionButton" Grid.Row="3" Grid.ColumnSpan="3" Content="Test Temperature Conversion" />
+                <Button x:Name="TestTemperatureConversionButton" Grid.Row="3" Grid.ColumnSpan="2" Content="Test Temperature Conversion" />
+                <Button x:Name="FirstViewButton" Grid.Row="3" Grid.Column="2" Content="First View" />
             </Grid>
         </Grid>
     </ScrollViewer>

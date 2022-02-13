@@ -66,6 +66,7 @@ namespace ReactiveUIUnoSample.Views
                 this.Bind(ViewModel, vm => vm.TemperatureTestingVM.SelectedDifficulty, view => view.TestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.TemperatureTestingVM.RunTestCommand, view => view.TestTemperatureConversionButton).DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.NavigateToFirstViewCommand, view => view.FirstViewButton).DisposeWith(disposables);
             });
         }
     }

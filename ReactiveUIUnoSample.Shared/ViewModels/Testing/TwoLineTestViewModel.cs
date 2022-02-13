@@ -313,7 +313,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                 takeCount = CurrentTestItemIndex + 1;
             }
             TwoLineTestResultsViewModel vm = new TwoLineTestResultsViewModel("Test Results", UserWasCorrect, UserWasWrong, new List<ITwoLineTestItem>(TestItems.Take(takeCount)), HostScreenWithContract, SchedulerProvider);
-            await HostScreenWithContract.Router.Navigate.Execute(vm);
+            await HostScreenWithContract.Router.NavigateAndRemoveCurrent().Execute(vm);
         }
 
         [Reactive]

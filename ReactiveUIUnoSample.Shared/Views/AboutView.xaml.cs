@@ -58,6 +58,15 @@ namespace ReactiveUIUnoSample.Views
                 this.BindCommand(ViewModel, vm => vm.ViewSILLicensePageCommand, view => view.NotoSerifViewSILLicensePageButton).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.ViewSILLicensePageCommand, view => view.NotoSansViewSILLicensePageButton).DisposeWith(disposables);
             });
+
+            Loaded += AboutView_Loaded;
+        }
+
+        private void AboutView_Loaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= AboutView_Loaded;
+            // Used to cause back navigation to fail when returning to a page (one of the SecondViewModel pages in our case) after navigating here. I was wrong about not needing to keep track of contract strings and now I have to resolve that problem.
+            ViewModel.HostScreenWithContract.Contract = "Break";
         }
     }
 }

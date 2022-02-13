@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class TemperatureConversionsTestingViewModel : UnitConversionsViewModelBase, IUnitConversionsTesting
+    public class TemperatureConversionsTestingViewModel : UnitConversionsViewModelBase//, IUnitConversionsTesting
     {
 
         // Number of Questions
@@ -50,52 +50,16 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         //private object m_selectedTestType;
         [Reactive]
         public object SelectedTestType { get; set; }
-        //{
-        //    get => m_selectedTestType;
-        //    set
-        //    {
-        //        if (m_selectedTestType != value)
-        //        {
-        //            m_selectedTestType = value;
-        //            if (value is ValueDisplayGenericPair<Enum> testType)
-        //            {
-        //                if (testType.Value is TemperatureConversionDirection.FahrenheitToCelsius)
-        //                {
-        //                    MinimumTemperature = m_minimumFahrenheitTemperatureDefaultValue;
-        //                    MaximumTemperature = m_maximumFahrenheitTemperatureDefaultValue;
-        //                }
-        //                else
-        //                {
-        //                    MinimumTemperature = m_minimumCelsiusTemperatureDefaultValue;
-        //                    MaximumTemperature = m_maximumCelsiusTemperatureDefaultValue;
-        //                }
-        //            }
-        //            RaisePropertyChanged();
-        //            //ChangeCommandCanExecute(RunTestCommand);
-        //        }
-        //    }
-        //}
 
-        public IList<ValueDisplayGenericPair<Enum>> TestTypes => new List<ValueDisplayGenericPair<Enum>>(new ValueDisplayGenericPair<Enum>[]
+        public IList<TemperatureConversionDirectionValueDisplayPair> TestTypes => new List<TemperatureConversionDirectionValueDisplayPair>(new TemperatureConversionDirectionValueDisplayPair[]
         {
-            new ValueDisplayGenericPair<Enum>(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
-            , new ValueDisplayGenericPair<Enum>(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
+            new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
+            , new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
         });
 
         //private object m_selectedDifficulty;
         [Reactive]
         public object SelectedDifficulty { get; set; }
-        //{
-        //    get => m_selectedDifficulty;
-        //    set
-        //    {
-        //        if (m_selectedDifficulty != value)
-        //        {
-        //            m_selectedDifficulty = value;
-        //            RaisePropertyChanged();
-        //        }
-        //    }
-        //}
 
         public override object HeaderContent { get; set; }
 
@@ -123,24 +87,16 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                     throw new InvalidOperationException($"Navigation is already occurring.");
                 }
                 var m_selectedTestType = SelectedTestType;
-                if (!(m_selectedTestType is ValueDisplayGenericPair<Enum> selectedTestType))
+                if (!(m_selectedTestType is TemperatureConversionDirectionValueDisplayPair selectedTestType))
                 {
-                    throw new InvalidCastException($"Expected {nameof(m_selectedTestType)} to be of type {nameof(ValueDisplayGenericPair<Enum>)} but instead it is of type '{m_selectedTestType?.GetType().FullName ?? "(null)"}'.");
+                    throw new InvalidCastException($"Expected {nameof(m_selectedTestType)} to be of type {nameof(TemperatureConversionDirectionValueDisplayPair)} but instead it is of type '{m_selectedTestType?.GetType().FullName ?? "(null)"}'.");
                 }
-                if (!(selectedTestType.Value is TemperatureConversionDirection testType))
-                {
-                    throw new InvalidCastException($"Expected {nameof(m_selectedTestType)} to be of type {nameof(ValueDisplayGenericPair<Enum>)} with the contained Enum to be of type {nameof(TemperatureConversionDirection)} but instead it is of type '{selectedTestType.Value?.GetType().FullName ?? "(null)"}'.");
-                }
+                var testType = selectedTestType.Value;
                 if (testType == TemperatureConversionDirection.Invalid)
                 {
                     throw new InvalidOperationException($"While trying to get the Value of {nameof(m_selectedTestType)}, it contained a {nameof(TemperatureConversionDirection)} value of '{testType}', which is invalid for test type.");
                 }
 
-                //TestDifficulty difficulty = m_selectedDifficulty?.Value ?? TestDifficulty.Invalid;
-                //if (difficulty == TestDifficulty.Invalid)
-                //{
-                //    throw new InvalidOperationException($"While trying to get the {nameof(TestDifficultyValueDisplayPair.Value)} of {nameof(m_selectedDifficulty)}, got '{m_selectedDifficulty?.Value.ToString() ?? "(null)"}'.");
-                //}
                 var m_selectedDifficulty = SelectedDifficulty;
                 if (!(m_selectedDifficulty is TestDifficultyValueDisplayPair selectedDifficulty))
                 {
@@ -178,7 +134,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                 }
                 if (!double.TryParse(maximumTemperature, NumberStyles.Float, CultureInfo.InvariantCulture, out double maxTemp))
                 {
-                    //maxTemp = double.Parse(m_maximumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
                     if (testType == TemperatureConversionDirection.FahrenheitToCelsius)
                     {
                         maxTemp = double.Parse(m_maximumFahrenheitTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
@@ -294,11 +249,9 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
                                 for (int addAnswerCtr = 0; addAnswerCtr < numAnswers; addAnswerCtr++)
                                 {
-                                    ////TestAnswer testAnswer = );
                                     answers.Add($"{startingAnswerValue + (addAnswerCtr * answerValueIncrement):F1} {answerUnits}");
                                 }
                                 string correctAnswer = answers[correctAnswerIdx];
-                                //questionsAndAnswers.Add((question, correctAnswer, answers));
                                 testItems.Add(new TwoLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
                             }
                             TwoLineTestViewModel testViewModel = new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider);
@@ -318,12 +271,11 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                                     testValueOffsetFromMinimum /= 2;
                                 }
                                 TemperatureConversionDirection conversionDirection = TemperatureConversionDirection.CelsiusToFahrenheit;
-                                string questionUnits = "C";// $"{(conversionDirection == TemperatureConversionDirection.FahrenheitToCelsius ? "F" : "C")}";
-                                string answerUnits = "F";// $"{(conversionDirection == TemperatureConversionDirection.FahrenheitToCelsius ? "C" : "F")}";
+                                string questionUnits = "C";
+                                string answerUnits = "F";
                                 double questionValue = minTemp + testValueOffsetFromMinimum;
                                 string question = $"{questionValue:F1} {questionUnits}";
                                 double correctAnswerValue = MiscHelpers.ConvertTemperature(conversionDirection, questionValue);
-                                //string correctAnswer = $"{correctAnswerValue:F1} {answerUnits}";
                                 double answerValueIncrement;
                                 switch (difficulty)
                                 {
@@ -348,11 +300,9 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
                                 for (int addAnswerCtr = 0; addAnswerCtr < numAnswers; addAnswerCtr++)
                                 {
-                                    ////TestAnswer testAnswer = );
                                     answers.Add($"{startingAnswerValue + (addAnswerCtr * answerValueIncrement):F1} {answerUnits}");
                                 }
                                 string correctAnswer = answers[correctAnswerIdx];
-                                //questionsAndAnswers.Add((question, correctAnswer, answers));
                                 testItems.Add(new TwoLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
                             }
                             TwoLineTestViewModel testViewModel = new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider);
@@ -406,7 +356,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             RunTestCommand = ReactiveCommand.CreateFromObservable(() =>
             RunTestCommandExecute()
             , RunTestCommandCanExecute().ObserveOn(SchedulerProvider.MainThread)
-            //, null
                     , SchedulerProvider.MainThread
                     );
         }

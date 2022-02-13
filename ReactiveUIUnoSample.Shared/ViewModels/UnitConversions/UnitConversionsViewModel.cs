@@ -53,19 +53,20 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         //    }
         //}
 
-        private IUnitConversionsTesting m_temperatureTestingVM;
-        public IUnitConversionsTesting TemperatureTestingVM
-        {
-            get => m_temperatureTestingVM;
-            set
-            {
-                if (m_temperatureTestingVM != value)
-                {
-                    m_temperatureTestingVM = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        //private IUnitConversionsTesting m_temperatureTestingVM;
+        [Reactive]
+        public TemperatureConversionsTestingViewModel TemperatureTestingVM { get; set; }
+        //{
+        //    get => m_temperatureTestingVM;
+        //    set
+        //    {
+        //        if (m_temperatureTestingVM != value)
+        //        {
+        //            m_temperatureTestingVM = value;
+        //            RaisePropertyChanged();
+        //        }
+        //    }
+        //}
 
         private string m_title = "Temperature Conversions!";
         public string Title
@@ -80,11 +81,11 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
             TempEntryOneText = "0";
             TempPickerTitle = "Temperature";
             SelectedTemperatureConversion = ConversionDirections[0];
-            m_temperatureTestingVM = new TemperatureConversionsTestingViewModel(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment);
+            TemperatureTestingVM = new TemperatureConversionsTestingViewModel(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment);
             this.WhenAnyValue(x => x.TempEntryOneText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
             {
                 string strToConvert = value;
-                if (string.IsNullOrWhiteSpace(strToConvert) || directionAsObj == null || !(directionAsObj is ValueDisplayGenericPair<TemperatureConversionDirection> direction))
+                if (string.IsNullOrWhiteSpace(strToConvert) || directionAsObj == null || !(directionAsObj is TemperatureConversionDirectionValueDisplayPair direction))
                 {
                     return "";
                 }

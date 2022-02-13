@@ -15,9 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DiagnosticsHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MiscHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TemperatureConversionStringToStringBindingTypeConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TestHelpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TestDifficultyValueDisplayPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ValueDisplayGenericPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SILOpenFontLicense1_1ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnitConversions\TemperatureConversionDirectionValueDisplayPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\SILOpenFontLicense1_1View.xaml.cs">
       <DependentUpon>SILOpenFontLicense1_1View.xaml</DependentUpon>
     </Compile>
@@ -36,7 +37,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTestItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTestResults.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTestWrongAnswer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\IUnitConversionsTesting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\TestDifficulty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationViewProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PreferencesKeys.cs" />

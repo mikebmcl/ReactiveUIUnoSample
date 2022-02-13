@@ -1,6 +1,6 @@
 ﻿using ReactiveUIUnoSample.Interfaces.Testing;
 
-namespace ReactiveUIUnoSample.Helpers
+namespace ReactiveUIUnoSample.ViewModels.Testing
 {
     [Windows.UI.Xaml.Data.Bindable]
     public class TestDifficultyValueDisplayPair : ValueDisplayGenericPair<TestDifficulty>

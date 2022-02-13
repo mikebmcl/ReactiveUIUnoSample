@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Uno.Extensions;
 using ReactiveUIUnoSample.Interfaces.Testing;
 using ReactiveUI.Fody.Helpers;
+using ReactiveUIUnoSample.ViewModels.Testing;
 
 namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 {
@@ -24,13 +25,13 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         private static readonly List<TestDifficultyValueDisplayPair> m_testDifficulties = new List<TestDifficultyValueDisplayPair>(new TestDifficultyValueDisplayPair[] { new TestDifficultyValueDisplayPair(TestDifficulty.Easy, "Easy"), new TestDifficultyValueDisplayPair(TestDifficulty.Medium, "Medium"), new TestDifficultyValueDisplayPair(TestDifficulty.Hard, "Hard") });
         public List<TestDifficultyValueDisplayPair> TestDifficulties => m_testDifficulties;
 
-        private static readonly List<ValueDisplayGenericPair<TemperatureConversionDirection>> _conversionDirections = new List<ValueDisplayGenericPair<TemperatureConversionDirection>>(new ValueDisplayGenericPair<TemperatureConversionDirection>[]
+        private static readonly List<TemperatureConversionDirectionValueDisplayPair> _conversionDirections = new List<TemperatureConversionDirectionValueDisplayPair>(new TemperatureConversionDirectionValueDisplayPair[]
         {
-            new ValueDisplayGenericPair<TemperatureConversionDirection>(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
-            , new ValueDisplayGenericPair<TemperatureConversionDirection>(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
+            new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
+            , new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
         });
 
-        public IReadOnlyList<ValueDisplayGenericPair<TemperatureConversionDirection>> ConversionDirections => _conversionDirections;
+        public IReadOnlyList<TemperatureConversionDirectionValueDisplayPair> ConversionDirections => _conversionDirections;
 
         public static double GetUniqueOffset(Random random, int adjustedDifferencePlusOne, HashSet<int> existingQuestionOffsets, double testValueOffsetFromMinimum)
         {

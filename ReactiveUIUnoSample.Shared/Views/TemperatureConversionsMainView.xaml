@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vmuc="using:ReactiveUIUnoSample.ViewModels.UnitConversions"
+    xmlns:vmt="using:ReactiveUIUnoSample.ViewModels.Testing"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -15,8 +16,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <!-- Note: The following is a demonstration of various considerations regarding fonts. The notes about each are in their AutomationProperties.Name because everything in Grid.Row 0 (i.e. the StackPanel and all of the TextBlocks it contains) has nothing to do with the app itself. It is useful from a learning and an experimenting point of view to have it here. By putting the "comments" in their AutomationProperties.Name properties, it vastly simplifies commenting and uncommenting since nested comments aren't supported in any XML-based markup. The proper use of AutomationProperties.Name is to describe the control for users who are using the app with the assistance of screen reading technology. For a TextBlock, the Text itself is normally sufficiently descriptive (screen readers get the same text values that are displayed on the screen when the app is running so you don't need to worry about the fact that you will probably be using data-binding for the text of most controls). But you can override it with AutomationProperties.Name if more information is needed than the text by itself conveys. And you can bind the value for AutomationProperties.Name rather than hard-coding it. This is useful in various ways, but especially in terms of localizing your app for speakers of various languages and for users who speak the same language (though perhaps with slightly different dialects) but live in cultures where other differences exist such as currency, number formatting, different vocabulary for things that are essentially equivalent (attorney vs. solicitor + barrister), and other globalization considerations. -->
-            <StackPanel Grid.Row="0">
+            <!-- Note: The following TextBlocks within the StackPanel are a demonstration of various considerations regarding fonts. The notes about each are in their AutomationProperties.Name because the StackPanel and all of its contents have nothing to do with the app itself. It is useful from a learning and an experimenting point of view to have it here. By putting the "comments" in their AutomationProperties.Name properties, it vastly simplifies commenting and uncommenting since nested comments aren't supported in any XML-based markup. The proper use of AutomationProperties.Name is to describe the control for users who are using the app with the assistance of screen reading technology. For a TextBlock, the Text itself is normally sufficiently descriptive (screen readers get the same text values that are displayed on the screen when the app is running so you don't need to worry about the fact that you will probably be using data-binding for the text of most controls). But you can override it with AutomationProperties.Name if more information is needed than the text by itself conveys. And you can bind the value for AutomationProperties.Name rather than hard-coding it. This is useful in various ways, but especially in terms of localizing your app for speakers of various languages and for users who speak the same language (though perhaps with slightly different dialects) but live in cultures where other differences exist such as currency, number formatting, different vocabulary for things that are essentially equivalent (attorney vs. solicitor + barrister), and other globalization considerations. -->
+            <!--<StackPanel Grid.Row="0">
                 <TextBlock Text="Temperatures"
                            AutomationProperties.Name="Temperatures text demostrating use of a bold sans-serif font using a custom ThemeResource TextBlock Style. Note: The Style uses a FontSize of 16 which is why the remaining examples explicitly set the FontSize property to 16. This is in most cases the best way to do things. By using styles that are defined at the application level (App.xaml and any resource dictionaries included in it) and used in a consistent way (e.g. everything that's a 'sub-header' from a design point of view gets the same style), it will be much easier to create, modify, and maintain a consistent look and feel for your app. The remaining TextBlocks are, in this regard, horrible. However for this specific use they are actually preferred. These aren't meant for actual use in the app. They are simply a demonstration that explains various aspects of and potential problems with the various ways to specify fonts when styling. By putting the raw strings in the controls here we avoid the need to constantly switch back and forth between this page and the resource dictiomary. We also avoid filling up the resource dictionary with the various bad practices and erroneous values that are intentionally used here."
                            Style="{ThemeResource SansBoldBodyMediumTextBlockStyle}" />
@@ -71,7 +72,7 @@
                            AutomationProperties.Name="Temperatures text demonstrating no FontFamily. This results in the platform using its default font. If you do not want to include a font with your app and do not want to try to specify specific fonts, you should still consider at least specifying a generic style such as serif or sans-serif so that you will have some degree of stylistic similarity across the various platforms. The best place to do this is in the Theme resource dictionaries because you can set a default style for each of the control types that will apply to all pages in the platform unless the pages or the controls within them specify something that overrides the default value. A default style is just a Style that has no Key value assigned to it. You cannot have multipe defaults for the same control in a single Xaml scope but you can set default styles within nested scopes that partially or completely override the default styles outside of that scope. For example, App.xaml's ResourceDictionary (including any that are part of it either by being in its MergedDictionaries or its ThemeDictionaries) create the application-wide scope. From there, the pages each have their own scope and the controls within a page each have their own scope and the controls within the controls... . So each page (views as we call them) can override the application's default styles with its own default styles (leaving intact any values inherited from the app's styles that it doesn't change) and the controls within the page can specify their own default styles for controls contained within them, and so on. It's best to do as much of the styling as possible in the theme dictionaries incorporated into the application's ResourceDictionary, especially anything related to colors. Something that looks good in the theme you happen to be using when testing might not look so good when you switch to a different theme. There is also consideration to be given to accessibility to make sure that your app is usable by the large number of people who use high contrast mode and those who have any of the various types of color blindness and color vision deficiency. It is also much easier for you since you (or your designer/design team) will, with rare exception, only need to make styling changes in that one centralized location rather than digging through all of the Xaml files in the app and modifying each control one by one."
                            FontWeight="Bold"
                            FontSize="16" />
-            </StackPanel>
+            </StackPanel>-->
             <Grid Grid.Row="1" Margin="0,0,0,6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -85,7 +86,15 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBox x:Name="TempEntryOneTextBox" Grid.Column="0" Grid.Row="1" Margin="4" />
-                <ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}" DisplayMemberPath="Display" />
+                <!-- WASM doesn't like this so we're going to use an explicit ItemTemplate instead. -->
+                <!--<ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}" DisplayMemberPath="Display" />-->
+                <ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vmuc:TemperatureConversionDirectionValueDisplayPair">
+                            <TextBlock Text="{x:Bind Display}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
                 <TextBox x:Name="TempEntryTwoTextBox" Grid.Column="2" Grid.Row="1" Margin="4" />
 
                 <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="4">
@@ -97,8 +106,22 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <ComboBox x:Name="TestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type" DisplayMemberPath="Display" />
-                    <ComboBox x:Name="TestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty" DisplayMemberPath="Display" />
+                    <!--<ComboBox x:Name="TestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type" DisplayMemberPath="Display" />-->
+                    <ComboBox x:Name="TestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vmuc:TemperatureConversionDirectionValueDisplayPair">
+                                <TextBlock Text="{x:Bind Display}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <!--<ComboBox x:Name="TestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty" DisplayMemberPath="Display" />-->
+                    <ComboBox x:Name="TestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vmt:TestDifficultyValueDisplayPair">
+                                <TextBlock Text="{x:Bind Display}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
                 <Button x:Name="TestTemperatureConversionButton" Grid.Row="3" Grid.ColumnSpan="3" Content="Test Temperature Conversion" />
             </Grid>

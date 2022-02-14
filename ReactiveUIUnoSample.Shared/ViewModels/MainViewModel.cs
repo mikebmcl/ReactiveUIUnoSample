@@ -15,13 +15,13 @@ using ReactiveUIUnoSample.Interfaces;
 using ReactiveUIUnoSample.ViewModels.UnitConversions;
 using ReactiveUIUnoSample.Views;
 
-using Splat;
-
 using Uno.Extensions;
 
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+
+using IMutableDependencyResolver = Splat.IMutableDependencyResolver;
 
 namespace ReactiveUIUnoSample.ViewModels
 {
@@ -31,103 +31,6 @@ namespace ReactiveUIUnoSample.ViewModels
     // framework around which an app could be built.
     public class MainViewModel : ReactiveObject, IScreenWithContract//, IEnableLogger
     {
-        /// <summary>
-        /// Lets us keep track of when navigation has occurred. For more info about <see cref="IObservable{T}"/>, 
-        /// see https://docs.microsoft.com/en-us/dotnet/api/system.iobserver-1?view=netstandard-2.0
-        /// </summary>
-        public class NavigationChangedObserver : IObserver<IChangeSet<IRoutableViewModel>>
-        {
-            private IDisposable m_unsubscriber;
-            private MainViewModel m_mainViewModel;
-            public NavigationChangedObserver(MainViewModel mainViewModel)
-            {
-                m_mainViewModel = mainViewModel;
-            }
-            /// <summary>
-            /// Use this to subscribe by passing in the <see cref="IObservable{T}"/> rather than calling <see cref="IObservable{T}.Subscribe(IObserver{T})"/> 
-            /// directly since this lets us properly handle disposing of resources associated with subscribing.
-            /// </summary>
-            /// <param name="provider"></param>
-            public virtual void Subscribe(IObservable<IChangeSet<IRoutableViewModel>> provider)
-            {
-                if (provider != null)
-                {
-                    m_unsubscriber?.Dispose();
-                    m_unsubscriber = provider.ObserveOn(m_mainViewModel.m_schedulerProvider.MainThread).Subscribe(this);
-                }
-            }
-
-            public virtual void Unsubscribe()
-            {
-                m_unsubscriber?.Dispose();
-            }
-
-            public void OnCompleted()
-            {
-                // Note: This is not called after every navigation but instead when the IObservable<T> itself is finished its business completely, i.e.
-                //  it won't be sending any more notifications (presumably because the app is shutting down). See:
-                //  https://docs.microsoft.com/en-us/dotnet/api/system.iobserver-1.oncompleted
-            }
-
-            public void OnError(Exception error)
-            {
-                //this.Log().
-                throw error;
-            }
-
-            public void OnNext(IChangeSet<IRoutableViewModel> value)
-            {
-                m_mainViewModel.IsBackEnabled = m_mainViewModel.Router.NavigationStack.Count > 1;
-                var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
-#if NETFX_CORE || __WASM__
-                manager.AppViewBackButtonVisibility = m_mainViewModel.Router.NavigationStack.Count > 1
-                ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
-                : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
-#endif
-                if (m_mainViewModel.Router.NavigationStack.Last() is DisplayViewModelBase displayViewModelBase)
-                {
-                    if (m_mainViewModel.CurrentHeader is null && !m_mainViewModel.m_navigationView.IsTest)
-                    {
-                        m_mainViewModel.CurrentHeader = new ContentControl();
-                    }
-                    if (m_mainViewModel.CurrentHeader != null)
-                    {
-                        if (m_mainViewModel.CurrentHeader is ContentControl currentHeader)
-                        {
-                            if (displayViewModelBase.NoHeader)
-                            {
-                                currentHeader.Content = null;
-                                return;
-                            }
-                            if (displayViewModelBase.HeaderContent is string headerString)
-                            {
-                                currentHeader.Content = new TextBlock() { Text = headerString };
-                            }
-                            else
-                            {
-                                currentHeader.Content = displayViewModelBase.HeaderContent;
-                            }
-                        }
-                        else
-                        {
-                            m_mainViewModel.CurrentHeader = displayViewModelBase.HeaderContent;
-                        }
-                    }
-                }
-                else
-                {
-                    if (m_mainViewModel.CurrentHeader is ContentControl currentHeader)
-                    {
-                        currentHeader.Content = null;
-                    }
-                    else
-                    {
-                        m_mainViewModel.CurrentHeader = null;
-                    }
-                }
-            }
-        }
-
         public MainViewModel(INavigationViewProvider navigationView, IMutableDependencyResolver mutableDependencyResolver, object initialHeader, ISchedulerProvider schedulerProvider)
         {
             m_schedulerProvider = schedulerProvider;
@@ -147,8 +50,10 @@ namespace ReactiveUIUnoSample.ViewModels
 
             // We want to know when navigation has occurred so that we can update the NavigationView's header and manage whether or not the
             // user can navigate back based on the number of items on the Router's NavigationStack.
-            m_navigationChangedObserver = new NavigationChangedObserver(this);
-            m_navigationChangedObserver.Subscribe(Router.NavigationChanged);
+            m_navigationChangedObserver = new NavigationChangedObserver(this).Subscribe(Router.NavigationChanged, schedulerProvider.MainThread);
+            _navigateBackExceptionObserver = new ExceptionObserver("NavigateBack").Subscribe(Router.NavigateBack.ThrownExceptions, schedulerProvider.MainThread, this.Log(), GetCurrentContract);
+            _navigateExceptionObserver = new ExceptionObserver("Navigate").Subscribe(Router.Navigate.ThrownExceptions, schedulerProvider.MainThread, this.Log(), GetCurrentContract);
+            _navigateAndResetExceptionObserver = new ExceptionObserver("NavigateAndReset").Subscribe(Router.NavigateAndReset.ThrownExceptions, schedulerProvider.MainThread, this.Log(), GetCurrentContract);
 
             // Manage the routing state. Use the Router.Navigate.Execute
             // command to navigate to different view models.
@@ -186,6 +91,11 @@ namespace ReactiveUIUnoSample.ViewModels
             ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
             : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
 #endif
+        }
+
+        private string GetCurrentContract()
+        {
+            return $"Current Contract: {Contract}.";
         }
 
         /// <summary>
@@ -281,6 +191,9 @@ namespace ReactiveUIUnoSample.ViewModels
         public string Contract { get; set; }
 
         private readonly NavigationChangedObserver m_navigationChangedObserver;
+        private readonly ExceptionObserver _navigateBackExceptionObserver;
+        private readonly ExceptionObserver _navigateExceptionObserver;
+        private readonly ExceptionObserver _navigateAndResetExceptionObserver;
 
         public void NavigationView_ItemInvoked(NavigationView view, NavigationViewItemInvokedEventArgs args)
         {
@@ -312,6 +225,7 @@ namespace ReactiveUIUnoSample.ViewModels
         }
 
         private INavigationViewProvider m_navigationView;
+        public INavigationViewProvider NavigationView => m_navigationView;
 
         [Reactive]
         public object CurrentHeader { get; set; }

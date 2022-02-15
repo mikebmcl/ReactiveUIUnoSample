@@ -79,24 +79,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotoSerif", "NotoSerif", "{
 		Fonts\NotoSerif\OFL.txt = Fonts\NotoSerif\OFL.txt
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ReactiveUIRoutingWithContracts", "ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.shproj", "{28978B16-EB5F-4728-9585-CF7FAFFB4FB8}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{21701239-ef57-40b2-904d-d8223a8a2436}*SharedItemsImports = 5
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{21701239-ef57-40b2-904d-d8223a8a2436}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{21701239-ef57-40b2-904d-d8223a8a2436}*SharedItemsImports = 5
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{28978b16-eb5f-4728-9585-cf7faffb4fb8}*SharedItemsImports = 13
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{2bbc1e31-7517-42e1-ab3f-5edf84d0da30}*SharedItemsImports = 4
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{2bbc1e31-7517-42e1-ab3f-5edf84d0da30}*SharedItemsImports = 4
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{2bbc1e31-7517-42e1-ab3f-5edf84d0da30}*SharedItemsImports = 4
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{558f27f7-edc7-4768-b6a2-b47c9ca219cb}*SharedItemsImports = 4
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{558f27f7-edc7-4768-b6a2-b47c9ca219cb}*SharedItemsImports = 4
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{558f27f7-edc7-4768-b6a2-b47c9ca219cb}*SharedItemsImports = 4
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{5c08069c-85d6-40ef-8851-a5e23b97ea5e}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{5c08069c-85d6-40ef-8851-a5e23b97ea5e}*SharedItemsImports = 5
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{85149910-5ad2-42a0-88b2-5db4a65db481}*SharedItemsImports = 5
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{85149910-5ad2-42a0-88b2-5db4a65db481}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{85149910-5ad2-42a0-88b2-5db4a65db481}*SharedItemsImports = 5
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{8ccf5633-c09a-47e5-97c7-1d18d0f89f11}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{8ccf5633-c09a-47e5-97c7-1d18d0f89f11}*SharedItemsImports = 5
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{8e5d9f42-3569-49f5-9d82-af9a82be76d5}*SharedItemsImports = 5
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{8e5d9f42-3569-49f5-9d82-af9a82be76d5}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{8e5d9f42-3569-49f5-9d82-af9a82be76d5}*SharedItemsImports = 5
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{a8c009d6-f255-45d9-b853-39f98d9ca516}*SharedItemsImports = 4
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{a8c009d6-f255-45d9-b853-39f98d9ca516}*SharedItemsImports = 4
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{a8c009d6-f255-45d9-b853-39f98d9ca516}*SharedItemsImports = 4
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{d2a4f849-c1ec-4bf9-abc1-a3feb171d4d0}*SharedItemsImports = 4
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{d2a4f849-c1ec-4bf9-abc1-a3feb171d4d0}*SharedItemsImports = 4
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{d2a4f849-c1ec-4bf9-abc1-a3feb171d4d0}*SharedItemsImports = 4
+		ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems*{d8e7f511-8126-4cfe-8b62-2c3143004f3d}*SharedItemsImports = 5
 		ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems*{d8e7f511-8126-4cfe-8b62-2c3143004f3d}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{d8e7f511-8126-4cfe-8b62-2c3143004f3d}*SharedItemsImports = 5
 		ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems*{dd00da24-dde5-46fa-bdc1-27b246b62a86}*SharedItemsImports = 13

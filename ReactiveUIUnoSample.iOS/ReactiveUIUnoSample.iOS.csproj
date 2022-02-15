@@ -200,5 +200,6 @@
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" />
   <Import Project="..\ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems" Label="Shared" />
+  <Import Project="..\ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

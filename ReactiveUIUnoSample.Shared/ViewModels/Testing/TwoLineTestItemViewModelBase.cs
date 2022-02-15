@@ -11,6 +11,7 @@ using System.Windows.Input;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using ReactiveUIRoutingWithContracts;
 
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
@@ -127,7 +128,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         //    //}
         //}
 
-        protected TwoLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, string secondLine, IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        protected TwoLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, string secondLine, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             FirstLine = question;
             SecondLine = secondLine;

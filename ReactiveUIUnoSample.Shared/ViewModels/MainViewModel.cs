@@ -11,6 +11,8 @@ using Microsoft.Toolkit.Uwp;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using ReactiveUIRoutingWithContracts;
+
 using ReactiveUIUnoSample.Interfaces;
 using ReactiveUIUnoSample.ViewModels.UnitConversions;
 using ReactiveUIUnoSample.Views;
@@ -29,7 +31,7 @@ namespace ReactiveUIUnoSample.ViewModels
     // As such, this is not really the first page of the app. It's just a wrapper that presents the views, along with any other things we want to be part of
     // all of the pages, such as navigation buttons, an app bar, etc. This sample uses a NavigationView that contains the RoutedViewHost, providing a basic
     // framework around which an app could be built.
-    public class MainViewModel : ReactiveObject, IScreenWithContract//, IEnableLogger
+    public class MainViewModel : ReactiveObject, IScreenForContracts//, IEnableLogger
     {
         public MainViewModel(INavigationViewProvider navigationView, IMutableDependencyResolver mutableDependencyResolver, object initialHeader, ISchedulerProvider schedulerProvider)
         {
@@ -40,7 +42,7 @@ namespace ReactiveUIUnoSample.ViewModels
             IsBackEnabled = false;
             RoutedHostPadding = new Thickness(4);
             CurrentHeader = initialHeader;
-            Router = new RoutingState(schedulerProvider.MainThread);
+            Router = new RoutingWithContractsState(schedulerProvider.MainThread);
             // Register all of our views and corresponding view models and contract strings
             RegisterAllViews(mutableDependencyResolver);
 
@@ -71,8 +73,7 @@ namespace ReactiveUIUnoSample.ViewModels
             // are limited (e.g. if your app should just swap between pages or if you want to give the user the option to go back to the "home" page without navigating
             // back through all the previous pages).
             //Contract = UnitConversionsViewModel.TemperatureConversionsMainViewContract;
-            Router.Navigate.Execute(new UnitConversionsViewModel(this, m_schedulerProvider));
-            //Router.Navigate.Execute(new FirstViewModel(this, m_schedulerProvider));
+            Router.Navigate.Execute(new UnitConversionsViewModel(this, m_schedulerProvider).ToViewModelAndContract());
 
             // The following is some special code needed to let us handle things like pressing the browser back button in WASM or the system back button in Android
             // This is based off of https://platform.uno/docs/articles/features/native-frame-nav.html with modifications due to our use of ReactiveUI rather than
@@ -91,11 +92,6 @@ namespace ReactiveUIUnoSample.ViewModels
             ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
             : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
 #endif
-        }
-
-        private string GetCurrentContract()
-        {
-            return $"Current Contract: {Contract}.";
         }
 
         /// <summary>
@@ -131,7 +127,7 @@ namespace ReactiveUIUnoSample.ViewModels
             // other dependency resolvers instead if their functionality better fits your needs. For a list of them along with details about how to set them up to be
             // used with ReactiveUI, see: https://www.reactiveui.net/api/splat/imutabledependencyresolver/ 
 
-            // We're opting to register individually like this because we're making use of our IScreenWithContract interface to allow navigating
+            // We're opting to register individually like this because we're making use of our IScreenForContracts interface to allow navigating
             // to multiple views that share the same view model.
             // Note that if you use contract names you should use them with all views you register for that view model. You can have one of those views be registered
             // with no contract (null and empty count as no contract, but whitespace is considered a distinct string rather than no contract), but that is not
@@ -185,10 +181,16 @@ namespace ReactiveUIUnoSample.ViewModels
 
         // The Router associated with this Screen.
         // Required by the IScreen interface.
-        public RoutingState Router { get; }
+        //public RoutingState Router { get; }
+        public RoutingWithContractsState Router { get; }
 
-        [Reactive]
-        public string Contract { get; set; }
+        public string GetCurrentContract()
+        {
+            return Router?.NavigationStack.LastOrDefault().Contract;
+        }
+
+        //[Reactive]
+        //public string Contract { get; set; }
 
         private readonly NavigationChangedObserver m_navigationChangedObserver;
         private readonly ExceptionObserver _navigateBackExceptionObserver;
@@ -206,21 +208,21 @@ namespace ReactiveUIUnoSample.ViewModels
                 // find NavigationViewItem with Content that equals InvokedItem
                 NavigationViewItem item = view.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
                 var vm = GetViewModelForNavigationViewItem(item);
-                if (vm != null)
+                if (vm.ViewModel != null)
                 {
                     Router.Navigate.Execute(vm);
                 }
             }
         }
 
-        private DisplayViewModelBase GetViewModelForNavigationViewItem(NavigationViewItem item)
+        private IViewModelAndContract GetViewModelForNavigationViewItem(NavigationViewItem item)
         {
             switch (item.Tag)
             {
                 case "about":
-                    return new AboutViewModel(this, m_schedulerProvider);
+                    return new AboutViewModel(this, m_schedulerProvider).ToViewModelAndContract();
                 default:
-                    return null;
+                    return default;
             }
         }
 
@@ -243,7 +245,7 @@ namespace ReactiveUIUnoSample.ViewModels
             {
                 try
                 {
-                    if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+                    if (Router.NavigationStack.Last().ViewModel is Interfaces.ICallOnBackNavigation callOnBackNavigation)
                     {
                         if (callOnBackNavigation.CallOnBackNavigation())
                         {
@@ -273,7 +275,7 @@ namespace ReactiveUIUnoSample.ViewModels
             {
                 try
                 {
-                    if (Router.NavigationStack.Last() is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+                    if (Router.NavigationStack.Last().ViewModel is Interfaces.ICallOnBackNavigation callOnBackNavigation)
                     {
                         if (callOnBackNavigation.CallOnBackNavigation())
                         {

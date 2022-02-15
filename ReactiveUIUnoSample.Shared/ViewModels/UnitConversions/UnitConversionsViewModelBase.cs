@@ -8,13 +8,14 @@ using Uno.Extensions;
 using ReactiveUIUnoSample.Interfaces.Testing;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUIUnoSample.ViewModels.Testing;
+using ReactiveUIRoutingWithContracts;
 
 namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 {
     [Windows.UI.Xaml.Data.Bindable]
     public abstract class UnitConversionsViewModelBase : DisplayViewModelBase
     {
-        protected UnitConversionsViewModelBase(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        protected UnitConversionsViewModelBase(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             //TemperaturePickerItems = m_temperaturePickerItems;
         }

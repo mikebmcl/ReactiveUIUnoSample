@@ -4,6 +4,7 @@ using ReactiveUI;
 
 using ReactiveUIUnoSample.Interfaces;
 using ReactiveUIUnoSample.ViewModels;
+using ReactiveUIRoutingWithContracts;
 
 using Splat;
 
@@ -28,8 +29,8 @@ namespace ReactiveUIUnoSample.UnitTests
     /// the types mentioned earlier.
     /// 
     /// If you want to run view model tests that in no way affect the routing stack nor examine its state in parallel with each other, start by creating a new base 
-    /// class that does not contain an implementation of <see cref="IScreen"/> or <see cref="IScreenWithContract"/> or in any way reference <see cref="Locator"/>, and 
-    /// pass in null for the <see cref="IScreenWithContract"/> parameter that goes to <see cref="ViewModelBase.ViewModelBase(IScreenWithContract, ISchedulerProvider, string, bool)"/>, 
+    /// class that does not contain an implementation of <see cref="IScreen"/> or <see cref="IScreenForContracts"/> or in any way reference <see cref="Locator"/>, and 
+    /// pass in null for the <see cref="IScreenForContracts"/> parameter that goes to <see cref="ViewModelBase.ViewModelBase(IScreenForContracts, ISchedulerProvider, string, bool)"/>, 
     /// which is the base class of all view models in the app. It does not do a null check for that argument to allow view models that don't need it to avoid 
     /// needing to have an instance of it to pass in. Doing that would ensure that those tests had nothing to do with navigation because if what they are testing 
     /// ever tries to access the routing stack in any way, it would result in a null reference exception. Whether or not they would run into other problems with
@@ -39,8 +40,8 @@ namespace ReactiveUIUnoSample.UnitTests
     {
         private static Lazy<INavigationViewProvider> m_navigationViewProvider = new Lazy<INavigationViewProvider>(() => new TestNavigationViewProvider(), LazyThreadSafetyMode.PublicationOnly);
         private static Lazy<ISchedulerProvider> m_schedulerProvider = new Lazy<ISchedulerProvider>(() => new TestSchedulerProvider(), LazyThreadSafetyMode.PublicationOnly);
-        private static Lazy<IScreenWithContract> m_screenWithContract = new Lazy<IScreenWithContract>(InitScreenWithContract, LazyThreadSafetyMode.PublicationOnly);
-        private static IScreenWithContract InitScreenWithContract()
+        private static Lazy<IScreenForContracts> m_screenWithContract = new Lazy<IScreenForContracts>(InitScreenWithContract, LazyThreadSafetyMode.PublicationOnly);
+        private static IScreenForContracts InitScreenWithContract()
         {
             return new MainViewModel(m_navigationViewProvider.Value, Locator.CurrentMutable, string.Empty, m_schedulerProvider.Value);
         }
@@ -53,7 +54,7 @@ namespace ReactiveUIUnoSample.UnitTests
         [SetUp]
         public void SetUpTest()
         {
-            ScreenWithContract.Router.NavigateAndReset.Execute(new FirstViewModel(ScreenWithContract, TestSchedulerProvider));
+            ScreenWithContract.Router.NavigateAndReset.Execute(new FirstViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract());
         }
 
         protected static INavigationViewProvider TestNavigationViewProvider
@@ -67,7 +68,7 @@ namespace ReactiveUIUnoSample.UnitTests
         }
 
         /// <summary>
-        /// An instance of <see cref="IScreenWithContract"/> that is either the view model of the main view (i.e. the view that contains the
+        /// An instance of <see cref="IScreenForContracts"/> that is either the view model of the main view (i.e. the view that contains the
         /// <see cref="ReactiveUI.Uno.RoutedViewHost"/>) or some type that mocks it by implementing that interface. Note that <see cref="SetUpTest"/>
         /// is called before each test, restoring the state of this object's navigation stack to the same state every time. Also, the 
         /// <see cref="ICallOnBackNavigation"/> interface is ignored entirely because implementations of it are likely to contain UI code. If you have 
@@ -75,16 +76,16 @@ namespace ReactiveUIUnoSample.UnitTests
         /// You can test the effects of it regardless of whether it invokes UI code by testing it directly in a running instance of the app via a test
         /// in a class that derives from <see cref="AppTestBase"/>.
         /// </summary>
-        protected static IScreenWithContract ScreenWithContract
+        protected static IScreenForContracts ScreenWithContract
         {
             get => m_screenWithContract.Value;
         }
 
         /// <summary>
-        /// This returns the most recently navigated to view model on the <see cref="ScreenWithContract"/>'s <see cref="IScreen.Router"/> navigation stack.
+        /// This returns the most recently navigated to view model on the <see cref="ScreenWithContract"/>'s <see cref="IScreenForContracts.Router"/> navigation stack.
         /// </summary>
         /// <returns></returns>
-        protected IRoutableViewModel GetCurrentViewModel()
+        protected IViewModelAndContract GetCurrentViewModel()
         {
             return ScreenWithContract.Router.NavigationStack[ScreenWithContract.Router.NavigationStack.Count - 1];
         }

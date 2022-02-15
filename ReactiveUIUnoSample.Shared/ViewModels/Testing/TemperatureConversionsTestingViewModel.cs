@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Uno.Extensions;
 using ReactiveUI;
 using System.Threading.Tasks;
+using ReactiveUIRoutingWithContracts;
 
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
@@ -78,7 +79,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             // We're using this as part of calculating the proper value of the RunTestCommand's CanExecute method.
             RunTestCommandIsExecutingValue = m_runTestCommandIsExecuting.Get();
         }
-        private IObservable<IRoutableViewModel> RunTestCommandExecute()
+        private IObservable<IViewModelAndContract> RunTestCommandExecute()
         {
             try
             {
@@ -254,8 +255,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                                 string correctAnswer = answers[correctAnswerIdx];
                                 testItems.Add(new TwoLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
                             }
-                            TwoLineTestViewModel testViewModel = new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider);
-                            return HostScreenWithContract.Router.Navigate.Execute(testViewModel);
+                            return HostScreenWithContract.Router.Navigate.Execute(new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
                         }
                     case TemperatureConversionDirection.CelsiusToFahrenheit:
                         {
@@ -305,8 +305,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                                 string correctAnswer = answers[correctAnswerIdx];
                                 testItems.Add(new TwoLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
                             }
-                            TwoLineTestViewModel testViewModel = new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider);
-                            return HostScreenWithContract.Router.Navigate.Execute(testViewModel);
+                            return HostScreenWithContract.Router.Navigate.Execute(new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
                         }
                     case TemperatureConversionDirection.Invalid:
                         throw new InvalidOperationException($"Value is {nameof(TemperatureConversionDirection)}.{nameof(TemperatureConversionDirection.Invalid)}. How did we even get here? We already checked {nameof(testType)} to ensure it was valid.");
@@ -346,7 +345,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                     /*&& difficultyObj.Value is ValueDisplayGenericPair<TestDifficulty> difficulty && difficulty.Value != TestDifficulty.Invalid*/
                     );
         }
-        public TemperatureConversionsTestingViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public TemperatureConversionsTestingViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             // Note: It's safe to not unsubscribe from this event because it does not hold a hard reference to this object, it's subscribing to an event on an object
             // that is a non-static member of this class, and we have no reasonable way to 100% guarantee that our attempt to unsubscribe would always run (because certain

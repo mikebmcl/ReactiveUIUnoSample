@@ -82,7 +82,7 @@ namespace ReactiveUIUnoSample.Views
                     }
                 }).DisposeWith(disposables);
 
-                this.Bind(ViewModel, x => x.SkipConfirmLeave, view => view.SkipConfirmLeaveCheckBox.IsChecked).DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.SkipConfirmLeave, view => view.SkipConfirmLeaveCheckBox.IsChecked).DisposeWith(disposables);
             });
         }
 

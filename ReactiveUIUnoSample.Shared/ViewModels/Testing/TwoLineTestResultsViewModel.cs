@@ -1,6 +1,7 @@
 ﻿using ReactiveUI.Fody.Helpers;
 
 using ReactiveUIUnoSample.Interfaces.Testing;
+using ReactiveUIRoutingWithContracts;
 
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         public override object HeaderContent { get; set; }
 
-        public TwoLineTestResultsViewModel(string title, IList<ITwoLineTestItem> userWasCorrect, IList<ITwoLineTestWrongAnswer> userWasWrong, IList<ITwoLineTestItem> testItems, IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public TwoLineTestResultsViewModel(string title, IList<ITwoLineTestItem> userWasCorrect, IList<ITwoLineTestWrongAnswer> userWasWrong, IList<ITwoLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             Title = title;
             HeaderContent = title;

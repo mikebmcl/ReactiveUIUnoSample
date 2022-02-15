@@ -8,6 +8,7 @@
     xmlns:android="http://uno.ui/android"
     xmlns:ios="http://uno.ui/ios"
     xmlns:reactiveUi="using:ReactiveUI.Uno"
+    xmlns:rurwc="using:ReactiveUIRoutingWithContracts"
     xmlns:muxc="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     mc:Ignorable="d android ios">
 
@@ -54,8 +55,10 @@
             </NavigationView.PaneFooter>-->
 
         <!-- The RoutedViewHost is responsible for displaying all of the pages in the app. This is important to keep. -->
-        <reactiveUi:RoutedViewHost x:Name="RoutedHostControl"
+        <!--<reactiveUi:RoutedViewHost x:Name="RoutedHostControl"
                                    ViewContract="{x:Bind ViewModel.Contract, Mode=OneWay}"
-                                   Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
+                                   Router="{x:Bind ViewModel.Router, Mode=OneWay}" />-->
+        <rurwc:RoutedContractViewHost x:Name="RoutedHostControl"
+                                      Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
     </muxc:NavigationView>
 </Page>

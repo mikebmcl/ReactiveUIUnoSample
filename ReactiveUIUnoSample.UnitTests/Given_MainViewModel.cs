@@ -8,7 +8,7 @@ namespace ReactiveUIUnoSample.UnitTests
 {
     internal class Given_MainViewModel : ReactiveTestBase
     {
-        [Test(Description = "When creating an instance of the MainViewModel, it does not throw an exception. This is critical because it is the IScreenWithContract provider that will be used for all tests of other view models.")]
+        [Test(Description = "When creating an instance of the MainViewModel, it does not throw an exception. This is critical because it is the IScreenForContracts provider that will be used for all tests of other view models.")]
         public void WhenCreateMainViewModel_ThenDoesNotThrow()
         {
             //using var _ = new AssertionScope();

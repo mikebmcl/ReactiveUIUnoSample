@@ -2,6 +2,8 @@
 
 using ReactiveUI;
 
+using ReactiveUIRoutingWithContracts;
+
 using ReactiveUIUnoSample.ViewModels;
 
 using System;
@@ -18,7 +20,7 @@ namespace ReactiveUIUnoSample
     /// Lets us keep track of when navigation has occurred. For more info about <see cref="IObservable{T}"/>, 
     /// see https://docs.microsoft.com/en-us/dotnet/api/system.iobserver-1?view=netstandard-2.0
     /// </summary>
-    public class NavigationChangedObserver : IObserver<IChangeSet<IRoutableViewModel>>
+    public class NavigationChangedObserver : IObserver<IChangeSet<IViewModelAndContract>>
     {
         private MainViewModel _mainViewModel;
         private IDisposable _unsubscriber;
@@ -33,7 +35,7 @@ namespace ReactiveUIUnoSample
         /// directly since this lets us properly handle disposing of resources associated with subscribing.
         /// </summary>
         /// <param name="provider"></param>
-        public virtual NavigationChangedObserver Subscribe(IObservable<IChangeSet<IRoutableViewModel>> provider, IScheduler observeOn, CancellationToken unsubscribeToken = default)
+        public virtual NavigationChangedObserver Subscribe(IObservable<IChangeSet<IViewModelAndContract>> provider, IScheduler observeOn, CancellationToken unsubscribeToken = default)
         {
             if (provider != null)
             {
@@ -66,7 +68,7 @@ namespace ReactiveUIUnoSample
             throw error;
         }
 
-        public void OnNext(IChangeSet<IRoutableViewModel> value)
+        public void OnNext(IChangeSet<IViewModelAndContract> value)
         {
             _mainViewModel.IsBackEnabled = _mainViewModel.Router.NavigationStack.Count > 1;
             var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
@@ -75,7 +77,7 @@ namespace ReactiveUIUnoSample
             ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
             : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
 #endif
-            if (_mainViewModel.Router.NavigationStack.Last() is DisplayViewModelBase displayViewModelBase)
+            if (_mainViewModel.Router.NavigationStack.Last().ViewModel is DisplayViewModelBase displayViewModelBase)
             {
                 if (_mainViewModel.CurrentHeader is null && !_mainViewModel.NavigationView.IsTest)
                 {

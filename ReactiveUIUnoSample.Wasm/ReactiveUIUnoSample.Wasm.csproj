@@ -58,6 +58,7 @@
   </ItemGroup>
   <Import Project="..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems" Label="Shared" Condition="Exists('..\ReactiveUIUnoSample.Shared\ReactiveUIUnoSample.Shared.projitems')" />
   <Import Project="..\ReactiveUIUnoSample.App.Shared\ReactiveUIUnoSample.App.Shared.projitems" Label="Shared" />
+  <Import Project="..\ReactiveUIRoutingWithContracts\ReactiveUIRoutingWithContracts.projitems" Label="Shared" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug' or '$(IsUiAutomationMappingEnabled)'=='True'">
     <IsUiAutomationMappingEnabled>True</IsUiAutomationMappingEnabled>
     <DefineConstants>$(DefineConstants);USE_UITESTS</DefineConstants>

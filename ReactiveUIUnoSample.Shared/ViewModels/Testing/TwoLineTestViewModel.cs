@@ -4,6 +4,7 @@ using ReactiveUI.Fody.Helpers;
 using ReactiveUIUnoSample.Interfaces;
 using ReactiveUIUnoSample.Interfaces.Testing;
 using ReactiveUIUnoSample.ViewModels;
+using ReactiveUIRoutingWithContracts;
 
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             if (navigateBack)
             {
                 SkipConfirmLeave = true;
-                await HostScreen.Router.NavigateBack.Execute();
+                await HostScreenWithContract.Router.NavigateBack.Execute();
             }
         }
         private readonly AtomicBoolean m_isNavigating = new AtomicBoolean();
@@ -312,8 +313,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             {
                 takeCount = CurrentTestItemIndex + 1;
             }
-            TwoLineTestResultsViewModel vm = new TwoLineTestResultsViewModel("Test Results", UserWasCorrect, UserWasWrong, new List<ITwoLineTestItem>(TestItems.Take(takeCount)), HostScreenWithContract, SchedulerProvider);
-            await HostScreenWithContract.Router.NavigateAndRemoveCurrent().Execute(vm);
+            await HostScreenWithContract.Router.NavigateAndRemoveCurrent().Execute(new TwoLineTestResultsViewModel("Test Results", UserWasCorrect, UserWasWrong, new List<ITwoLineTestItem>(TestItems.Take(takeCount)), HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
         }
 
         [Reactive]
@@ -372,7 +372,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         private readonly string _secondLineSettingsKey;
 
-        public TwoLineTestViewModel(string showSecondLinePreferencesKey, bool showSecondLineDefault, string showSecondLinePrompt, bool hasSecondLine, IList<ITwoLineTestItem> testItems, IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public TwoLineTestViewModel(string showSecondLinePreferencesKey, bool showSecondLineDefault, string showSecondLinePrompt, bool hasSecondLine, IList<ITwoLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>(schedulerProvider.CurrentThread);
             HeaderContent = "First Page";

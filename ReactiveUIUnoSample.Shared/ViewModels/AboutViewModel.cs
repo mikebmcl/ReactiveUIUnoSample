@@ -1,6 +1,8 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using ReactiveUIRoutingWithContracts;
+
 using System;
 using System.Reflection;
 using System.Windows.Input;
@@ -11,7 +13,7 @@ namespace ReactiveUIUnoSample.ViewModels
 {
     public class AboutViewModel : DisplayViewModelBase
     {
-        public AboutViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public AboutViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             // Note: For UWP, Skia.Gtk, and Skia.Tizen these properties should be extracted from the App Manifest or hard-coded here.
             HeaderContent = "About";
@@ -59,7 +61,7 @@ namespace ReactiveUIUnoSample.ViewModels
             }
             //}?? assembly.GetName()?.Version?.ToString(3) ?? "";
             AppVersionText = appVersionText;
-            ViewSILLicensePageCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new SILOpenFontLicense1_1ViewModel(HostScreenWithContract, SchedulerProvider)));
+            ViewSILLicensePageCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new SILOpenFontLicense1_1ViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract()));
         }
 
         [Reactive]

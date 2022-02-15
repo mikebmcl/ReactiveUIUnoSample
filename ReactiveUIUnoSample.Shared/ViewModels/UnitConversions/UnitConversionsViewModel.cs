@@ -9,6 +9,7 @@ using ReactiveUIUnoSample.Interfaces;
 using ReactiveUIUnoSample.ViewModels.Testing;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI;
+using ReactiveUIRoutingWithContracts;
 
 namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 {
@@ -42,13 +43,13 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 
         public System.Windows.Input.ICommand NavigateToFirstViewCommand { get; set; }
 
-        public UnitConversionsViewModel(IScreenWithContract hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public UnitConversionsViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             TempEntryOneText = "0";
             TempPickerTitle = "Temperature";
             SelectedTemperatureConversion = ConversionDirections[0];
             TemperatureTestingVM = new TemperatureConversionsTestingViewModel(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment);
-            NavigateToFirstViewCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider)));
+            NavigateToFirstViewCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract()));
             this.WhenAnyValue(x => x.TempEntryOneText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
             {
                 string strToConvert = value;

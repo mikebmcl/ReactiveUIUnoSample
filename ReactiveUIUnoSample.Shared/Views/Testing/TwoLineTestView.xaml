@@ -40,14 +40,14 @@
             <Border Grid.Row="2" Margin="8" Padding="4">
                 <TextBlock x:Name="ResultTextBlock" HorizontalAlignment="Stretch" HorizontalTextAlignment="Center" />
             </Border>
-            <Button x:Name="DisableOneWrongAnswerButton" Grid.Row="3" Margin="10" />
+            <Button x:Name="DisableOneWrongAnswerButton" Grid.Row="3" Margin="10" Command="{x:Bind ViewModel.DisableOneWrongAnswerCommand}" />
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="CheckAnswerButton" Grid.Column="0" Margin="8,8,4,8" />
-                <Button x:Name="NextFinishButton" Grid.Column="1" Margin="4,8,8,8" />
+                <Button x:Name="CheckAnswerButton" Grid.Column="0" Margin="8,8,4,8" Command="{x:Bind ViewModel.CheckAnswerCommand}" />
+                <Button x:Name="NextFinishButton" Grid.Column="1" Margin="4,8,8,8" Command="{x:Bind ViewModel.NextFinishCommand}" />
             </Grid>
         </Grid>
     </ScrollViewer>

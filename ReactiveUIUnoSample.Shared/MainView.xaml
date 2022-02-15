@@ -54,11 +54,7 @@
                 </StackPanel>
             </NavigationView.PaneFooter>-->
 
-        <!-- The RoutedViewHost is responsible for displaying all of the pages in the app. This is important to keep. -->
-        <!--<reactiveUi:RoutedViewHost x:Name="RoutedHostControl"
-                                   ViewContract="{x:Bind ViewModel.Contract, Mode=OneWay}"
-                                   Router="{x:Bind ViewModel.Router, Mode=OneWay}" />-->
-        <rurwc:RoutedContractViewHost x:Name="RoutedHostControl"
-                                      Router="{x:Bind ViewModel.Router, Mode=OneWay}" />
+        <!-- The RoutedContractViewHost is responsible for displaying all of the pages in the app. This is important to keep. -->
+        <rurwc:RoutedContractViewHost x:Name="RoutedHostControl" />
     </muxc:NavigationView>
 </Page>

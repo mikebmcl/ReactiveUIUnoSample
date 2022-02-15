@@ -21,11 +21,65 @@ using ReactiveUI;
 using System.Threading.Tasks;
 using ReactiveUIRoutingWithContracts;
 
-namespace ReactiveUIUnoSample.ViewModels.Testing
+namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class TemperatureConversionsTestingViewModel : UnitConversionsViewModelBase//, IUnitConversionsTesting
+    public class TemperatureConversionsViewModel : TemperatureConversionsViewModelBase//, IUnitConversionsTesting
     {
+        public TemperatureConversionsViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        {
+            RunTestCommand = ReactiveCommand.CreateFromObservable(() =>
+            RunTestCommandExecute()
+            , this.WhenAnyValue(
+                    x => x.SelectedTestType,
+                    x => x.SelectedDifficulty,
+                    (testType, difficulty) =>
+                    testType != null &&
+                    difficulty != null
+                    ).ObserveOn(SchedulerProvider.MainThread)
+                    , SchedulerProvider.MainThread
+                    );
+            TempEntryOneText = "0";
+            TempPickerTitle = "Temperature";
+            SelectedTemperatureConversion = ConversionDirections[0];
+            NavigateToFirstViewCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract()));
+            this.WhenAnyValue(x => x.TempEntryOneText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
+            {
+                string strToConvert = value;
+                if (string.IsNullOrWhiteSpace(strToConvert) || directionAsObj == null || !(directionAsObj is TemperatureConversionDirectionValueDisplayPair direction))
+                {
+                    return "";
+                }
+                double convertedValue;
+                if (double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double valueToConvert))
+                {
+                    switch (direction.Value)
+                    {
+                        case TemperatureConversionDirection.CelsiusToFahrenheit:
+                            convertedValue = MiscHelpers.ConvertTemperature(TemperatureConversionDirection.CelsiusToFahrenheit, valueToConvert);
+                            break;
+                        case TemperatureConversionDirection.FahrenheitToCelsius:
+                            convertedValue = MiscHelpers.ConvertTemperature(TemperatureConversionDirection.FahrenheitToCelsius, valueToConvert);
+                            break;
+                        case TemperatureConversionDirection.Invalid:
+                            return "";
+                        default:
+                            DiagnosticsHelpers.ReportProblem($"Unknown temperature picker enumerator value '{direction.Value}'", LogLevel.Error, null);
+                            return m_errorValue;
+                    }
+                    if (convertedValue == double.PositiveInfinity)
+                    {
+                        return m_errorValue;
+                    }
+                    return convertedValue.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    return m_errorValue;
+                }
+
+            }).ToProperty(this, x => x.TempEntryTwoText, out _tempEntryTwoText);
+        }
 
         // Number of Questions
 
@@ -62,23 +116,32 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         [Reactive]
         public object SelectedDifficulty { get; set; }
 
-        public override object HeaderContent { get; set; }
+        private string m_errorValue = "(Error)";
+
+        [Reactive]
+        public object SelectedTemperatureConversion { get; set; }
+
+        [Reactive]
+        public string TempEntryOneText { get; set; }
+
+        private readonly ObservableAsPropertyHelper<string> _tempEntryTwoText;
+        public string TempEntryTwoText => _tempEntryTwoText.Value;
+
+        [Reactive]
+        public string TempPickerTitle { get; set; }
+
+        private string m_title = "Temperature Conversions!";
+        public string Title
+        {
+            get => m_title; set { if (m_title != value) { m_title = value; RaisePropertyChanged(); } }
+        }
+
+        public override object HeaderContent { get; set; } = "Temperature Conversions";
+
+        public System.Windows.Input.ICommand NavigateToFirstViewCommand { get; set; }
 
         public ICommand RunTestCommand { get; set; }
         private readonly AtomicBoolean m_runTestCommandIsExecuting = new AtomicBoolean();
-        /// <summary>
-        /// This exists solely as a component of correctly determining the appropriate return value of RunTestCommand's CanExecute method. There is
-        /// no guarantee that it is actually up-to-date and should never be modified except by the event handler for m_runTestCommandIsExecuting's
-        /// ValueChanged event. It need to be marked with ReactiveAttribute or to otherwise implement INotifyPropertyChanged or one of the other mechanisms
-        /// that ensures that ReactiveUI's WhenAny extension methods will be informed that its value changed.
-        /// </summary>
-        [Reactive]
-        private bool RunTestCommandIsExecutingValue { get; set; }
-        private void RunTestCommandIsExecutingValueChangedHandler(object sender, EventArgs args)
-        {
-            // We're using this as part of calculating the proper value of the RunTestCommand's CanExecute method.
-            RunTestCommandIsExecutingValue = m_runTestCommandIsExecuting.Get();
-        }
         private IObservable<IViewModelAndContract> RunTestCommandExecute()
         {
             try
@@ -322,41 +385,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             {
                 m_runTestCommandIsExecuting.ForceToFalse();
             }
-        }
-
-        private bool RunTestCommandCanExecuteSelector(IObservedChange<TemperatureConversionsTestingViewModel, object> testType, IObservedChange<TemperatureConversionsTestingViewModel, object> difficultyObj, IObservedChange<TemperatureConversionsTestingViewModel, bool> runTestCommandIsExecutingValue)
-        {
-            var isRunningValue = runTestCommandIsExecutingValue?.GetValue();
-            return isRunningValue is false &&
-                    testType?.GetValue() != null &&
-                    difficultyObj?.GetValue() != null;
-        }
-        private IObservable<bool> RunTestCommandCanExecute()
-        {
-            return this.WhenAny(
-                    x => x.SelectedTestType,
-                    x => x.SelectedDifficulty,
-                    x => x.RunTestCommandIsExecutingValue,
-                    RunTestCommandCanExecuteSelector
-                    //(testType, difficultyObj, runTestCommandIsExecutingValue) =>
-                    //runTestCommandIsExecutingValue?.Value is false &&
-                    //testType?.Value != null &&
-                    //difficultyObj?.Value != null
-                    /*&& difficultyObj.Value is ValueDisplayGenericPair<TestDifficulty> difficulty && difficulty.Value != TestDifficulty.Invalid*/
-                    );
-        }
-        public TemperatureConversionsTestingViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
-        {
-            // Note: It's safe to not unsubscribe from this event because it does not hold a hard reference to this object, it's subscribing to an event on an object
-            // that is a non-static member of this class, and we have no reasonable way to 100% guarantee that our attempt to unsubscribe would always run (because certain
-            // platforms cannot guarantee that custom back handlers will always run) barring creating some really horrible code that would involve other classes.
-            m_runTestCommandIsExecuting.ValueChanged += RunTestCommandIsExecutingValueChangedHandler;
-
-            RunTestCommand = ReactiveCommand.CreateFromObservable(() =>
-            RunTestCommandExecute()
-            , RunTestCommandCanExecute().ObserveOn(SchedulerProvider.MainThread)
-                    , SchedulerProvider.MainThread
-                    );
         }
     }
 }

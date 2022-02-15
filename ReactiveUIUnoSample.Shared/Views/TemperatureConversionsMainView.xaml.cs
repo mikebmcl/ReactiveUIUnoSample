@@ -28,28 +28,31 @@ namespace ReactiveUIUnoSample.Views
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     [Bindable]
-    //[ViewContract(UnitConversionsViewModel.TemperatureConversionsMainViewContract)]
-    public sealed partial class TemperatureConversionsMainView : Page, IViewFor<UnitConversionsViewModel>
+    //[ViewContract(TemperatureConversionsViewModel.TemperatureConversionsMainViewContract)]
+    public sealed partial class TemperatureConversionsMainView : Page, IViewFor<TemperatureConversionsViewModel>
     {
         public static readonly DependencyProperty ViewModelProperty =
-                    DependencyProperty.Register(nameof(ViewModel), typeof(UnitConversionsViewModel),
-                typeof(TemperatureConversionsMainView), null);//  new PropertyMetadata(default(UnitConversionsViewModel)));
+                    DependencyProperty.Register(nameof(ViewModel), typeof(TemperatureConversionsViewModel),
+                typeof(TemperatureConversionsMainView), null);//  new PropertyMetadata(default(TemperatureConversionsViewModel)));
 
-        public UnitConversionsViewModel ViewModel
+        public TemperatureConversionsViewModel ViewModel
         {
-            get => (UnitConversionsViewModel)GetValue(ViewModelProperty);
+            get => (TemperatureConversionsViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
         object IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (UnitConversionsViewModel)value;
+            set => ViewModel = (TemperatureConversionsViewModel)value;
         }
+
+        public TemperatureConversionsViewModel BindingRoot => ViewModel;
 
         public TemperatureConversionsMainView()
         {
             this.InitializeComponent();
+
             // This goes in the constructor. It should be used for various types of bindings that need to be disposed of
             // See: https://www.reactiveui.net/docs/handbook/when-activated/ and https://www.reactiveui.net/docs/handbook/data-binding/
             this.WhenActivated(disposables =>
@@ -59,14 +62,11 @@ namespace ReactiveUIUnoSample.Views
                 this.OneWayBind(ViewModel, vm => vm.ConversionDirections, view => view.TemperaturePickerItemsComboBox.ItemsSource);
                 this.Bind(ViewModel, vm => vm.SelectedTemperatureConversion, view => view.TemperaturePickerItemsComboBox.SelectedItem).DisposeWith(disposables);
 
-                this.OneWayBind(ViewModel, vm => vm.TemperatureTestingVM.TestTypes, view => view.TestTypeComboBox.ItemsSource).DisposeWith(disposables);
-                this.Bind(ViewModel, vm => vm.TemperatureTestingVM.SelectedTestType, view => view.TestTypeComboBox.SelectedItem).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, vm => vm.TestTypes, view => view.TestTypeComboBox.ItemsSource).DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.SelectedTestType, view => view.TestTypeComboBox.SelectedItem).DisposeWith(disposables);
 
                 this.OneWayBind(ViewModel, vm => vm.TestDifficulties, view => view.TestDifficultyComboBox.ItemsSource).DisposeWith(disposables);
-                this.Bind(ViewModel, vm => vm.TemperatureTestingVM.SelectedDifficulty, view => view.TestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
-
-                this.BindCommand(ViewModel, vm => vm.TemperatureTestingVM.RunTestCommand, view => view.TestTemperatureConversionButton).DisposeWith(disposables);
-                this.BindCommand(ViewModel, vm => vm.NavigateToFirstViewCommand, view => view.FirstViewButton).DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.SelectedDifficulty, view => view.TestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
             });
         }
     }

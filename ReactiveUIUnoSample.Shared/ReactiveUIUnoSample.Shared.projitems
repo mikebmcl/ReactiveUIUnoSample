@@ -59,7 +59,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestWrongAnswerViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TemperatureConversionsTestingViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnitConversions\UnitConversionsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnitConversions\UnitConversionsViewModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\AboutView.xaml.cs">

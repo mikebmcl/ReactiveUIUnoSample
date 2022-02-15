@@ -72,8 +72,7 @@ namespace ReactiveUIUnoSample.ViewModels
             // addition to navigating. It can be used at any time, not just when the app starts running, but because it clears the whole stack the use cases for it
             // are limited (e.g. if your app should just swap between pages or if you want to give the user the option to go back to the "home" page without navigating
             // back through all the previous pages).
-            //Contract = UnitConversionsViewModel.TemperatureConversionsMainViewContract;
-            Router.Navigate.Execute(new UnitConversionsViewModel(this, m_schedulerProvider).ToViewModelAndContract());
+            Router.Navigate.Execute(new TemperatureConversionsViewModel(this, m_schedulerProvider).ToViewModelAndContract());
 
             // The following is some special code needed to let us handle things like pressing the browser back button in WASM or the system back button in Android
             // This is based off of https://platform.uno/docs/articles/features/native-frame-nav.html with modifications due to our use of ReactiveUI rather than
@@ -172,7 +171,7 @@ namespace ReactiveUIUnoSample.ViewModels
             mutableDependencyResolver.Register(() => new SILOpenFontLicense1_1View(), typeof(IViewFor<SILOpenFontLicense1_1ViewModel>));
             mutableDependencyResolver.Register(() => new SecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.SecondViewContractName);
             mutableDependencyResolver.Register(() => new AlternateSecondView(), typeof(IViewFor<SecondViewModel>), SecondViewModel.AlternateSecondViewContractName);
-            mutableDependencyResolver.Register(() => new TemperatureConversionsMainView(), typeof(IViewFor<ReactiveUIUnoSample.ViewModels.UnitConversions.UnitConversionsViewModel>));
+            mutableDependencyResolver.Register(() => new TemperatureConversionsMainView(), typeof(IViewFor<ViewModels.UnitConversions.TemperatureConversionsViewModel>));
             mutableDependencyResolver.Register(() => new Views.Testing.TwoLineTestView(), typeof(IViewFor<ViewModels.Testing.TwoLineTestViewModel>));
             mutableDependencyResolver.Register(() => new Views.Testing.TwoLineTestResultsView(), typeof(IViewFor<ViewModels.Testing.TwoLineTestResultsViewModel>));
         }

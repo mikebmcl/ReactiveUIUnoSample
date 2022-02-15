@@ -28,7 +28,7 @@ namespace ReactiveUIUnoSample.ViewModels
             });
             TemperatureConversionsMainViewCommand = ReactiveCommand.CreateFromObservable(() =>
                 {
-                    return HostScreenWithContract.Router.Navigate.Execute(new UnitConversionsViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
+                    return HostScreenWithContract.Router.Navigate.Execute(new TemperatureConversionsViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
                 });
         }
         public static string EnteredAmountTextBoxAutomationId => "EnteredAmountTextBox";

@@ -29,9 +29,9 @@ namespace ReactiveUIUnoSample
             this.InitializeComponent();
             m_navigationViewProvider = new NavigationViewProvider(RootNavigationView);
             ViewModel = new MainViewModel(m_navigationViewProvider, Locator.CurrentMutable, new ContentControl() { }, new SchedulerProvider());
-
             this.WhenActivated(disposables =>
             {
+                this.OneWayBind(ViewModel, vm => vm.Router, view => view.RoutedHostControl.Router).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, vm => vm.CurrentHeader, view => view.RootNavigationView.Header).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, vm => vm.IsBackEnabled, view => view.RootNavigationView.IsBackEnabled).DisposeWith(disposables);
                 this.OneWayBind(ViewModel, vm => vm.RoutedHostPadding, view => view.RoutedHostControl.Padding).DisposeWith(disposables);

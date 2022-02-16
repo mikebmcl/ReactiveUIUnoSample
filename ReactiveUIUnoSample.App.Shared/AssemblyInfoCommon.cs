@@ -34,6 +34,8 @@ using System.Reflection;
 [assembly: AssemblyProduct("ReactiveUI with Uno for iOS")]
 #elif __MACOS__
 [assembly: AssemblyProduct("ReactiveUI with Uno for macOS")]
+#elif HAS_UNO_SKIA_WPF
+[assembly: AssemblyProduct("ReactiveUI with Uno for WPF")]
 #else
 [assembly: AssemblyProduct("ReactiveUI with Uno")]
 #endif

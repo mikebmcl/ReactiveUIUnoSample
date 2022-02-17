@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AtomicBoolean.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BooleanObserver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\BoolToVisibilityBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DecimalToStringBindingTypeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExceptionObserver.cs" />

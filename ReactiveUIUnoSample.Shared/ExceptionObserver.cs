@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace ReactiveUIUnoSample
 {
-    public class ExceptionObserver : IObserver<Exception>
+    public class ExceptionObserver : IObserver<Exception>, IDisposable
     {
         private IDisposable _unsubscriber;
         private CancellationToken _unsubscribeToken;
@@ -25,6 +25,7 @@ namespace ReactiveUIUnoSample
         private ILogger _logger;
         //private readonly WeakReference<Func<string>> _additionalLogInfoFuncWeakRef = new WeakReference<Func<string>>(null);
         private Func<string> _additionalLogInfoFunc;
+        private bool disposedValue;
 
         public ExceptionObserver(string identifier)
         {
@@ -89,6 +90,26 @@ namespace ReactiveUIUnoSample
             {
                 throw value;
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _unsubscriber?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

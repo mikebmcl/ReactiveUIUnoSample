@@ -20,11 +20,12 @@ namespace ReactiveUIUnoSample
     /// Lets us keep track of when navigation has occurred. For more info about <see cref="IObservable{T}"/>, 
     /// see https://docs.microsoft.com/en-us/dotnet/api/system.iobserver-1?view=netstandard-2.0
     /// </summary>
-    public class NavigationChangedObserver : IObserver<IChangeSet<IViewModelAndContract>>
+    public class NavigationChangedObserver : IObserver<IChangeSet<IViewModelAndContract>>, IDisposable
     {
         private MainViewModel _mainViewModel;
         private IDisposable _unsubscriber;
         private CancellationToken _unsubscribeToken;
+        private bool disposedValue;
 
         public NavigationChangedObserver(MainViewModel mainViewModel)
         {
@@ -118,6 +119,25 @@ namespace ReactiveUIUnoSample
                     _mainViewModel.CurrentHeader = null;
                 }
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _unsubscriber?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

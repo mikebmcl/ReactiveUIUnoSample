@@ -18,6 +18,7 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using Uno.Extensions;
 using ReactiveUI;
+using System.Reactive;
 using System.Threading.Tasks;
 using ReactiveUIRoutingWithContracts;
 
@@ -140,7 +141,7 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 
         public System.Windows.Input.ICommand NavigateToFirstViewCommand { get; set; }
 
-        public ICommand RunTestCommand { get; set; }
+        public ReactiveCommand<Unit, IViewModelAndContract> RunTestCommand { get; set; }
         private readonly AtomicBoolean m_runTestCommandIsExecuting = new AtomicBoolean();
         private IObservable<IViewModelAndContract> RunTestCommandExecute()
         {

@@ -9,7 +9,9 @@ using ReactiveUIRoutingWithContracts;
 using Splat;
 
 using System;
+using System.Linq;
 using System.Threading;
+using ReactiveUIUnoSample.ViewModels.UnitConversions;
 
 namespace ReactiveUIUnoSample.UnitTests
 {
@@ -38,33 +40,90 @@ namespace ReactiveUIUnoSample.UnitTests
     /// </summary>
     public class ReactiveTestBase
     {
-        private static Lazy<INavigationViewProvider> m_navigationViewProvider = new Lazy<INavigationViewProvider>(() => new TestNavigationViewProvider(), LazyThreadSafetyMode.PublicationOnly);
-        private static Lazy<ISchedulerProvider> m_schedulerProvider = new Lazy<ISchedulerProvider>(() => new TestSchedulerProvider(), LazyThreadSafetyMode.PublicationOnly);
-        private static Lazy<IScreenForContracts> m_screenWithContract = new Lazy<IScreenForContracts>(InitScreenWithContract, LazyThreadSafetyMode.PublicationOnly);
+        private static readonly Lazy<INavigationViewProvider> _navigationViewProvider = new Lazy<INavigationViewProvider>(() => new TestNavigationViewProvider(), LazyThreadSafetyMode.PublicationOnly);
+        private static readonly Lazy<TestSchedulerProvider> _schedulerProvider = new Lazy<TestSchedulerProvider>(() => new TestSchedulerProvider(), LazyThreadSafetyMode.PublicationOnly);
+        private static readonly Lazy<IScreenForContracts> _screenWithContract = new Lazy<IScreenForContracts>(InitScreenWithContract, LazyThreadSafetyMode.PublicationOnly);
         private static IScreenForContracts InitScreenWithContract()
         {
-            return new MainViewModel(m_navigationViewProvider.Value, Locator.CurrentMutable, string.Empty, m_schedulerProvider.Value);
+            return new MainViewModel(_navigationViewProvider.Value, Locator.CurrentMutable, string.Empty, _schedulerProvider.Value);
         }
 
         /// <summary>
-        /// Runs before every test. Clears the navigation stack and puts a new instance of <see cref="FirstViewModel"/> on it, which is
+        /// Runs before every test. Clears the navigation stack and puts a new instance of <see cref="TemperatureConversionsViewModel"/> on it, which is
         /// the state of the navigation stack when the app has finished loading from a cold start. Existing view models are discarded so if
-        /// they implement <see cref="IDisposable"/>, 
+        /// they implement <see cref="IDisposable"/>, make sure you dispose of them before the test method you created them in exits. Classes that derive from this can have their own [Setup] method. This will run first followed by the setup method in the derived class. This is useful because it allows you to establish the Given conditions that the When methods expect without duplicating them or needing to remember to call them in every test method. Similarly, 
         /// </summary>
         [SetUp]
         public void SetUpTest()
         {
-            ScreenWithContract.Router.NavigateAndReset.Execute(new FirstViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract());
+            ScreenWithContract.Router.NavigateAndReset.Execute(new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract());
+        }
+
+        [TearDown]
+        public void TearDownTest()
+        {
+            // Add any code you want to run at the end of each test here. Because this should be the base class for virtually all test classes, keep in mind that this will run for every test method in every test class within this project. Think carefully before adding anything here. Each test class can have its own [TearDown] method. The tear down method, if any, in a derived class will run before the tear down, if any, in its base class. If an exception is thrown in a class's [SetUp] method then its [TearDown] will not be called.
+        }
+
+        /// <summary>
+        /// Will call Dispose on each view model in the navigation stact that implements IDisposable starting from the highest index (current) 
+        /// continuing in order to the first item. The arguments determine the behavior if an exception is thrown in the process. An exception,
+        /// if any, will be transformed into a string by <see cref="DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(Exception, string, string)"/>
+        /// and the resulting string will written to the test output.
+        /// </summary>
+        /// <param name="rethrowException">
+        /// <code>true</code> If an exception occurs, it will be logged to the test output then rethrown.
+        /// <code>false</code> If an exception occurs, it will be logged to the test output but will not be rethrown. Wbat happens next
+        /// depends on the value of <paramref name="continueOnException"/>.
+        /// </param>
+        /// <param name="continueOnException">
+        /// <code>true</code> If an exception occurs and <paramref name="rethrowException"/> is <c>false</c>, processing and disposal of
+        /// remaining items on the navigation stack will continue.
+        /// <code>false</code> If an exception occurs, processing and disposal of items on the navigation stack will cease. If
+        /// <paramref name="rethrowException"/> is <c>true</c> then processing and disposal will automatically cease as a result of
+        /// the exception being rethrown
+        /// </param>
+        protected void CallDisposeOnEntireNavigationStackHighestToLowestIndex(bool rethrowException = false, bool continueOnException = true)
+        {
+            var navigationStack = ScreenWithContract?.Router?.NavigationStack;
+            if (navigationStack is null)
+            {
+                TestContext.WriteLine($"Unexpected null navigation stack in {nameof(CallDisposeOnEntireNavigationStackHighestToLowestIndex)}.");
+                return;
+            }
+            for (int idx = navigationStack.Count - 1; idx >= 0; idx--)
+            {
+                var item = navigationStack[idx];
+                try
+                {
+                    if (item.ViewModel is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception while disposing of {item.ViewModel.GetType().FullName} at navigation stack index {idx}."));
+                    if (rethrowException)
+                    {
+                        throw;
+                    }
+                    if (!continueOnException)
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
         protected static INavigationViewProvider TestNavigationViewProvider
         {
-            get => m_navigationViewProvider.Value;
+            get => _navigationViewProvider.Value;
         }
 
-        protected static ISchedulerProvider TestSchedulerProvider
+        protected static TestSchedulerProvider TestSchedulerProvider
         {
-            get => m_schedulerProvider.Value;
+            get => _schedulerProvider.Value;
         }
 
         /// <summary>
@@ -78,7 +137,7 @@ namespace ReactiveUIUnoSample.UnitTests
         /// </summary>
         protected static IScreenForContracts ScreenWithContract
         {
-            get => m_screenWithContract.Value;
+            get => _screenWithContract.Value;
         }
 
         /// <summary>

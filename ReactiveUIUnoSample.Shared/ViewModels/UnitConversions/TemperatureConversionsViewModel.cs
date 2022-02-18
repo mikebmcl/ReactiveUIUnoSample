@@ -21,29 +21,79 @@ using ReactiveUI;
 using System.Reactive;
 using System.Threading.Tasks;
 using ReactiveUIRoutingWithContracts;
+using System.Linq;
 
 namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class TemperatureConversionsViewModel : TemperatureConversionsViewModelBase//, IUnitConversionsTesting
+    public class TemperatureConversionsViewModel : DisplayViewModelBase//TemperatureConversionsViewModelBase//, IUnitConversionsTesting
     {
         public TemperatureConversionsViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
-            RunTestCommand = ReactiveCommand.CreateFromObservable(() =>
-            RunTestCommandExecute()
-            , this.WhenAnyValue(
+            // Note: It's safe to not unsubscribe from this event because it does not hold a hard reference to this object, it's subscribing to an event on an object
+            // that is a non-static member of this class, and we have no reasonable way to 100% guarantee that our attempt to unsubscribe would always run (because certain
+            // platforms cannot guarantee that custom back handlers will always run) barring creating some really horrible code that would involve other classes.
+            _isNavigating.ValueChanged += IsNavigatingValueChangedHandler;
+
+            RunTest = ReactiveCommand.CreateFromTask(async () =>
+            {
+                if (!_isNavigating.Set(true))
+                {
+                    await HostScreenWithContract.Router.Navigate.Execute(null);
+                }
+                try
+                {
+                    await RunTestImpl();
+                }
+                finally
+                {
+                    _isNavigating.ForceToFalse();
+                }
+            },
+                this.WhenAnyValue(
+                    //x => x.CurrentViewModel,
                     x => x.SelectedTestType,
                     x => x.SelectedDifficulty,
-                    (testType, difficulty) =>
+                    x => x.IsNavigating,
+                    (testType, difficulty, isnav) =>
+                    // cvm is just a signal that does nothing becaue the problem is the delay between navigation beginning and the navigation stack actually changing
                     testType != null &&
-                    difficulty != null
-                    ).ObserveOn(SchedulerProvider.MainThread)
-                    , SchedulerProvider.MainThread
-                    );
+                    difficulty != null &&
+                    !isnav &&
+                    HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
+                .ObserveOn(SchedulerProvider.MainThread),
+                SchedulerProvider.MainThread
+                );
+            _runTestExceptionObserver = new ExceptionObserver(nameof(RunTest)).Subscribe(RunTest.ThrownExceptions, SchedulerProvider.MainThread, this.Log());
             TempEntryOneText = "0";
             TempPickerTitle = "Temperature";
             SelectedTemperatureConversion = ConversionDirections[0];
-            NavigateToFirstViewCommand = ReactiveCommand.CreateFromObservable(() => HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract()));
+            NavigateToFirstView = ReactiveCommand.CreateFromTask(async () =>
+            {
+                if (!_isNavigating.Set(true))
+                {
+                    await HostScreenWithContract.Router.Navigate.Execute(null);
+                }
+                try
+                {
+                    await HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
+                }
+                finally
+                {
+                    _isNavigating.ForceToFalse();
+                }
+            },
+                this.WhenAnyValue(
+                    x => x.CurrentViewModel,
+                    x => x.IsNavigating,
+                    (cvm, isnav) =>
+                    !isnav &&
+                    HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
+                .ObserveOn(SchedulerProvider.MainThread),
+                SchedulerProvider.MainThread
+                );
+            //NavigateToFirstView.IsExecuting.ToProperty(this, nameof(NavigateToFirstViewIsRunning), out _navigateToFirstViewIsRunning, false, SchedulerProvider.MainThread);
+            _navigateToFirstViewExceptionObserver = new ExceptionObserver(nameof(NavigateToFirstView)).Subscribe(NavigateToFirstView.ThrownExceptions, SchedulerProvider.MainThread, this.Log());
             this.WhenAnyValue(x => x.TempEntryOneText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
             {
                 string strToConvert = value;
@@ -66,58 +116,73 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                             return "";
                         default:
                             DiagnosticsHelpers.ReportProblem($"Unknown temperature picker enumerator value '{direction.Value}'", LogLevel.Error, null);
-                            return m_errorValue;
+                            return _errorValue;
                     }
                     if (convertedValue == double.PositiveInfinity)
                     {
-                        return m_errorValue;
+                        return _errorValue;
                     }
                     return convertedValue.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    return m_errorValue;
+                    return _errorValue;
                 }
 
-            }).ToProperty(this, x => x.TempEntryTwoText, out _tempEntryTwoText);
+            }).ToProperty(this, nameof(TempEntryTwoText), out _tempEntryTwoText, false, SchedulerProvider.MainThread);
+        }
+
+        private readonly AtomicBoolean _isNavigating = new AtomicBoolean();
+        /// <summary>
+        /// This exists solely as a component of correctly determining the appropriate return value of RunTestCommand's CanExecute method. There is
+        /// no guarantee that it is actually up-to-date and should never be modified except by the event handler for m_runTestCommandIsExecuting's
+        /// ValueChanged event. It need to be marked with ReactiveAttribute or to otherwise implement INotifyPropertyChanged or one of the other mechanisms
+        /// that ensures that ReactiveUI's WhenAny extension methods will be informed that its value changed.
+        /// </summary>
+        [Reactive]
+        private bool IsNavigating { get; set; }
+        private void IsNavigatingValueChangedHandler(object sender, EventArgs args)
+        {
+            // We're using this as part of calculating the proper value of the RunTestCommand's CanExecute method.
+            IsNavigating = _isNavigating.Get();
         }
 
         // Number of Questions
 
-        private const string m_numberOfQuestionsDefaultValue = "10";
+        private const string _numberOfQuestionsDefaultValue = "10";
         [Reactive]
         public string NumberOfQuestions { get; set; }
 
         // Temperature
 
         // These are arbitrary but are close to equal (-20F is -28.88889C)
-        private const string m_minimumCelsiusTemperatureDefaultValue = "-30";
-        private const string m_minimumFahrenheitTemperatureDefaultValue = "-20";
+        private const string _minimumCelsiusTemperatureDefaultValue = "-30";
+        private const string _minimumFahrenheitTemperatureDefaultValue = "-20";
         [Reactive]
         public string MinimumTemperature { get; set; }
 
         // These are arbitrary but happen to be equal.
-        private const string m_maximumCelsiusTemperatureDefaultValue = "60";
-        private const string m_maximumFahrenheitTemperatureDefaultValue = "140";
+        private const string _maximumCelsiusTemperatureDefaultValue = "60";
+        private const string _maximumFahrenheitTemperatureDefaultValue = "140";
 
         [Reactive]
         public string MaximumTemperature { get; set; }
 
-        //private object m_selectedTestType;
+        //private object _selectedTestType;
         [Reactive]
         public object SelectedTestType { get; set; }
 
         public IList<TemperatureConversionDirectionValueDisplayPair> TestTypes => new List<TemperatureConversionDirectionValueDisplayPair>(new TemperatureConversionDirectionValueDisplayPair[]
         {
-            new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.CelsiusToFahrenheit, m_celsiusToFahrenheit)
-            , new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.FahrenheitToCelsius, m_fahrenheitToCelsius)
+            new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.CelsiusToFahrenheit, _celsiusToFahrenheit)
+            , new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.FahrenheitToCelsius, _fahrenheitToCelsius)
         });
 
-        //private object m_selectedDifficulty;
+        //private object _selectedDifficulty;
         [Reactive]
         public object SelectedDifficulty { get; set; }
 
-        private string m_errorValue = "(Error)";
+        private string _errorValue = "(Error)";
 
         [Reactive]
         public object SelectedTemperatureConversion { get; set; }
@@ -131,49 +196,103 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         [Reactive]
         public string TempPickerTitle { get; set; }
 
-        private string m_title = "Temperature Conversions!";
+        private string _title = "Temperature Conversions!";
         public string Title
         {
-            get => m_title; set { if (m_title != value) { m_title = value; RaisePropertyChanged(); } }
+            get => _title; set { if (_title != value) { _title = value; RaisePropertyChanged(); } }
         }
 
         public override object HeaderContent { get; set; } = "Temperature Conversions";
+        protected const string _fahrenheitToCelsius = "F to C";
+        protected const string _celsiusToFahrenheit = "C to F";
+        private static readonly List<TestDifficultyValueDisplayPair> _testDifficulties = new List<TestDifficultyValueDisplayPair>(new TestDifficultyValueDisplayPair[] { new TestDifficultyValueDisplayPair(TestDifficulty.Easy, "Easy"), new TestDifficultyValueDisplayPair(TestDifficulty.Medium, "Medium"), new TestDifficultyValueDisplayPair(TestDifficulty.Hard, "Hard") });
+        public List<TestDifficultyValueDisplayPair> TestDifficulties => _testDifficulties;
 
-        public System.Windows.Input.ICommand NavigateToFirstViewCommand { get; set; }
+        private static readonly List<TemperatureConversionDirectionValueDisplayPair> _conversionDirections = new List<TemperatureConversionDirectionValueDisplayPair>(new TemperatureConversionDirectionValueDisplayPair[]
+        {
+            new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.CelsiusToFahrenheit, _celsiusToFahrenheit)
+            , new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.FahrenheitToCelsius, _fahrenheitToCelsius)
+        });
 
-        public ReactiveCommand<Unit, IViewModelAndContract> RunTestCommand { get; set; }
-        private readonly AtomicBoolean m_runTestCommandIsExecuting = new AtomicBoolean();
-        private IObservable<IViewModelAndContract> RunTestCommandExecute()
+        public IReadOnlyList<TemperatureConversionDirectionValueDisplayPair> ConversionDirections => _conversionDirections;
+
+        public static double GetUniqueOffset(Random random, int adjustedDifferencePlusOne, HashSet<int> existingQuestionOffsets, double testValueOffsetFromMinimum)
+        {
+            // We want to prevent duplicates since the number of possible values to test is greater than the number of questions. We do this before adjusting for half degree values (if we are doing half degrees) since those half degree values are part of the possible values.
+            if (!existingQuestionOffsets.Add((int)testValueOffsetFromMinimum))
+            {
+                // If there isn't a large difference between possible values and number of questions, then we could run into issues with it bogging down trying to get a value from random that isn't already in the HashSet, especially towards the end of the question generation. So all of this code that follows exists to cut that off by capping the number of calls to random and if we hit the cap then incrementally checking values in the HashSet until we find an unused one.
+                const int infiniteLoopPreventionMax = 100;
+                bool foundValue = false;
+                for (int infiniteLoopPreventionCounter = 0; infiniteLoopPreventionCounter < infiniteLoopPreventionMax; infiniteLoopPreventionCounter++)
+                {
+                    testValueOffsetFromMinimum = random.Next(adjustedDifferencePlusOne);
+                    if (existingQuestionOffsets.Add((int)testValueOffsetFromMinimum))
+                    {
+                        foundValue = true;
+                        break;
+                    }
+                    infiniteLoopPreventionCounter++;
+                }
+                if (!foundValue)
+                {
+                    double fallback = testValueOffsetFromMinimum;
+                    for (int checkIfNotUsed = 0; checkIfNotUsed < adjustedDifferencePlusOne; checkIfNotUsed++)
+                    {
+                        if (existingQuestionOffsets.Add(checkIfNotUsed))
+                        {
+                            foundValue = true;
+                            testValueOffsetFromMinimum = checkIfNotUsed;
+                            break;
+                        }
+                    }
+                    if (!foundValue)
+                    {
+                        // We should never get here because there should be more possible values than number of questions so we should've found a possible value.
+                        testValueOffsetFromMinimum = fallback;
+                    }
+                }
+            }
+            return testValueOffsetFromMinimum;
+        }
+
+        public ReactiveCommand<Unit, Unit> NavigateToFirstView { get; set; }
+        private readonly ExceptionObserver _navigateToFirstViewExceptionObserver;
+        //private readonly ObservableAsPropertyHelper<bool> _navigateToFirstViewIsRunning;
+        //public bool NavigateToFirstViewIsRunning => _navigateToFirstViewIsRunning?.Value ?? false;
+
+        public ReactiveCommand<Unit, Unit> RunTest { get; set; }
+        private readonly ExceptionObserver _runTestExceptionObserver;
+        //private readonly ObservableAsPropertyHelper<bool> _runTestIsExecuting;
+        //public bool RunTestIsExecuting => _runTestIsExecuting?.Value ?? false;
+
+        private IObservable<IViewModelAndContract> RunTestImpl()
         {
             try
             {
-                if (m_runTestCommandIsExecuting.Set(true))
+                var _selectedTestType = SelectedTestType;
+                if (!(_selectedTestType is TemperatureConversionDirectionValueDisplayPair selectedTestType))
                 {
-                    throw new InvalidOperationException($"Navigation is already occurring.");
-                }
-                var m_selectedTestType = SelectedTestType;
-                if (!(m_selectedTestType is TemperatureConversionDirectionValueDisplayPair selectedTestType))
-                {
-                    throw new InvalidCastException($"Expected {nameof(m_selectedTestType)} to be of type {nameof(TemperatureConversionDirectionValueDisplayPair)} but instead it is of type '{m_selectedTestType?.GetType().FullName ?? "(null)"}'.");
+                    throw new InvalidCastException($"Expected {nameof(_selectedTestType)} to be of type {nameof(TemperatureConversionDirectionValueDisplayPair)} but instead it is of type '{_selectedTestType?.GetType().FullName ?? "(null)"}'.");
                 }
                 var testType = selectedTestType.Value;
                 if (testType == TemperatureConversionDirection.Invalid)
                 {
-                    throw new InvalidOperationException($"While trying to get the Value of {nameof(m_selectedTestType)}, it contained a {nameof(TemperatureConversionDirection)} value of '{testType}', which is invalid for test type.");
+                    throw new InvalidOperationException($"While trying to get the Value of {nameof(_selectedTestType)}, it contained a {nameof(TemperatureConversionDirection)} value of '{testType}', which is invalid for test type.");
                 }
 
-                var m_selectedDifficulty = SelectedDifficulty;
-                if (!(m_selectedDifficulty is TestDifficultyValueDisplayPair selectedDifficulty))
+                var _selectedDifficulty = SelectedDifficulty;
+                if (!(_selectedDifficulty is TestDifficultyValueDisplayPair selectedDifficulty))
                 {
-                    throw new InvalidCastException($"Expected {nameof(m_selectedDifficulty)} to be of type {nameof(TestDifficultyValueDisplayPair)} but instead it is of type '{m_selectedDifficulty?.GetType().FullName ?? "(null)"}'.");
+                    throw new InvalidCastException($"Expected {nameof(_selectedDifficulty)} to be of type {nameof(TestDifficultyValueDisplayPair)} but instead it is of type '{_selectedDifficulty?.GetType().FullName ?? "(null)"}'.");
                 }
                 var difficulty = selectedDifficulty.Value;
                 if (difficulty == TestDifficulty.Invalid)
                 {
-                    throw new InvalidOperationException($"While trying to get the Value of {nameof(m_selectedDifficulty)}, it contained a {nameof(TestDifficulty)} value of '{difficulty}', which is invalid for test difficulty.");
+                    throw new InvalidOperationException($"While trying to get the Value of {nameof(_selectedDifficulty)}, it contained a {nameof(TestDifficulty)} value of '{difficulty}', which is invalid for test difficulty.");
                 }
 
-                int numQuestions = int.Parse(m_numberOfQuestionsDefaultValue, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                int numQuestions = int.Parse(_numberOfQuestionsDefaultValue, NumberStyles.Integer, CultureInfo.InvariantCulture);
 #if DEBUG
                 numQuestions = 2;
 #endif
@@ -185,35 +304,35 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                 string maximumTemperature = MaximumTemperature;
                 if (!double.TryParse(minimumTemperature, NumberStyles.Float, CultureInfo.InvariantCulture, out double minTemp))
                 {
-                    //minTemp = double.Parse(m_minimumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+                    //minTemp = double.Parse(_minimumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
                     if (testType == TemperatureConversionDirection.FahrenheitToCelsius)
                     {
-                        minTemp = double.Parse(m_minimumFahrenheitTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
-                        MinimumTemperature = m_minimumFahrenheitTemperatureDefaultValue;
+                        minTemp = double.Parse(_minimumFahrenheitTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+                        MinimumTemperature = _minimumFahrenheitTemperatureDefaultValue;
                     }
                     else
                     {
-                        minTemp = double.Parse(m_minimumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
-                        MinimumTemperature = m_minimumCelsiusTemperatureDefaultValue;
+                        minTemp = double.Parse(_minimumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+                        MinimumTemperature = _minimumCelsiusTemperatureDefaultValue;
                     }
                 }
                 if (!double.TryParse(maximumTemperature, NumberStyles.Float, CultureInfo.InvariantCulture, out double maxTemp))
                 {
                     if (testType == TemperatureConversionDirection.FahrenheitToCelsius)
                     {
-                        maxTemp = double.Parse(m_maximumFahrenheitTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
-                        MaximumTemperature = m_maximumFahrenheitTemperatureDefaultValue;
+                        maxTemp = double.Parse(_maximumFahrenheitTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+                        MaximumTemperature = _maximumFahrenheitTemperatureDefaultValue;
                     }
                     else
                     {
-                        maxTemp = double.Parse(m_maximumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
-                        MaximumTemperature = m_maximumCelsiusTemperatureDefaultValue;
+                        maxTemp = double.Parse(_maximumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+                        MaximumTemperature = _maximumCelsiusTemperatureDefaultValue;
                     }
                 }
                 const double spreadIfDefault = 30.0;
                 if (minTemp >= maxTemp)
                 {
-                    if (minimumTemperature != m_minimumCelsiusTemperatureDefaultValue && maximumTemperature != m_maximumCelsiusTemperatureDefaultValue && Math.Abs(minTemp - maxTemp) >= 10)
+                    if (minimumTemperature != _minimumCelsiusTemperatureDefaultValue && maximumTemperature != _maximumCelsiusTemperatureDefaultValue && Math.Abs(minTemp - maxTemp) >= 10)
                     {
                         double oldMinTemp = minTemp;
                         minTemp = maxTemp;
@@ -221,7 +340,7 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                     }
                     else
                     {
-                        if (minimumTemperature == m_minimumCelsiusTemperatureDefaultValue)
+                        if (minimumTemperature == _minimumCelsiusTemperatureDefaultValue)
                         {
                             double oldMaxTemp = maxTemp;
                             maxTemp += spreadIfDefault;
@@ -229,7 +348,7 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                         }
                         else
                         {
-                            if (maximumTemperature == m_maximumCelsiusTemperatureDefaultValue)
+                            if (maximumTemperature == _maximumCelsiusTemperatureDefaultValue)
                             {
                                 double oldMinTemp = minTemp;
                                 minTemp -= spreadIfDefault;
@@ -381,10 +500,6 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
             {
                 DiagnosticsHelpers.ReportProblem($"Exception when trying to create and run a temperature conversion test. Details to follow.", LogLevel.Error, this.Log(), ex);
                 throw;
-            }
-            finally
-            {
-                m_runTestCommandIsExecuting.ForceToFalse();
             }
         }
     }

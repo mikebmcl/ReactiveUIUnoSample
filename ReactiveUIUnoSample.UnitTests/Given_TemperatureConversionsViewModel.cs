@@ -64,11 +64,11 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(convertedTemperature, Is.EqualTo(0));
         }
 
-        [Test(Description = "When SelectedTestType and SelectedDifficulty are set, Then RunTestCommand.CanExecute is true")]
-        public void WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCommandCanExecuteIsTrue()
+        [Test(Description = "When SelectedTestType and SelectedDifficulty are set, Then RunTest.CanExecute is true")]
+        public void WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCanExecuteIsTrue()
         {
             using var booleanObserver = new BooleanObserver();
-            booleanObserver.Subscribe(_viewModel.RunTestCommand.CanExecute, TestSchedulerProvider.MainThread);
+            booleanObserver.Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread);
             _viewModel.SelectedTestType = _viewModel.TestTypes.First();
             _viewModel.SelectedDifficulty = _viewModel.TestDifficulties.First();
             // For reasons I do not currently understand, ticking by 1 or 2 does not cause CanExecute to change but ticking by 10 does (I didn't test 3-9).
@@ -76,12 +76,54 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(booleanObserver.LastValue is true, Is.True);
         }
 
-        [Test(Description = "When SelectedTestType and SelectedDifficulty are set, Then RunTestCommand.Execute navigates to TwoLineTestViewModel")]
-        public void WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCommandExecuteNavigatesToTwoLineTestViewModel()
+        [Test(Description = "When SelectedTestType and SelectedDifficulty are set, Then RunTest.Execute navigates to TwoLineTestViewModel")]
+        public void WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestExecuteNavigatesToTwoLineTestViewModel()
         {
-            WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCommandCanExecuteIsTrue();
-            Assert.That(() => (_viewModel.RunTestCommand as System.Windows.Input.ICommand).Execute(null), Throws.Nothing);
+            WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCanExecuteIsTrue();
+            Assert.That(() => (_viewModel.RunTest as System.Windows.Input.ICommand).Execute(null), Throws.Nothing);
             Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+        }
+
+        [Test(Description = "When SelectedTestType and SelectedDifficulty are set and RunTest.Execute followed by NavigateToFirstView.Execute, Then navigates to TwoLineTestViewModel and not FirstView")]
+        public void WhenSelectedTestTypeAndSelectedDifficultyAreSetAndRunRunTestExecuteFollowedByNavigateToFirstViewExecute_ThenNavigatesToTwoLineTestViewModelAndNotFirstView()
+        {
+            //Assert.Multiple(() =>
+            //{
+            _viewModel.HostScreenWithContract.Router.CurrentViewModel.Subscribe();
+            BooleanObserver runTestCanExecuteObserver = new BooleanObserver().Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread);
+            BooleanObserver navigateToFirstViewCanExecute = new BooleanObserver().Subscribe(_viewModel.NavigateToFirstView.CanExecute, TestSchedulerProvider.MainThread);
+            Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
+            Assert.That(runTestCanExecuteObserver.LastValue, Is.Null);
+            _viewModel.SelectedTestType = _viewModel.TestTypes.First();
+            TestSchedulerProvider.MainThread.AdvanceBy(10);
+            Assert.That(runTestCanExecuteObserver.LastValue, Is.False);
+            _viewModel.SelectedDifficulty = _viewModel.TestDifficulties.First();
+            TestSchedulerProvider.MainThread.AdvanceBy(10);
+            Assert.That(runTestCanExecuteObserver.LastValue, Is.True);
+            using var runTestExecuteSchedulerDisposable = TestSchedulerProvider.MainThread.Schedule(string.Empty, (sch, state) => _viewModel.RunTest.Execute().Subscribe());
+            //Assert.That(() => _viewModel.RunTest.Execute().Subscribe(), Throws.Nothing);
+            TestSchedulerProvider.MainThread.AdvanceBy(4);
+            //TestSchedulerProvider.CurrentThread.AdvanceBy(1);
+            //TestSchedulerProvider.TaskPool.AdvanceBy(1);
+            Assert.That(runTestCanExecuteObserver.LastValue is false && (_viewModel.RunTest as System.Windows.Input.ICommand).CanExecute(null), Is.False);
+            Assert.That(navigateToFirstViewCanExecute.LastValue is false && (_viewModel.NavigateToFirstView as System.Windows.Input.ICommand).CanExecute(null), Is.False);
+            //TestSchedulerProvider.MainThread.AdvanceBy(1);
+            //Assert.That(runTestCanExecuteObserver.LastValue, Is.Not.Null);
+            Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            //Assert.That(_viewModel.CurrentViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            //Assert.That(runTestCanExecuteObserver.LastValue, Is.False);
+            //Assert.That(navigateToFirstViewCanExecute.LastValue, Is.False);
+            //TestSchedulerProvider.MainThread.AdvanceBy(10);
+            //Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            //Assert.That(_viewModel.HostScreenWithContract.Router.NavigationStack.FirstOrDefault((ivmvc) => ivmvc.ViewModel.GetType() == typeof(FirstViewModel)), Is.Null);
+
+            //Assert.That(runTestIsExecutingObserver.LastValue, Is.Not.Null);
+            ////Assert.That(_viewModel.RunTestIsExecuting, Is.True);
+            //Assert.That(() => (_viewModel.NavigateToFirstView as System.Windows.Input.ICommand).CanExecute(null), Is.False);
+            //TestSchedulerProvider.MainThread.AdvanceBy(10);
+            //Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            //Assert.That(_viewModel.HostScreenWithContract.Router.NavigationStack.FirstOrDefault((ivmvc) => ivmvc.ViewModel.GetType() == typeof(FirstViewModel)), Is.Null);
+            //});
         }
     }
 }

@@ -57,6 +57,7 @@ namespace ReactiveUIUnoSample.UnitTests
         public void SetUpTest()
         {
             ScreenWithContract.Router.NavigateAndReset.Execute(new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract());
+            TestSchedulerProvider.MainThread.AdvanceBy(10);
         }
 
         [TearDown]

@@ -106,7 +106,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <!--<ComboBox x:Name="TestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type" DisplayMemberPath="Display" />-->
                     <ComboBox x:Name="TestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="vmuc:TemperatureConversionDirectionValueDisplayPair">
@@ -114,7 +113,6 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <!--<ComboBox x:Name="TestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty" DisplayMemberPath="Display" />-->
                     <ComboBox x:Name="TestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="vmt:TestDifficultyValueDisplayPair">
@@ -123,8 +121,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
-                <Button x:Name="TestTemperatureConversionButton" Grid.Row="3" Grid.ColumnSpan="2" Content="Test Temperature Conversion" Command="{x:Bind ViewModel.RunTestCommand}" />
-                <Button x:Name="FirstViewButton" Grid.Row="3" Grid.Column="2" Content="First View" Command="{x:Bind ViewModel.NavigateToFirstViewCommand}" />
+                <Button x:Name="TestTemperatureConversionButton" Grid.Row="3" Grid.ColumnSpan="2" Content="Test Temperature Conversion" Command="{x:Bind ViewModel.RunTest}" />
+                <Button x:Name="FirstViewButton" Grid.Row="3" Grid.Column="2" Content="First View" Command="{x:Bind ViewModel.NavigateToFirstView}" />
             </Grid>
         </Grid>
     </ScrollViewer>

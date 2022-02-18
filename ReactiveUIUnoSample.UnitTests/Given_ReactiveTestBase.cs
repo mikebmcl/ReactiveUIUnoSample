@@ -2,6 +2,8 @@
 
 using NUnit.Framework;
 
+using ReactiveUIRoutingWithContracts;
+
 using ReactiveUIUnoSample.ViewModels;
 
 namespace ReactiveUIUnoSample.UnitTests
@@ -18,6 +20,16 @@ namespace ReactiveUIUnoSample.UnitTests
             SetUpTest();
             Assert.IsTrue(ScreenWithContract.Router.NavigationStack.Count == 1);
             Assert.IsTrue(typeOfFirstViewModel == GetCurrentViewModel().GetType());
+        }
+
+        [Test(Description = "When navigating to null, Then the navigation stack is not changed and no exception is thrown")]
+        public void WhenNavigatingToNull_ThenTheNavigationStackIsNotChangedAndNoExceptionIsThrown()
+        {
+            Assert.That(ScreenWithContract.Router.NavigationStack.Count == 1, Is.True);
+            var initialViewModel = GetCurrentViewModel();
+            Assert.That(() => { ScreenWithContract.Router.Navigate.Execute(null); }, Throws.Nothing);
+            Assert.That(ScreenWithContract.Router.NavigationStack.Count == 1, Is.True);
+            Assert.That(GetCurrentViewModel(), Is.SameAs(initialViewModel));
         }
     }
 }

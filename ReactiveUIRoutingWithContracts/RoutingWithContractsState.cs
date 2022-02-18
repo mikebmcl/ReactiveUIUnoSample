@@ -148,12 +148,20 @@ namespace ReactiveUIRoutingWithContracts
             Navigate = ReactiveCommand.CreateFromObservable<IViewModelAndContract, IViewModelAndContract>(
              vm =>
              {
-                 if (vm.ViewModel is null)
+                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
+                 if (vm is null)
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                     //return Observable.Empty<IViewModelAndContract>().ObserveOn(navigateScheduler);
+                 }
+                 if (vm.ViewModel is null && vm != ViewModelAndContract.DoNothing)
                  {
                      throw new Exception("Navigate must be called with a non-null IViewModelAndContract.ViewModel");
                  }
-
-                 NavigationStack.Add(vm);
+                 if (vm != ViewModelAndContract.DoNothing)
+                 {
+                     NavigationStack.Add(vm);
+                 }
                  return Observable.Return(vm).ObserveOn(navigateScheduler);
              });
 

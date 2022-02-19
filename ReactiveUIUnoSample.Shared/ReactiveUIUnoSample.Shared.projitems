@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DiagnosticsHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MiscHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TemperatureConversionStringToStringBindingTypeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IViewModelAndContractObserver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mixins\RoutingWithContractsStateMixins.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationChangedObserver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TestDifficultyValueDisplayPair.cs" />

@@ -12,6 +12,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using ReactiveUIUnoSample.ViewModels.UnitConversions;
+using Microsoft.Reactive.Testing;
+using System.Reactive.Linq;
 
 namespace ReactiveUIUnoSample.UnitTests
 {
@@ -56,14 +58,72 @@ namespace ReactiveUIUnoSample.UnitTests
         [SetUp]
         public void SetUpTest()
         {
+            if (_screenWithContract.Value.Router.IsNavigating)
+            {
+                //WaitForNavigation(() => ScreenWithContract.Router.NavigateAndReset.Execute(new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract()));
+                WaitForNavigation();
+            }
             ScreenWithContract.Router.NavigateAndReset.Execute(new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract());
-            TestSchedulerProvider.MainThread.AdvanceBy(10);
+            WaitForNavigation();
         }
 
         [TearDown]
         public void TearDownTest()
         {
             // Add any code you want to run at the end of each test here. Because this should be the base class for virtually all test classes, keep in mind that this will run for every test method in every test class within this project. Think carefully before adding anything here. Each test class can have its own [TearDown] method. The tear down method, if any, in a derived class will run before the tear down, if any, in its base class. If an exception is thrown in a class's [SetUp] method then its [TearDown] will not be called.
+        }
+
+        /// <summary>
+        /// Call with an <see cref="Action"/> that performs navigation. If navigation is already occurring and has not completed when this is called, then <see cref="TimeoutException"/> will always be thrown no matter what value you pass for <paramref name="maxTimeToWait"/> because your navigation will be ignored. This is by design. <see cref="RoutingWithContractsState"/> intentionally ignores other attempts to navigate while a navigation is running.
+        /// </summary>
+        /// <param name="navigate">The delegate that performs navigation</param>
+        /// <param name="maxTimeToWait">The maximum amount of time to wait for in units passed to either <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.AdvanceBy(TRelative)"/> or <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.Sleep(TRelative)"/> depemding on whether or not the scheduler is running, as determined by checking <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.IsEnabled"/>.</param>
+        /// <param name="schedulerToWaitOn">The <see cref="TestScheduler"/> to use to observe whether or not navigation has occurred. Normally this will be <see cref="TestSchedulerProvider.MainThread"/>, which is what will be used if this is null.</param>
+        /// <exception cref="TimeoutException">Thrown if navigation still has not occurred after waiting <paramref name="maxTimeToWait"/> units of time. If navigation is already occurring and has not completed when this is called, then this exception will always be thrown no matter what value you pass for <paramref name="maxTimeToWait"/> because your navigation will be ignored. This is by design. If the scheduler has a lot of work going on you should increase that value and run the test again. If the scheduler should not be particularly busy or you advanced the scheduler by a much larger amount and still get this exception, then navigation is either not occurring or is not being signaled as complete. This could indicate a problem in <see cref="RoutingWithContractsState"/>. Set a breakpoint in the approriate navigation method (defined in <see cref="RoutingWithContractsState.SetupRx"/> to verify that navigation is occurring.</exception>
+        public void WaitForNavigation(int maxTimeToWait = 100, TestScheduler schedulerToWaitOn = null)
+        {
+            TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
+            for (int i = 0; i < maxTimeToWait; i++)
+            {
+                if (scheduler.IsEnabled)
+                {
+                    scheduler.Sleep(1);
+                    if (!ScreenWithContract.Router.IsNavigating)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    scheduler.AdvanceBy(1);
+                    if (!ScreenWithContract.Router.IsNavigating)
+                    {
+                        return;
+                    }
+                }
+            }
+            throw new TimeoutException($"In {nameof(WaitForNavigation)}, navigation still had not occurred after {maxTimeToWait} passed.");
+        }
+
+        /// <summary>
+        /// Use this to advance a scheduler. Reactive things do not happen instantly so they need a bit of time to process. Additionally,
+        /// you can schedule things to run at specific times on the various schedulers for testing purposes. This method is a convenience
+        /// method that handles checking to see if the scheduler is already running and then calling Sleep or AdvanceBy (for running or
+        /// not running); whichever is appropriate.
+        /// </summary>
+        /// <param name="time">The amount of time to advance the scheduler by in units, passed to either <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.AdvanceBy(TRelative)"/> or <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.Sleep(TRelative)"/> depemding on whether or not the scheduler is running, as determined by checking <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.IsEnabled"/>. The default should be plenty, however depending on how many observables and observers were affected and how many times, it may not be enough. You may want to design the test so that each time you change something, you call this with a small value in a loop that checks to see if the observable effects of the change have occurred and if they do not after a reasonable number of loops, throw a meaningful exception that will let you examine the problem at the point it is occurring rather than having to piece it together from a single exception at the end of the test.</param>
+        /// <param name="schedulerToWaitOn">The <see cref="TestScheduler"/> to advance. The default value of <c>null</c> will advance <see cref="TestSchedulerProvider.MainThread"/>.</param>
+        public void AdvanceScheduler(int time = 100, TestScheduler schedulerToWaitOn = null)
+        {
+            TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
+            if (scheduler.IsEnabled)
+            {
+                scheduler.Sleep(time);
+            }
+            else
+            {
+                scheduler.AdvanceBy(time);
+            }
         }
 
         /// <summary>
@@ -145,9 +205,9 @@ namespace ReactiveUIUnoSample.UnitTests
         /// This returns the most recently navigated to view model on the <see cref="ScreenWithContract"/>'s <see cref="IScreenForContracts.Router"/> navigation stack.
         /// </summary>
         /// <returns></returns>
-        protected IViewModelAndContract GetCurrentViewModel()
+        protected IRoutableViewModelForContracts GetCurrentViewModel()
         {
-            return ScreenWithContract.Router.NavigationStack[ScreenWithContract.Router.NavigationStack.Count - 1];
+            return ScreenWithContract.Router.NavigationStack[ScreenWithContract.Router.NavigationStack.Count - 1]?.ViewModel;
         }
     }
 }

@@ -30,37 +30,21 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
     {
         public TemperatureConversionsViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
-            // Note: It's safe to not unsubscribe from this event because it does not hold a hard reference to this object, it's subscribing to an event on an object
-            // that is a non-static member of this class, and we have no reasonable way to 100% guarantee that our attempt to unsubscribe would always run (because certain
-            // platforms cannot guarantee that custom back handlers will always run) barring creating some really horrible code that would involve other classes.
-            _isNavigating.ValueChanged += IsNavigatingValueChangedHandler;
-
             RunTest = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (!_isNavigating.Set(true))
-                {
-                    await HostScreenWithContract.Router.Navigate.Execute(null);
-                }
-                try
-                {
-                    await RunTestImpl();
-                }
-                finally
-                {
-                    _isNavigating.ForceToFalse();
-                }
+                await RunTestImpl();
             },
                 this.WhenAnyValue(
                     //x => x.CurrentViewModel,
                     x => x.SelectedTestType,
                     x => x.SelectedDifficulty,
-                    x => x.IsNavigating,
+                    x => x.HostScreenWithContract.Router.IsNavigating,
                     (testType, difficulty, isnav) =>
                     // cvm is just a signal that does nothing becaue the problem is the delay between navigation beginning and the navigation stack actually changing
                     testType != null &&
                     difficulty != null &&
-                    !isnav &&
-                    HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
+                    !isnav)
+                //&& HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
                 .ObserveOn(SchedulerProvider.MainThread),
                 SchedulerProvider.MainThread
                 );
@@ -70,25 +54,13 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
             SelectedTemperatureConversion = ConversionDirections[0];
             NavigateToFirstView = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (!_isNavigating.Set(true))
-                {
-                    await HostScreenWithContract.Router.Navigate.Execute(null);
-                }
-                try
-                {
-                    await HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
-                }
-                finally
-                {
-                    _isNavigating.ForceToFalse();
-                }
+                await HostScreenWithContract.Router.Navigate.Execute(new FirstViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
             },
                 this.WhenAnyValue(
-                    x => x.CurrentViewModel,
-                    x => x.IsNavigating,
-                    (cvm, isnav) =>
-                    !isnav &&
-                    HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
+                    x => x.HostScreenWithContract.Router.IsNavigating,
+                    (isnav) =>
+                    !isnav)
+                //&& HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
                 .ObserveOn(SchedulerProvider.MainThread),
                 SchedulerProvider.MainThread
                 );
@@ -130,21 +102,6 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                 }
 
             }).ToProperty(this, nameof(TempEntryTwoText), out _tempEntryTwoText, false, SchedulerProvider.MainThread);
-        }
-
-        private readonly AtomicBoolean _isNavigating = new AtomicBoolean();
-        /// <summary>
-        /// This exists solely as a component of correctly determining the appropriate return value of RunTestCommand's CanExecute method. There is
-        /// no guarantee that it is actually up-to-date and should never be modified except by the event handler for m_runTestCommandIsExecuting's
-        /// ValueChanged event. It need to be marked with ReactiveAttribute or to otherwise implement INotifyPropertyChanged or one of the other mechanisms
-        /// that ensures that ReactiveUI's WhenAny extension methods will be informed that its value changed.
-        /// </summary>
-        [Reactive]
-        private bool IsNavigating { get; set; }
-        private void IsNavigatingValueChangedHandler(object sender, EventArgs args)
-        {
-            // We're using this as part of calculating the proper value of the RunTestCommand's CanExecute method.
-            IsNavigating = _isNavigating.Get();
         }
 
         // Number of Questions

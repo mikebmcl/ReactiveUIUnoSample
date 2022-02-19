@@ -78,7 +78,7 @@ namespace ReactiveUIUnoSample
             ? Windows.UI.Core.AppViewBackButtonVisibility.Visible
             : Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
 #endif
-            if (_mainViewModel.Router.NavigationStack.Last().ViewModel is DisplayViewModelBase displayViewModelBase)
+            if (_mainViewModel.Router.NavigationStack.LastOrDefault()?.ViewModel is DisplayViewModelBase displayViewModelBase)
             {
                 if (_mainViewModel.CurrentHeader is null && !_mainViewModel.NavigationView.IsTest)
                 {

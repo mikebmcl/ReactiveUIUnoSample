@@ -34,7 +34,7 @@ namespace ReactiveUIUnoSample
         /// empty navigation stack and your unit tests might not contain any tests to ensure that your observers properly handle
         /// an empty navigation stack.
         /// </remarks>
-        public static ReactiveCommand<IViewModelAndContract, IViewModelAndContract> NavigateAndRemoveCurrent(this RoutingWithContractsState routingState, Action<IViewModelAndContract> runAfterRemoval = null)
+        internal static ReactiveCommand<IViewModelAndContract, IViewModelAndContract> NavigateAndRemoveCurrent(this RoutingWithContractsStateUnguarded routingState, Action<IViewModelAndContract> runAfterRemoval = null)
         {
             if (routingState.NavigationStack.Count > 0)
             {
@@ -61,7 +61,7 @@ namespace ReactiveUIUnoSample
         /// model (i.e. the one that was at index 0).
         /// </param>
         /// <returns></returns>
-        public static ReactiveCommand<IViewModelAndContract, IViewModelAndContract> NavigateAndReset(this RoutingWithContractsState routingState, Action<IViewModelAndContract> runOnEachHighestToLowestIndexOrdered)
+        internal static ReactiveCommand<IViewModelAndContract, IViewModelAndContract> NavigateAndReset(this RoutingWithContractsStateUnguarded routingState, Action<IViewModelAndContract> runOnEachHighestToLowestIndexOrdered)
         {
             List<IViewModelAndContract> reversedList = routingState.NavigationStack.Reverse().ToList();
             routingState.NavigationStack.Clear();

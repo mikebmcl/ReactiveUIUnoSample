@@ -25,14 +25,14 @@ namespace ReactiveUIUnoSample.UnitTests
             // preconditions that are assumed to exist for this particular Given: https://en.wikipedia.org/wiki/Behavior-driven_development
             // An exception here will prevent the test from running and the [TearDown] method in this class will not run (tear down
             // methods in base classes will still run though). This runs after the [SetUp] in ReactiveBase.
-            if (GetCurrentViewModel()?.ViewModel is TemperatureConversionsViewModel vm)
+            if (GetCurrentViewModel() is TemperatureConversionsViewModel vm)
             {
                 _viewModel = vm;
             }
             Warn.If(_viewModel is null, () =>
             {
                 _viewModel = new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider);
-                return $"Expected the Current View Model to be of type {nameof(TemperatureConversionsViewModel)}. Instead it is of type {GetCurrentViewModel()?.ViewModel?.GetType().FullName ?? "(null)"}";
+                return $"Expected the Current View Model to be of type {nameof(TemperatureConversionsViewModel)}. Instead it is of type {GetCurrentViewModel()?.GetType().FullName ?? "(null)"}";
             });
         }
 
@@ -49,6 +49,7 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             _viewModel.TempEntryOneText = "100";
             _viewModel.SelectedTemperatureConversion = _viewModel.ConversionDirections.First((tcdvdp) => tcdvdp.Value == Helpers.TemperatureConversionDirection.CelsiusToFahrenheit);
+            AdvanceScheduler();
             var sut = _viewModel.TempEntryTwoText;
             Assert.That(double.TryParse(sut, out double convertedTemperature), Is.True);
             Assert.That(convertedTemperature, Is.EqualTo(212));
@@ -59,6 +60,7 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             _viewModel.TempEntryOneText = "32";
             _viewModel.SelectedTemperatureConversion = _viewModel.ConversionDirections.First((tcdvdp) => tcdvdp.Value == Helpers.TemperatureConversionDirection.FahrenheitToCelsius);
+            AdvanceScheduler();
             var sut = _viewModel.TempEntryTwoText;
             Assert.That(double.TryParse(sut, out double convertedTemperature), Is.True);
             Assert.That(convertedTemperature, Is.EqualTo(0));
@@ -81,7 +83,7 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCanExecuteIsTrue();
             Assert.That(() => (_viewModel.RunTest as System.Windows.Input.ICommand).Execute(null), Throws.Nothing);
-            Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TwoLineTestViewModel)));
         }
 
         [Test(Description = "When SelectedTestType and SelectedDifficulty are set and RunTest.Execute followed by NavigateToFirstView.Execute, Then navigates to TwoLineTestViewModel and not FirstView")]
@@ -92,7 +94,7 @@ namespace ReactiveUIUnoSample.UnitTests
             _viewModel.HostScreenWithContract.Router.CurrentViewModel.Subscribe();
             BooleanObserver runTestCanExecuteObserver = new BooleanObserver().Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread);
             BooleanObserver navigateToFirstViewCanExecute = new BooleanObserver().Subscribe(_viewModel.NavigateToFirstView.CanExecute, TestSchedulerProvider.MainThread);
-            Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
             Assert.That(runTestCanExecuteObserver.LastValue, Is.Null);
             _viewModel.SelectedTestType = _viewModel.TestTypes.First();
             TestSchedulerProvider.MainThread.AdvanceBy(10);
@@ -109,7 +111,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(navigateToFirstViewCanExecute.LastValue is false && (_viewModel.NavigateToFirstView as System.Windows.Input.ICommand).CanExecute(null), Is.False);
             //TestSchedulerProvider.MainThread.AdvanceBy(1);
             //Assert.That(runTestCanExecuteObserver.LastValue, Is.Not.Null);
-            Assert.That(GetCurrentViewModel()?.ViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TwoLineTestViewModel)));
             //Assert.That(_viewModel.CurrentViewModel, Is.AssignableTo(typeof(TwoLineTestViewModel)));
             //Assert.That(runTestCanExecuteObserver.LastValue, Is.False);
             //Assert.That(navigateToFirstViewCanExecute.LastValue, Is.False);

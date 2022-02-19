@@ -5,6 +5,7 @@ using NUnit.Framework;
 using ReactiveUIRoutingWithContracts;
 
 using ReactiveUIUnoSample.ViewModels;
+using ReactiveUIUnoSample.ViewModels.UnitConversions;
 
 namespace ReactiveUIUnoSample.UnitTests
 {
@@ -15,11 +16,26 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             Assert.IsTrue(ScreenWithContract.Router.NavigationStack.Count == 1);
             var typeOfFirstViewModel = GetCurrentViewModel().GetType();
+            ;
+            //WaitForNavigation(() => ScreenWithContract.Router.NavigateBack.Execute());
             ScreenWithContract.Router.NavigateBack.Execute();
+            WaitForNavigation();
             Assert.IsTrue(ScreenWithContract.Router.NavigationStack.Count == 0);
             SetUpTest();
             Assert.IsTrue(ScreenWithContract.Router.NavigationStack.Count == 1);
             Assert.IsTrue(typeOfFirstViewModel == GetCurrentViewModel().GetType());
+        }
+
+        [Test(Description = "When test runs, Then navigation stack will contain one item of type TemperatureConversionsViewModel")]
+        public void WhenTestRuns_ThenNavigationStackWIllContainOneItem()
+        {
+            Assert.That(ScreenWithContract.Router.NavigationStack.Count, Is.EqualTo(1));
+        }
+
+        [Test(Description = "When test runs, Then navigation stack will contain one item of type TemperatureConversionsViewModel")]
+        public void WhenTestRuns_ThenNavigationStackWIllContainOneItemOfTypeTemperatureConversionsViewModel()
+        {
+            Assert.That(GetCurrentViewModel(), Is.TypeOf(typeof(TemperatureConversionsViewModel)));
         }
 
         [Test(Description = "When navigating to null, Then the navigation stack is not changed and no exception is thrown")]
@@ -28,6 +44,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(ScreenWithContract.Router.NavigationStack.Count == 1, Is.True);
             var initialViewModel = GetCurrentViewModel();
             Assert.That(() => { ScreenWithContract.Router.Navigate.Execute(null); }, Throws.Nothing);
+            Assert.That(ScreenWithContract.Router.IsNavigating, Is.False);
             Assert.That(ScreenWithContract.Router.NavigationStack.Count == 1, Is.True);
             Assert.That(GetCurrentViewModel(), Is.SameAs(initialViewModel));
         }

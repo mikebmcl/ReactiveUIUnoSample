@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mixins\ViewModelAndContractMixins.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoutedContractViewHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoutingWithContractsState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RoutingWithContractsStateUnguarded.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModelAndContract.cs" />
   </ItemGroup>
   <ItemGroup>

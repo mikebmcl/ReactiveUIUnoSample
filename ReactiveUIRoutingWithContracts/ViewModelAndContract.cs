@@ -13,6 +13,8 @@
     {
         public IRoutableViewModelForContracts ViewModel { get; }
         public string Contract { get; }
+        internal static string DoNothingContract = "{8F2F167E-2707-48BD-AC7C-F1E818E760B1}";
+        public static ViewModelAndContract DoNothing { get; } = new ViewModelAndContract(null, DoNothingContract);
         public ViewModelAndContract(IRoutableViewModelForContracts viewModel, string contract = null)
         {
             ViewModel = viewModel;

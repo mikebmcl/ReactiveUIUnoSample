@@ -477,12 +477,11 @@ namespace ReactiveUIRoutingWithContracts
             Navigate = ReactiveCommand.CreateFromObservable<IViewModelAndContract, IViewModelAndContract>(
              vm =>
              {
-                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
                  if (vm is null)
                  {
-                     return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
+                     throw new Exception("Navigate must be called with a non-null argument");
                  }
-                 if (vm.ViewModel is null && vm != DoNothing)
+                 if (vm.ViewModel is null)
                  {
                      throw new Exception("Navigate must be called with a non-null IViewModelAndContract.ViewModel");
                  }
@@ -519,10 +518,13 @@ namespace ReactiveUIRoutingWithContracts
             NavigateWithStatus = ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract>(
              status =>
              {
-                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
                  if (status is null || status.Value is null)
                  {
-                     return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
+                     throw new Exception("NavigateWithStatus must be called with a non-null argument");
+                 }
+                 if (status.Value is null)
+                 {
+                     throw new Exception("NavigateWithStatus must be called with a non-null IViewModelAndContract");
                  }
 
                  var vm = status.Value;

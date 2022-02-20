@@ -139,6 +139,8 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(wasCalled, Is.True);
         }
 
+        // NavigateBack*
+
         [Test(Description = "When NavigateBackWithStatus.Execute with null argument, Then exception is thrown")]
         public void WhenNavigateBackWithStatusExecuteWithNullArgument_ThenExceptionIsThrown()
         {
@@ -157,6 +159,8 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateBack.Execute(), Throws.Nothing);
         }
 
+        // Navigate*
+
         [Test(Description = "When Navigate.Execute to null, Then exception is thrown")]
         public void WhenNavigateExecuteToNull_ThenExceptionIsThrown()
         {
@@ -172,7 +176,7 @@ namespace ReactiveUIUnoSample.UnitTests
         [Test(Description = "When Navigate.Execute to valid IViewModelContract, Then no exception is thrown")]
         public void WhenNavigateExecuteCalledWithValidIViewModelContract_ThenNoExceptionIsThrown()
         {
-            Assert.That(() => _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract()), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract()), Throws.Nothing);
         }
 
         [Test(Description = "When NavigateWithStatus.Execute to null, Then exception is thrown")]

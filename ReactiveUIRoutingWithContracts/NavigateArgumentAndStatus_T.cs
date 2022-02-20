@@ -17,11 +17,6 @@
         /// </summary>
         public bool AlreadyNavigating { get; private set; }
 
-        public NavigateArgumentAndStatus()
-        {
-            Value = default;
-        }
-
         public NavigateArgumentAndStatus(T value)
         {
             Value = value;

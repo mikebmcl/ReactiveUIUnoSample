@@ -664,12 +664,11 @@ namespace ReactiveUIRoutingWithContracts
             NavigateAndRemoveCurrent = ReactiveCommand.CreateFromObservable<IViewModelAndContract, IViewModelAndContract>(
              vm =>
              {
-                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
                  if (vm is null)
                  {
-                     return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
+                     throw new Exception("NavigateAndRemoveCurrent must be called with a non-null argument.");
                  }
-                 if (vm.ViewModel is null && vm != DoNothing)
+                 if (vm.ViewModel is null)
                  {
                      throw new Exception("NavigateAndRemoveCurrent must be called with a non-null IViewModelAndContract.ViewModel");
                  }
@@ -710,17 +709,20 @@ namespace ReactiveUIRoutingWithContracts
             NavigateAndRemoveCurrentWithStatus = ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract>(
              status =>
              {
-                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
-                 if (status is null || status.Value is null)
+                 if (status is null)
                  {
-                     return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
+                     throw new Exception("NavigateAndRemoveCurrentWithStatus must be called with a non-null argument.");
+                 }
+                 if (status.Value is null)
+                 {
+                     throw new Exception("NavigateAndRemoveCurrentWithStatus must be called with a non-null IViewModelAndContract.");
                  }
 
                  var vm = status.Value;
 
-                 if (vm.ViewModel is null && vm != DoNothing)
+                 if (vm.ViewModel is null)
                  {
-                     throw new Exception("NavigateAndRemoveCurrent must be called with a non-null IViewModelAndContract.ViewModel");
+                     throw new Exception("NavigateAndRemoveCurrentWithStatus must be called with a non-null IViewModelAndContract.ViewModel");
                  }
                  if (_isNavigating.Set(true))
                  {

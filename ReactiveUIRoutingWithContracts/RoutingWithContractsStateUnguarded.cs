@@ -107,6 +107,11 @@ namespace ReactiveUIRoutingWithContracts
         [IgnoreDataMember]
         public IObservable<IChangeSet<IViewModelAndContract>> NavigationChanged { get; protected set; } // TODO: Create Test
 
+        [IgnoreDataMember]
+        private const string DoNothingContract = "{8F2F167E-2707-48BD-AC7C-F1E818E760B1}";
+        [IgnoreDataMember]
+        private static ViewModelAndContract DoNothing { get; } = new ViewModelAndContract(null, DoNothingContract);
+
         [OnDeserialized]
         private void SetupRx(StreamingContext sc) => SetupRx();
 
@@ -131,14 +136,14 @@ namespace ReactiveUIRoutingWithContracts
                  // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
                  if (vm is null)
                  {
-                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                     return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
                      //return Observable.Empty<IViewModelAndContract>().ObserveOn(navigateScheduler);
                  }
-                 if (vm.ViewModel is null && vm != ViewModelAndContract.DoNothing)
+                 if (vm.ViewModel is null && vm != DoNothing)
                  {
                      throw new Exception("Navigate must be called with a non-null IViewModelAndContract.ViewModel");
                  }
-                 if (vm != ViewModelAndContract.DoNothing)
+                 if (vm != DoNothing)
                  {
                      NavigationStack.Add(vm);
                  }

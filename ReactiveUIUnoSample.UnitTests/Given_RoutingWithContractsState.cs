@@ -203,7 +203,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateWithStatus.Execute(new NavigateArgumentAndStatus<IViewModelAndContract>(GetEmptyVMViewModelAndContract())), Throws.Nothing);
         }
 
-        // Empty navigation stack
+        // Empty navigation stack NavigateAndReset and NavigateAndResetWithStatus
 
         [Test(Description = "When NavigateAndReset.Execute to null and empty navigation stack, Then exception is thrown")]
         public void WhenNavigateAndResetExecuteToNullAndEmptyNavigationStack_ThenExceptionIsThrown()
@@ -254,7 +254,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateAndResetWithStatus.Execute(new NavigateArgumentAndStatus<IViewModelAndContract>(GetEmptyVMViewModelAndContract())), Throws.Nothing);
         }
 
-        // Non-empty navigation stack
+        // Non-empty navigation stack NavigateAndReset and NavigateAndResetWithStatus
 
         [Test(Description = "When NavigateAndReset.Execute to null and non-empty navigation stack, Then exception is thrown")]
         public void WhenNavigateAndResetExecuteToNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()
@@ -319,7 +319,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateAndResetWithStatus.Execute(new NavigateArgumentAndStatus<IViewModelAndContract>(GetEmptyVMViewModelAndContract())), Throws.Nothing);
         }
 
-        // Empty navigation stack
+        // Empty navigation stack NavigateAndRemoveCurrent and NavigateAndRemoveCurrentWithStatus
 
         [Test(Description = "When NavigateAndRemoveCurrent.Execute with null and empty navigation stack, Then exception is thrown")]
         public void WhenNavigateAndRemoveCurrentExecuteToNullAndEmptyNavigationStack_ThenExceptionIsThrown()
@@ -363,7 +363,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateAndRemoveCurrentWithStatus.Execute(new NavigateArgumentAndStatus<IViewModelAndContract>(GetEmptyVMViewModelAndContract())), Throws.Nothing);
         }
 
-        // Non-empty navigation stack
+        // Non-empty navigation stack NavigateAndRemoveCurrent and NavigateAndRemoveCurrentWithStatus
 
         [Test(Description = "When NavigateAndRemoveCurrent.Execute with null and non-empty navigation stack, Then exception is thrown")]
         public void WhenNavigateAndRemoveCurrentExecuteToNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()
@@ -416,7 +416,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateAndRemoveCurrentWithStatus.Execute(new NavigateArgumentAndStatus<IViewModelAndContract>(GetEmptyVMViewModelAndContract())), Throws.Nothing);
         }
 
-        // Empty navigation stack
+        // Empty navigation stack NavigateAndApplyFunc and NavigateAndApplyFuncWithStatus
 
         [Test(Description = "When NavigateAndApplyFunc.Execute called with null and empty navigation stack, Then exception is thrown")]
         public void WhenNavigateAndApplyFuncExecuteToNullAndEmptyNavigationStack_ThenExceptionIsThrown()
@@ -495,7 +495,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, GetEmptyVMViewModelAndContract()))), Throws.Nothing);
         }
 
-        // Non-empty navigation stack
+        // Non-empty navigation stack NavigateAndApplyFunc and NavigateAndApplyFuncWithStatus
 
         [Test(Description = "When NavigateAndApplyFunc.Execute called with null and non-empty navigation stack, Then exception is thrown")]
         public void WhenNavigateAndApplyFuncExecuteToNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()

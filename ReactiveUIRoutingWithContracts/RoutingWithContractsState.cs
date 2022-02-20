@@ -421,7 +421,10 @@ namespace ReactiveUIRoutingWithContracts
                             IViewModelAndContract navigatingTo = _navigationStack.Count > 1 ? _navigationStack[_navigationStack.Count - 2] : default;
                             _navigatingToIViewModelAndContractWeakRef.SetTarget(navigatingTo);
                             _stackWasCleared = navigatingTo == null;
-                            _navigationStack.RemoveAt(_navigationStack.Count - 1);
+                            if (_navigationStack.Count > 0)
+                            {
+                                _navigationStack.RemoveAt(_navigationStack.Count - 1);
+                            }
                             return Observable.Return(navigatingTo).ObserveOn(navigateScheduler);
                         }
                         catch
@@ -455,7 +458,10 @@ namespace ReactiveUIRoutingWithContracts
                             IViewModelAndContract navigatingTo = _navigationStack.Count > 1 ? _navigationStack[_navigationStack.Count - 2] : default;
                             _navigatingToIViewModelAndContractWeakRef.SetTarget(navigatingTo);
                             _stackWasCleared = navigatingTo == null;
-                            _navigationStack.RemoveAt(_navigationStack.Count - 1);
+                            if (_navigationStack.Count > 0)
+                            {
+                                _navigationStack.RemoveAt(_navigationStack.Count - 1);
+                            }
                             return Observable.Return(navigatingTo).ObserveOn(navigateScheduler);
                         }
                         catch

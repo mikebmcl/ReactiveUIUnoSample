@@ -226,6 +226,7 @@ namespace ReactiveUIUnoSample.ViewModels
         }
 
         private INavigationViewProvider m_navigationView;
+
         public INavigationViewProvider NavigationView => m_navigationView;
 
         [Reactive]
@@ -301,6 +302,26 @@ namespace ReactiveUIUnoSample.ViewModels
                 // Already running so mark as handled to prevent navigation from occurring while waiting for navigation to occur.
                 args.Handled = true;
             }
+        }
+
+        private bool _disposedValue;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    Router?.Dispose();
+                }
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

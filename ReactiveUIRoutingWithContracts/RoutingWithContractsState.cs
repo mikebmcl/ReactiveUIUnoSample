@@ -144,6 +144,7 @@ namespace ReactiveUIRoutingWithContracts
 
             public void OnError(Exception error)
             {
+                _routingWithContractsState._userManipulatingStack = false;
                 _routingWithContractsState._isNavigating.ForceToFalse();
                 _routingWithContractsState.IsNavigating = false;
                 throw error;
@@ -151,6 +152,10 @@ namespace ReactiveUIRoutingWithContracts
 
             public void OnNext(IViewModelAndContract value)
             {
+                if (_routingWithContractsState._userManipulatingStack)
+                {
+                    return;
+                }
                 if (_routingWithContractsState._navigatingToIViewModelAndContractWeakRef.TryGetTarget(out IViewModelAndContract vmc))
                 {
                     if (vmc == value)
@@ -235,6 +240,7 @@ namespace ReactiveUIRoutingWithContracts
         {
             _scheduler = scheduler ?? RxApp.MainThreadScheduler;
             _navigationStack = new ObservableCollection<IViewModelAndContract>();
+            NavigationStack = new ReadOnlyObservableCollection<IViewModelAndContract>(_navigationStack);
             _iViewModelAndContractObserver = new IViewModelAndContractObserver(this);
             SetupRx();
         }
@@ -262,11 +268,24 @@ namespace ReactiveUIRoutingWithContracts
         public ReactiveCommand<Unit, IViewModelAndContract> NavigateBack { get; protected set; }
 
         /// <summary>
+        /// Gets or sets a command which will navigate back to the previous element in the stack.
+        /// </summary>
+        [IgnoreDataMember]
+        public ReactiveCommand<NavigateArgumentAndStatus<Unit>, IViewModelAndContract> NavigateBackWithStatus { get; protected set; }
+
+        /// <summary>
         /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
         /// must be a ViewModel that implements IRoutableViewModelForContracts.
         /// </summary>
         [IgnoreDataMember]
         public ReactiveCommand<IViewModelAndContract, IViewModelAndContract> Navigate { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets a command that navigates to the a new element in the stack - the Execute parameter
+        /// must be a ViewModel that implements IRoutableViewModelForContracts.
+        /// </summary>
+        [IgnoreDataMember]
+        public ReactiveCommand<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract> NavigateWithStatus { get; protected set; }
 
         /// <summary>
         /// Gets or sets a command that navigates to a new element and resets the navigation stack (i.e. the
@@ -278,6 +297,15 @@ namespace ReactiveUIRoutingWithContracts
         public ReactiveCommand<IViewModelAndContract, IViewModelAndContract> NavigateAndReset { get; protected set; }
 
         /// <summary>
+        /// Gets or sets a command that navigates to a new element and resets the navigation stack (i.e. the
+        /// new ViewModel will now be the only element in the stack) - the
+        /// Execute parameter must be a ViewModel that implements
+        /// IRoutableViewModelForContracts.
+        /// </summary>
+        [IgnoreDataMember]
+        public ReactiveCommand<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract> NavigateAndResetWithStatus { get; protected set; }
+
+        /// <summary>
         /// Gets or sets a command that navigates to a new element and removes the last element from the navigation stack (i.e.
         /// the new ViewModel essentially replaces the view model that is the current view model but it is done by removal of
         /// the current view model, if there is one, followed by adding the new view model to the stack) - the Execute parameter
@@ -285,6 +313,48 @@ namespace ReactiveUIRoutingWithContracts
         /// </summary>
         [IgnoreDataMember]
         public ReactiveCommand<IViewModelAndContract, IViewModelAndContract> NavigateAndRemoveCurrent { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets a command that navigates to a new element and removes the last element from the navigation stack (i.e.
+        /// the new ViewModel essentially replaces the view model that is the current view model but it is done by removal of
+        /// the current view model, if there is one, followed by adding the new view model to the stack) - the Execute parameter
+        /// must be a ViewModel that implements IRoutableViewModelForContracts.
+        /// </summary>
+        [IgnoreDataMember]
+        public ReactiveCommand<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract> NavigateAndRemoveCurrentWithStatus { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets a command that invokes an <see cref="Func{T, TResult}"/> that is passed the navigation stack to examine
+        /// and manipulate it and then report whether or not navigation should occur. The Execute parameter has the following
+        /// requirements: If the <see cref="IViewModelAndContract"/> of the <see cref="Func{T, TResult}"/> is null then Func will
+        /// not run and nothing will change on the stack. If that <see cref="IViewModelAndContract"/> has a null
+        /// <see cref="IRoutableViewModelForContracts"/> and the <see cref="IViewModelAndContract"/> is not
+        /// <see cref="ViewModelAndContract.DoNothing"/>, an exception will be thrown. If no exception was thrown, the Func will
+        /// run. If the Func returns true and <see cref="IViewModelAndContract"/> is not <see cref="ViewModelAndContract.DoNothing"/>,
+        /// navigation to the supplied <see cref="IViewModelAndContract"/> will proceed. If false, no navigation will occur.
+        /// Regardless of whether or not navigation will occur, before the Func runs, <see cref="IsNavigating"/> will be set to
+        /// <c>true</c>. If no navigation will occur after the Func runs, if the Func throws an exception, or if Func is null, then
+        /// <see cref="IsNavigating"/> will be set to <c>false</c> and no navigation will occur. If navigation does occur, then it
+        /// will be set to false when the navigation has completed or errored due to an exception. 
+        /// </summary>
+        [IgnoreDataMember]
+        public ReactiveCommand<RoutingWithContractsStateApplyFuncData, IViewModelAndContract> NavigateAndApplyFunc { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets a command that invokes <see cref="RoutingWithContractsStateApplyFuncData.Fn"/> an <see cref="Func{T, TResult}"/> that . The Execute parameter has the following
+        /// requirements: If the <see cref="IViewModelAndContract"/> of the <see cref="Func{T, TResult}"/> is null then Func will
+        /// not run and nothing will change on the stack. If that <see cref="IViewModelAndContract"/> has a null
+        /// <see cref="IRoutableViewModelForContracts"/> and the <see cref="IViewModelAndContract"/> is not
+        /// <see cref="ViewModelAndContract.DoNothing"/>, an exception will be thrown. If no exception was thrown, the Func will
+        /// run. If the Func returns true and <see cref="IViewModelAndContract"/> is not <see cref="ViewModelAndContract.DoNothing"/>,
+        /// navigation to the supplied <see cref="IViewModelAndContract"/> will proceed. If false, no navigation will occur.
+        /// Regardless of whether or not navigation will occur, before the Func runs, <see cref="IsNavigating"/> will be set to
+        /// <c>true</c>. If no navigation will occur after the Func runs, if the Func throws an exception, or if Func is null, then
+        /// <see cref="IsNavigating"/> will be set to <c>false</c> and no navigation will occur. If navigation does occur, then it
+        /// will be set to false when the navigation has completed or errored due to an exception.
+        /// </summary>
+        [IgnoreDataMember]
+        public ReactiveCommand<NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>, IViewModelAndContract> NavigateAndApplyFuncWithStatus { get; protected set; }
 
         /// <summary>
         /// Gets or sets the current view model which is to be shown for the Routing.
@@ -317,6 +387,9 @@ namespace ReactiveUIRoutingWithContracts
         private bool _stackWasCleared;
 
         [IgnoreDataMember]
+        private bool _userManipulatingStack;
+
+        [IgnoreDataMember]
         private bool _disposedValue;
 
         [OnDeserialized]
@@ -338,8 +411,8 @@ namespace ReactiveUIRoutingWithContracts
                         }
                         try
                         {
-                            _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                             IsNavigating = true;
+                            _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                             IViewModelAndContract navigatingTo = _navigationStack.Count > 1 ? _navigationStack[_navigationStack.Count - 2] : default;
                             _navigatingToIViewModelAndContractWeakRef.SetTarget(navigatingTo);
                             _stackWasCleared = navigatingTo == null;
@@ -348,6 +421,41 @@ namespace ReactiveUIRoutingWithContracts
                         }
                         catch
                         {
+                            _stackWasCleared = false;
+                            _isNavigating.ForceToFalse();
+                            IsNavigating = false;
+                            throw;
+                        }
+                    },
+                    countAsBehavior.Select(x => x > 1));
+
+            NavigateBackWithStatus =
+                ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<Unit>, IViewModelAndContract>(
+                    status =>
+                    {
+                        if (status is null)
+                        {
+                            throw new Exception($"NavigateBackWithStatus must be called with a non-null value.");
+                        }
+                        if (_isNavigating.Set(true))
+                        {
+                            status.SetAlreadyNavigating(true);
+                            return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                        }
+                        try
+                        {
+                            IsNavigating = true;
+                            status.SetAlreadyNavigating(false);
+                            _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                            IViewModelAndContract navigatingTo = _navigationStack.Count > 1 ? _navigationStack[_navigationStack.Count - 2] : default;
+                            _navigatingToIViewModelAndContractWeakRef.SetTarget(navigatingTo);
+                            _stackWasCleared = navigatingTo == null;
+                            _navigationStack.RemoveAt(_navigationStack.Count - 1);
+                            return Observable.Return(navigatingTo).ObserveOn(navigateScheduler);
+                        }
+                        catch
+                        {
+                            _stackWasCleared = false;
                             _isNavigating.ForceToFalse();
                             IsNavigating = false;
                             throw;
@@ -373,22 +481,71 @@ namespace ReactiveUIRoutingWithContracts
                  }
                  try
                  {
+                     IsNavigating = true;
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                      if (vm != ViewModelAndContract.DoNothing)
                      {
                          _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
-                         IsNavigating = true;
                          _navigationStack.Add(vm);
                      }
                      else
                      {
-                         _isNavigating.ForceToFalse();
-                         IsNavigating = false;
+                         vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = vm == null;
                      }
                      return Observable.Return(vm).ObserveOn(navigateScheduler);
                  }
                  catch
                  {
+                     _stackWasCleared = false;
+                     _isNavigating.ForceToFalse();
+                     IsNavigating = false;
+                     throw;
+                 }
+             });
+
+            NavigateWithStatus = ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract>(
+             status =>
+             {
+                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
+                 if (status is null || status.Value is null)
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+
+                 var vm = status.Value;
+
+                 if (vm.ViewModel is null && vm != ViewModelAndContract.DoNothing)
+                 {
+                     throw new Exception("NavigateWithStatus must be called with a non-null IViewModelAndContract.ViewModel");
+                 }
+                 if (_isNavigating.Set(true))
+                 {
+                     status.SetAlreadyNavigating(true);
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+                 try
+                 {
+                     IsNavigating = true;
+                     status.SetAlreadyNavigating(false);
+                     _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                     if (vm != ViewModelAndContract.DoNothing)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _navigationStack.Add(vm);
+                     }
+                     else
+                     {
+                         vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = vm == null;
+                     }
+                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+                 }
+                 catch
+                 {
+                     _stackWasCleared = false;
                      _isNavigating.ForceToFalse();
                      IsNavigating = false;
                      throw;
@@ -413,22 +570,75 @@ namespace ReactiveUIRoutingWithContracts
                  }
                  try
                  {
+                     IsNavigating = true;
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                      if (vm != ViewModelAndContract.DoNothing)
                      {
                          _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
-                         IsNavigating = true;
                          _navigationStack.Clear();
                          _navigationStack.Add(vm);
                      }
                      else
                      {
-                         _isNavigating.ForceToFalse();
+                         vm = null;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                         _stackWasCleared = true;
+                         _navigationStack.Clear();
                      }
                      return Observable.Return(vm).ObserveOn(navigateScheduler);
                  }
                  catch
                  {
+                     _stackWasCleared = false;
+                     _isNavigating.ForceToFalse();
+                     IsNavigating = false;
+                     throw;
+                 }
+             });
+
+            NavigateAndResetWithStatus = ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract>(
+             status =>
+             {
+                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
+                 if (status is null || status.Value is null)
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+
+                 var vm = status.Value;
+
+                 if (vm.ViewModel is null && vm != ViewModelAndContract.DoNothing)
+                 {
+                     throw new Exception("NavigateAndReset must be called with a non-null IViewModelAndContract.ViewModel");
+                 }
+                 if (_isNavigating.Set(true))
+                 {
+                     status.SetAlreadyNavigating(true);
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+                 try
+                 {
+                     IsNavigating = true;
+                     status.SetAlreadyNavigating(false);
+                     _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                     if (vm != ViewModelAndContract.DoNothing)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _navigationStack.Clear();
+                         _navigationStack.Add(vm);
+                     }
+                     else
+                     {
+                         vm = null;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = true;
+                         _navigationStack.Clear();
+                     }
+                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+                 }
+                 catch
+                 {
+                     _stackWasCleared = false;
                      _isNavigating.ForceToFalse();
                      IsNavigating = false;
                      throw;
@@ -453,11 +663,11 @@ namespace ReactiveUIRoutingWithContracts
                  }
                  try
                  {
+                     IsNavigating = true;
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                      if (vm != ViewModelAndContract.DoNothing)
                      {
                          _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
-                         IsNavigating = true;
                          if (_navigationStack.Count > 0)
                          {
                              _navigationStack.RemoveAt(_navigationStack.Count - 1);
@@ -466,12 +676,169 @@ namespace ReactiveUIRoutingWithContracts
                      }
                      else
                      {
-                         _isNavigating.ForceToFalse();
+                         vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = vm == null;
                      }
                      return Observable.Return(vm).ObserveOn(navigateScheduler);
                  }
                  catch
                  {
+                     _stackWasCleared = false;
+                     _isNavigating.ForceToFalse();
+                     IsNavigating = false;
+                     throw;
+                 }
+             });
+
+            NavigateAndRemoveCurrentWithStatus = ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<IViewModelAndContract>, IViewModelAndContract>(
+             status =>
+             {
+                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
+                 if (status is null || status.Value is null)
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+
+                 var vm = status.Value;
+
+                 if (vm.ViewModel is null && vm != ViewModelAndContract.DoNothing)
+                 {
+                     throw new Exception("NavigateAndRemoveCurrent must be called with a non-null IViewModelAndContract.ViewModel");
+                 }
+                 if (_isNavigating.Set(true))
+                 {
+                     status.SetAlreadyNavigating(true);
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+                 try
+                 {
+                     IsNavigating = true;
+                     status.SetAlreadyNavigating(false);
+                     _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                     if (vm != ViewModelAndContract.DoNothing)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         if (_navigationStack.Count > 0)
+                         {
+                             _navigationStack.RemoveAt(_navigationStack.Count - 1);
+                         }
+                         _navigationStack.Add(vm);
+                     }
+                     else
+                     {
+                         vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = vm == null;
+                     }
+                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+                 }
+                 catch
+                 {
+                     _stackWasCleared = false;
+                     _isNavigating.ForceToFalse();
+                     IsNavigating = false;
+                     throw;
+                 }
+             });
+
+            NavigateAndApplyFunc = ReactiveCommand.CreateFromObservable<RoutingWithContractsStateApplyFuncData, IViewModelAndContract>(
+             tup =>
+             {
+                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
+                 if (tup.ViewModelAndContract is null)
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+                 if (_isNavigating.Set(true))
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+                 try
+                 {
+                     IsNavigating = true;
+                     _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                     if (tup.ViewModelAndContract?.ViewModel is null && tup.ViewModelAndContract != ViewModelAndContract.DoNothing)
+                     {
+                         throw new Exception("NavigateAndApplyFunc must receive a non-null IViewModelAndContract with a non-null IViewModelAndContract.ViewModel");
+                     }
+                     var vm = tup.ViewModelAndContract;
+                     // This is how we avoid having the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
+                     _userManipulatingStack = true;
+                     var navigate = tup.Fn?.Invoke(_navigationStack) ?? false;
+                     _userManipulatingStack = false;
+                     if (vm != ViewModelAndContract.DoNothing && navigate)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _navigationStack.Add(vm);
+                     }
+                     else
+                     {
+                         // If the user kept the current view model the same then this shouldn't do anything in terms of changing the view. If they did change it then this will cause the view to update to the view model the user's changes left as the most recent view model.
+                         vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = vm == null;
+                     }
+                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+                 }
+                 catch
+                 {
+                     _userManipulatingStack = false;
+                     _stackWasCleared = false;
+                     _isNavigating.ForceToFalse();
+                     IsNavigating = false;
+                     throw;
+                 }
+             });
+
+            NavigateAndApplyFuncWithStatus = ReactiveCommand.CreateFromObservable<NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>, IViewModelAndContract>(
+             status =>
+             {
+                 // As a workaround for blocking navigation when the framework doesn't because the observables didn't update before new user input came in to a different control that triggered navigation.
+                 if (status is null || status.Value.ViewModelAndContract is null)
+                 {
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+
+                 var tup = status.Value;
+
+                 if (_isNavigating.Set(true))
+                 {
+                     status.SetAlreadyNavigating(true);
+                     return Observable.Return(ViewModelAndContract.DoNothing).ObserveOn(navigateScheduler);
+                 }
+                 try
+                 {
+                     IsNavigating = true;
+                     status.SetAlreadyNavigating(false);
+                     _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
+                     if (tup.ViewModelAndContract?.ViewModel is null && tup.ViewModelAndContract != ViewModelAndContract.DoNothing)
+                     {
+                         throw new Exception("NavigateAndApplyFunc must receive a non-null IViewModelAndContract with a non-null IViewModelAndContract.ViewModel");
+                     }
+                     var vm = tup.ViewModelAndContract;
+                     // This is how we avoid havig the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
+                     _userManipulatingStack = true;
+                     var navigate = tup.Fn?.Invoke(_navigationStack) ?? false;
+                     _userManipulatingStack = false;
+
+                     if (vm != ViewModelAndContract.DoNothing && navigate)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _navigationStack.Add(vm);
+                     }
+                     else
+                     {
+                         vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
+                         _stackWasCleared = vm == null;
+                     }
+                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+                 }
+                 catch
+                 {
+                     _userManipulatingStack = false;
+                     _stackWasCleared = false;
                      _isNavigating.ForceToFalse();
                      IsNavigating = false;
                      throw;

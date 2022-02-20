@@ -1,4 +1,7 @@
-﻿namespace ReactiveUIRoutingWithContracts
+﻿using System;
+using System.Collections.ObjectModel;
+
+namespace ReactiveUIRoutingWithContracts
 {
     public static class ViewModelAndContractMixins
     {
@@ -12,7 +15,9 @@
         /// An instance of <see cref="ViewModelAndContract"/> that can be passed to any method requiring an 
         /// <see cref="IViewModelAndContract"/> argument.
         /// </returns>
-        public static ViewModelAndContract ToViewModelAndContract(this IRoutableViewModelForContracts viewModel) => new ViewModelAndContract(viewModel);
+        public static ViewModelAndContract ToViewModelAndContract(this IRoutableViewModelForContracts viewModel) =>
+            new ViewModelAndContract(viewModel);
+
         /// <summary>
         /// Returns a <see cref="ViewModelAndContract"/> using this <see cref="IRoutableViewModelForContracts"/> as the 
         /// <see cref="ViewModelAndContract.ViewModel"/>. Its <see cref="ViewModelAndContract.Contract"/> will be <paramref name="contract"/>.
@@ -25,6 +30,13 @@
         /// An instance of <see cref="ViewModelAndContract"/> that can be passed to any method requiring an 
         /// <see cref="IViewModelAndContract"/> argument.
         /// </returns>
-        public static ViewModelAndContract ToViewModelAndContract(this IRoutableViewModelForContracts viewModel, string contract) => new ViewModelAndContract(viewModel, contract);
+        public static ViewModelAndContract ToViewModelAndContract(this IRoutableViewModelForContracts viewModel, string contract) =>
+            new ViewModelAndContract(viewModel, contract);
+
+        public static NavigateArgumentAndStatus<IViewModelAndContract> ToNavigateArgumentAndStatus(this IViewModelAndContract vmc) =>
+            new NavigateArgumentAndStatus<IViewModelAndContract>(vmc);
+
+        public static NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData> ToNavigateArgumentAndStatus(this IViewModelAndContract vmc, Func<ObservableCollection<IViewModelAndContract>, bool> fn) =>
+            new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData(fn, vmc));
     }
 }

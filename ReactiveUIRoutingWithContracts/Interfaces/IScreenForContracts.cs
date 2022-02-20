@@ -1,6 +1,8 @@
-﻿namespace ReactiveUIRoutingWithContracts
+﻿using System;
+
+namespace ReactiveUIRoutingWithContracts
 {
-    public interface IScreenForContracts
+    public interface IScreenForContracts : IDisposable
     {
         RoutingWithContractsState Router { get; }
         string GetCurrentContract();

@@ -758,14 +758,25 @@ namespace ReactiveUIRoutingWithContracts
                      IsNavigating = true;
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                      // This is how we avoid having the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
+                     var startCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
                      _userManipulatingStack = true;
                      fn.Invoke(_navigationStack);
                      _userManipulatingStack = false;
-                     // If the user kept the current view model the same then this shouldn't do anything in terms of changing the view. If they did change it then this will cause the view to update to the view model the user's changes left as the most recent view model.
-                     var vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
-                     _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
-                     _stackWasCleared = vm == null;
-                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+
+                     var postActionCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                     if (startCurrentViewModel != postActionCurrentViewModel)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(postActionCurrentViewModel);
+                         _stackWasCleared = postActionCurrentViewModel == null;
+                         return Observable.Return(postActionCurrentViewModel).ObserveOn(navigateScheduler);
+                     }
+                     else
+                     {
+                         _stackWasCleared = false;
+                         _isNavigating.ForceToFalse();
+                         IsNavigating = false;
+                         return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
+                     }
                  }
                  catch
                  {
@@ -802,14 +813,25 @@ namespace ReactiveUIRoutingWithContracts
                      status.SetAlreadyNavigating(false);
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                      // This is how we avoid havig the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
+                     var startCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
                      _userManipulatingStack = true;
                      fn.Invoke(_navigationStack);
                      _userManipulatingStack = false;
 
-                     var vm = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
-                     _navigatingToIViewModelAndContractWeakRef.SetTarget(vm);
-                     _stackWasCleared = vm == null;
-                     return Observable.Return(vm).ObserveOn(navigateScheduler);
+                     var postActionCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+                     if (startCurrentViewModel != postActionCurrentViewModel)
+                     {
+                         _navigatingToIViewModelAndContractWeakRef.SetTarget(postActionCurrentViewModel);
+                         _stackWasCleared = postActionCurrentViewModel == null;
+                         return Observable.Return(postActionCurrentViewModel).ObserveOn(navigateScheduler);
+                     }
+                     else
+                     {
+                         _stackWasCleared = false;
+                         _isNavigating.ForceToFalse();
+                         IsNavigating = false;
+                         return Observable.Return(DoNothing).ObserveOn(navigateScheduler);
+                     }
                  }
                  catch
                  {

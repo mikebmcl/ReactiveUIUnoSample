@@ -594,5 +594,84 @@ namespace ReactiveUIUnoSample.UnitTests
         }
 
 
+        [Test(Description = "When ModifyNavigationStack.Execute with non-empty navigation stack and NavigateWithStatus attempt in Action, Then no exception is thrown on navigate attempt and stack does not change")]
+        public void WhenModifyNavigationStackExecuteCalledWithNonEmptyNavigationStackAndNavigateWithStatusAttemptInAction_ThenNoExceptionIsThrownOnNavigateWithStatusAttemptAndStackDoesNotChange()
+        {
+            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            _routingWithContractsState.ModifyNavigationStack.Execute((stack) =>
+            {
+                Assert.That(stack.Count, Is.EqualTo(1));
+                var originalTopStackItem = stack[stack.Count - 1];
+                var navigateTo = GetTemperatureConversionVMViewModelAndContract().ToNavigateArgumentAndStatus();
+                _routingWithContractsState.NavigateWithStatus.Execute(navigateTo);
+                AdvanceScheduler();
+                Assert.That(navigateTo.AlreadyNavigating, Is.True);
+                Assert.That(stack.Count, Is.EqualTo(1));
+                Assert.That(stack[stack.Count - 1], Is.SameAs(originalTopStackItem));
+            });
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+        }
+
+        [Test(Description = "When ModifyNavigationStackWithStatus.Execute with non-empty navigation stack and NavigateWithStatus attempt in Action, Then no exception is thrown on navigate attempt and stack does not change")]
+        public void WhenModifyNavigationStackWithStatusExecuteCalledWithNonEmptyNavigationStackAndNavigateWithStatusAttemptInAction_ThenNoExceptionIsThrownOnNavigateWithStatusAttemptAndStackDoesNotChange()
+        {
+            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            var modifyWithStatus = new ModifyArgumentAndStatus((stack) =>
+            {
+                Assert.That(stack.Count, Is.EqualTo(1));
+                var originalTopStackItem = stack[stack.Count - 1];
+                var navigateTo = GetTemperatureConversionVMViewModelAndContract().ToNavigateArgumentAndStatus();
+                _routingWithContractsState.NavigateWithStatus.Execute(navigateTo);
+                AdvanceScheduler();
+                Assert.That(navigateTo.AlreadyNavigating, Is.True);
+                Assert.That(stack.Count, Is.EqualTo(1));
+                Assert.That(stack[stack.Count - 1], Is.SameAs(originalTopStackItem));
+            });
+            _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(modifyWithStatus);
+            Assert.That(modifyWithStatus.AlreadyNavigating, Is.False);
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+        }
+
+        [Test(Description = "When ModifyNavigationStack.Execute with non-empty navigation stack and current view model is changed in the Action, Then no exception is thrown and navigation occurs")]
+        public void WhenModifyNavigationStackExecuteCalledWithNonEmptyNavigationStackAndCurrentViewModelChangedInAction_ThenNoExceptionIsThrownAndNavigationOccurs()
+        {
+            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            _routingWithContractsState.ModifyNavigationStack.Execute((stack) =>
+            {
+                Assert.That(stack.Count, Is.EqualTo(1));
+                var originalTopStackItem = stack[stack.Count - 1];
+                var addTo = GetTemperatureConversionVMViewModelAndContract();
+                stack.Add(addTo);
+                Assert.That(stack.Count, Is.EqualTo(2));
+                Assert.That(stack[stack.Count - 1], Is.SameAs(addTo));
+            });
+            // Verify that it's still navigating because we changed the current view model in the action.
+            Assert.That(_routingWithContractsState.IsNavigating, Is.True);
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+        }
+
+        [Test(Description = "When ModifyNavigationStackWithStatus.Execute with non-empty navigation stack and current view model is changed in the Action, Then no exception is thrown and navigation occurs")]
+        public void WhenModifyNavigationStackWithStatusExecuteCalledWithNonEmptyNavigationStackAndCurrentViewModelChangedInAction_ThenNoExceptionIsThrownAndNavigationOccurs()
+        {
+            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            var modifyWithStatus = new ModifyArgumentAndStatus((stack) =>
+            {
+                Assert.That(stack.Count, Is.EqualTo(1));
+                var originalTopStackItem = stack[stack.Count - 1];
+                var addTo = GetTemperatureConversionVMViewModelAndContract();
+                stack.Add(addTo);
+                Assert.That(stack.Count, Is.EqualTo(2));
+                Assert.That(stack[stack.Count - 1], Is.SameAs(addTo));
+            });
+            _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(modifyWithStatus);
+            Assert.That(modifyWithStatus.AlreadyNavigating, Is.False);
+            // Verify that it's still navigating because we changed the current view model in the action.
+            Assert.That(_routingWithContractsState.IsNavigating, Is.True);
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+        }
     }
 }

@@ -58,19 +58,86 @@ namespace ReactiveUIUnoSample.UnitTests
         [SetUp]
         public void SetUpTest()
         {
+            // Note: This works. For some reason if the scheduler is running then calling Sleep on it doesn't cause it to actually advance?
+            TestSchedulerProvider.CurrentThread.Stop();
+            TestSchedulerProvider.MainThread.Stop();
+            TestSchedulerProvider.TaskPool.Stop();
             if (_screenWithContract.Value.Router.IsNavigating)
             {
-                //WaitForNavigation(() => ScreenWithContract.Router.NavigateAndReset.Execute(new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract()));
-                WaitForNavigation();
+                try
+                {
+                    WaitForNavigation();
+                }
+                catch (Exception ex)
+                {
+                    // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. We can bury exceptions here because this is just clean up code.
+                    TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(TearDownTest)}. Details to follow."));
+                    if (_screenWithContract.Value.Router.IsNavigating)
+                    {
+                        throw;
+                    }
+                }
             }
             ScreenWithContract.Router.NavigateAndReset.Execute(new TemperatureConversionsViewModel(ScreenWithContract, TestSchedulerProvider).ToViewModelAndContract());
-            WaitForNavigation();
+            try
+            {
+                WaitForNavigation();
+            }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. We can bury exceptions here because this is just clean up code.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(TearDownTest)}. Details to follow."));
+                if (_screenWithContract.Value.Router.IsNavigating)
+                {
+                    throw;
+                }
+            }
         }
 
         [TearDown]
         public void TearDownTest()
         {
+            // Note: This works. For some reason if the scheduler is running then calling Sleep on it doesn't cause it to actually advance?
+            TestSchedulerProvider.CurrentThread.Stop();
+            TestSchedulerProvider.MainThread.Stop();
+            TestSchedulerProvider.TaskPool.Stop();
             // Add any code you want to run at the end of each test here. Because this should be the base class for virtually all test classes, keep in mind that this will run for every test method in every test class within this project. Think carefully before adding anything here. Each test class can have its own [TearDown] method. The tear down method, if any, in a derived class will run before the tear down, if any, in its base class. If an exception is thrown in a class's [SetUp] method then its [TearDown] will not be called.
+            try
+            {
+                AdvanceScheduler();
+            }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. We can bury exceptions here because this is just clean up code.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(TearDownTest)}. Details to follow."));
+            }
+            try
+            {
+                AdvanceScheduler(schedulerToWaitOn: TestSchedulerProvider.CurrentThread);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. We can bury exceptions here because this is just clean up code.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(TearDownTest)}. Details to follow."));
+            }
+            try
+            {
+                AdvanceScheduler(schedulerToWaitOn: TestSchedulerProvider.TaskPool);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. We can bury exceptions here because this is just clean up code.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(TearDownTest)}. Details to follow."));
+            }
+            try
+            {
+                WaitForNavigation();
+            }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. We can bury exceptions here because this is just clean up code.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(TearDownTest)}. Details to follow."));
+            }
         }
 
         /// <summary>
@@ -83,23 +150,28 @@ namespace ReactiveUIUnoSample.UnitTests
         public static void WaitForNavigation(int maxTimeToWait = 100, TestScheduler schedulerToWaitOn = null)
         {
             TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
+            // Note: scheduler.Sleep(...) just skips time, it doesn't cause events to be processed.
+            bool schedulerWasRunning = scheduler.IsEnabled;
+            scheduler.Stop();
             for (int i = 0; i < maxTimeToWait; i++)
             {
-                if (scheduler.IsEnabled)
-                {
-                    scheduler.Sleep(1);
-                    if (!ScreenWithContract.Router.IsNavigating)
-                    {
-                        return;
-                    }
-                }
-                else
+                try
                 {
                     scheduler.AdvanceBy(1);
                     if (!ScreenWithContract.Router.IsNavigating)
                     {
+                        if (schedulerWasRunning)
+                        {
+                            scheduler.Start();
+                        }
                         return;
                     }
+                }
+                catch (Exception ex)
+                {
+                    // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. However, we can't bury the exception here because then expected exceptions in the tests never surface and tests fails because the exception they expected and should've received was eaten. Then again this might not be an actual problem since it's only causing failure where failure was expected and doesn't seem to be causing further problems for now. I wonder what it would do in the event of a double throw though...
+                    TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(WaitForNavigation)} at iteration {i + 1}. Details to follow."));
+                    throw;
                 }
             }
             throw new TimeoutException($"In {nameof(WaitForNavigation)}, navigation still had not occurred after {maxTimeToWait} passed.");
@@ -116,14 +188,29 @@ namespace ReactiveUIUnoSample.UnitTests
         public static void AdvanceScheduler(int time = 100, TestScheduler schedulerToWaitOn = null)
         {
             TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
-            if (scheduler.IsEnabled)
-            {
-                scheduler.Sleep(time);
-            }
-            else
+            bool schedulerWasRunning = scheduler.IsEnabled;
+            scheduler.Stop();
+            //if (scheduler.IsEnabled)
+            //{
+            //    scheduler.Sleep(time);
+            //}
+            //else
+            //{
+            try
             {
                 scheduler.AdvanceBy(time);
             }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. However, we can't bury the exception here because then expected exceptions in the tests never surface and tests fails because the exception they expected and should've received was eaten.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(AdvanceScheduler)}. Details to follow."));
+                throw;
+            }
+            if (schedulerWasRunning)
+            {
+                scheduler.Start();
+            }
+            //}
         }
 
         /// <summary>

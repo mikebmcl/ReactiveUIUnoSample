@@ -16,7 +16,6 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             Assert.IsTrue(ScreenWithContract.Router.NavigationStack.Count == 1);
             var typeOfFirstViewModel = GetCurrentViewModel().GetType();
-            ;
             //WaitForNavigation(() => ScreenWithContract.Router.NavigateBack.Execute());
             ScreenWithContract.Router.NavigateBack.Execute();
             WaitForNavigation();
@@ -38,12 +37,12 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(GetCurrentViewModel(), Is.TypeOf(typeof(TemperatureConversionsViewModel)));
         }
 
-        [Test(Description = "When navigating to null, Then the navigation stack is not changed and no exception is thrown")]
-        public void WhenNavigatingToNull_ThenTheNavigationStackIsNotChangedAndNoExceptionIsThrown()
+        [Test(Description = "When navigating to null, Then the navigation stack is not changed and exception is thrown")]
+        public void WhenNavigatingToNull_ThenTheNavigationStackIsNotChangedAndExceptionIsThrown()
         {
             Assert.That(ScreenWithContract.Router.NavigationStack.Count == 1, Is.True);
             var initialViewModel = GetCurrentViewModel();
-            Assert.That(() => { ScreenWithContract.Router.Navigate.Execute(null); }, Throws.Nothing);
+            Assert.That(() => { ScreenWithContract.Router.Navigate.Execute(null); AdvanceScheduler(); }, Throws.Exception);
             Assert.That(ScreenWithContract.Router.IsNavigating, Is.False);
             Assert.That(ScreenWithContract.Router.NavigationStack.Count == 1, Is.True);
             Assert.That(GetCurrentViewModel(), Is.SameAs(initialViewModel));

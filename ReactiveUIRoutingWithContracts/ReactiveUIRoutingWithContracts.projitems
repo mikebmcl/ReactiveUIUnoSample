@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)NavigateArgumentAndStatus_T.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoutedContractViewHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoutingWithContractsState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RoutingWithContractsStateApplyFuncData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoutingWithContractsStateUnguarded.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModelAndContract.cs" />
   </ItemGroup>

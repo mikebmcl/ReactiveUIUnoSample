@@ -1,5 +1,14 @@
-﻿namespace ReactiveUIRoutingWithContracts
+﻿using System;
+using System.Collections.ObjectModel;
+
+namespace ReactiveUIRoutingWithContracts
 {
+    public class ModifyArgumentAndStatus : NavigateArgumentAndStatus<Action<ObservableCollection<IViewModelAndContract>>>
+    {
+        public ModifyArgumentAndStatus(Action<ObservableCollection<IViewModelAndContract>> fn) : base(fn) { }
+    }
+
+    //public class UnitArgumentAndStatus : NavigateArgumentAndStatus<System.Reactive.Unit>
     /// <summary>
     /// Used by <see cref="RoutingWithContractState"/> to receive the navigation argument and report back the status of
     /// whether the call was discarded because navigation was already in progress.

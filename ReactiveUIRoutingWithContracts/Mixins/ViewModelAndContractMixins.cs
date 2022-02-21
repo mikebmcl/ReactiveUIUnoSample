@@ -35,8 +35,5 @@ namespace ReactiveUIRoutingWithContracts
 
         public static NavigateArgumentAndStatus<IViewModelAndContract> ToNavigateArgumentAndStatus(this IViewModelAndContract vmc) =>
             new NavigateArgumentAndStatus<IViewModelAndContract>(vmc);
-
-        public static NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData> ToNavigateArgumentAndStatus(this IViewModelAndContract vmc, Func<ObservableCollection<IViewModelAndContract>, bool> fn) =>
-            new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData(fn, vmc));
     }
 }

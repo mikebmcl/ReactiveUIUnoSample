@@ -46,23 +46,28 @@ namespace ReactiveUIUnoSample.UnitTests
         protected void WaitForNavigation(int maxTimeToWait = 100, TestScheduler schedulerToWaitOn = null)
         {
             TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
+            // If the Scheduler is enabled that means it thinks that it is processing things (and probably is). But we want to force it to through. We could try to rig up something to wait until it finishes since in theory when it's done processing items it switches off. But for now this works.
+            bool schedulerWasRunning = scheduler.IsEnabled;
+            scheduler.Stop();
             for (int i = 0; i < maxTimeToWait; i++)
             {
-                if (scheduler.IsEnabled)
-                {
-                    scheduler.Sleep(1);
-                    if (!ScreenForContracts.Router.IsNavigating)
-                    {
-                        return;
-                    }
-                }
-                else
+                try
                 {
                     scheduler.AdvanceBy(1);
                     if (!ScreenForContracts.Router.IsNavigating)
                     {
+                        if (schedulerWasRunning)
+                        {
+                            scheduler.Start();
+                        }
                         return;
                     }
+                }
+                catch (Exception ex)
+                {
+                    // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. However, we can't bury the exception here because then expected exceptions in the tests never surface and tests fails because the exception they expected and should've received was eaten. Then again this might not be an actual problem since it's only causing failure where failure was expected and doesn't seem to be causing further problems for now. I wonder what it would do in the event of a double throw though...
+                    TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(WaitForNavigation)} at iteration {i + 1}. Details to follow."));
+                    throw;
                 }
             }
             throw new TimeoutException($"In {nameof(WaitForNavigation)}, navigation still had not occurred after {maxTimeToWait} passed.");
@@ -71,6 +76,11 @@ namespace ReactiveUIUnoSample.UnitTests
         protected ViewModelAndContract GetEmptyVMViewModelAndContract()
         {
             return new EmptyViewModel(ScreenForContracts).ToViewModelAndContract();
+        }
+
+        protected ViewModelAndContract GetTemperatureConversionVMViewModelAndContract()
+        {
+            return new TemperatureConversionsViewModel(ScreenForContracts, TestSchedulerProvider).ToViewModelAndContract();
         }
 
         protected NavigateArgumentAndStatus<IViewModelAndContract> GetNavigateArgumentAndStatus(IViewModelAndContract vm = null)
@@ -85,13 +95,21 @@ namespace ReactiveUIUnoSample.UnitTests
         protected void AdvanceScheduler(int time = 100, TestScheduler schedulerToWaitOn = null)
         {
             TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
-            if (scheduler.IsEnabled)
-            {
-                scheduler.Sleep(time);
-            }
-            else
+            bool schedulerWasRunning = scheduler.IsEnabled;
+            scheduler.Stop();
+            try
             {
                 scheduler.AdvanceBy(time);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Our actual exception observers can end up getting the intentional exceptions and throwing as a result, e.g. TemperatureConversionsViewModel. We don't want that. However, we can't bury the exception here because then expected exceptions in the tests never surface and tests fails because the exception they expected and should've received was eaten.
+                TestContext.WriteLine(DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, $"Exception in {nameof(AdvanceScheduler)}. Details to follow."));
+                throw;
+            }
+            if (schedulerWasRunning)
+            {
+                scheduler.Start();
             }
         }
 
@@ -135,7 +153,7 @@ namespace ReactiveUIUnoSample.UnitTests
             bool wasCalled = false;
             using IViewModelAndContractObserver viewModelAndContractObserver = new IViewModelAndContractObserver().Subscribe(_routingWithContractsState.CurrentViewModel, (val) => wasCalled = true, null, null, TestSchedulerProvider.MainThread);
             _routingWithContractsState.Navigate.Execute(new EmptyViewModel(ScreenForContracts).ToViewModelAndContract());
-            TestSchedulerProvider.MainThread.AdvanceBy(10);
+            AdvanceScheduler(10);
             Assert.That(wasCalled, Is.True);
         }
 
@@ -416,190 +434,78 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(() => _routingWithContractsState.NavigateAndRemoveCurrentWithStatus.Execute(new NavigateArgumentAndStatus<IViewModelAndContract>(GetEmptyVMViewModelAndContract())), Throws.Nothing);
         }
 
-        // Empty navigation stack NavigateAndApplyFunc and NavigateAndApplyFuncWithStatus
+        // Empty navigation stack ModifyNavigationStack and ModifyNavigationStackWithStatus
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute called with null and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteToNullAndEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStack.Execute called with null and empty navigation stack, Then exception is thrown")]
+        public void WhenModifyNavigationStackExecuteToNullAndEmptyNavigationStack_ThenExceptionIsThrown()
         {
             Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(null), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStack.Execute(null), Throws.Exception);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with null Func and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithNullFuncAndEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStack.Execute with valid Action and empty navigation stack, Then no exception is thrown")]
+        public void WhenModifyNavigationStackExecuteCalledWithValidActionAndEmptyNavigationStack_ThenNoExceptionIsThrown()
         {
             Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData(null, GetEmptyVMViewModelAndContract())), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStack.Execute((stack) => { }), Throws.Nothing);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with null IViewModelContract and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithNullIViewModelContractAndEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStackWithStatus.Execute with null and empty navigation stack, Then exception is thrown")]
+        public void WhenModifyNavigationStackWithStatusExecuteCalledWithNullAndEmptyNavigationStack_ThenExceptionIsThrown()
         {
             Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData((stack) => true, null)), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(null), Throws.Exception);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with IViewModelContract with null ViewModel and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithNullIViewModelContractViewModelAndEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStackWithStatus.Execute with valid Action and empty navigation stack, Then no exception is thrown")]
+        public void WhenModifyNavigationStackWithStatusExecuteCalledWithValidIViewModelContractAndEmptyNavigationStack_ThenNoExceptionIsThrown()
         {
             Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData((stack) => true, new ViewModelAndContract(null))), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(new ModifyArgumentAndStatus((stack) => { })), Throws.Nothing);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with valid IViewModelContract and empty navigation stack, Then no exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithValidIViewModelContractAndEmptyNavigationStack_ThenNoExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData((stack) => true, GetEmptyVMViewModelAndContract())), Throws.Nothing);
-        }
+        // Non-empty navigation stack ModifyNavigationStack and ModifyNavigationStackWithStatus
 
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullAndEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(null), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null RoutingWithContractsStateApplyFuncData and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullRoutingWithContractsStateApplyFuncDataAndEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(null)), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null Func and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullFuncAndEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData(null, GetEmptyVMViewModelAndContract()))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null IViewModelContract and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullIViewModelContractAndEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, null))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with IViewModelContract with null ViewModel and empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullIViewModelContractViewModelAndEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, new ViewModelAndContract(null)))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with valid IViewModelContract and empty navigation stack, Then no exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithValidIViewModelContractAndEmptyNavigationStack_ThenNoExceptionIsThrown()
-        {
-            Assert.That(() => _routingWithContractsState.NavigationStack.Count, Is.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, GetEmptyVMViewModelAndContract()))), Throws.Nothing);
-        }
-
-        // Non-empty navigation stack NavigateAndApplyFunc and NavigateAndApplyFuncWithStatus
-
-        [Test(Description = "When NavigateAndApplyFunc.Execute called with null and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteToNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStack.Execute called with null and non-empty navigation stack, Then exception is thrown")]
+        public void WhenModifyNavigationStackExecuteToNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()
         {
             _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
             WaitForNavigation();
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(null), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStack.Execute(null), Throws.Exception);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with null Func and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithNullFuncAndNonEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStack.Execute with valid IViewModelContract and non-empty navigation stack, Then no exception is thrown")]
+        public void WhenModifyNavigationStackExecuteCalledWithValidIViewModelContractAndNonEmptyNavigationStack_ThenNoExceptionIsThrown()
         {
             _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
             WaitForNavigation();
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData(null, GetEmptyVMViewModelAndContract())), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStack.Execute((stack) => { }), Throws.Nothing);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with null IViewModelContract and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithNullIViewModelContractAndNonEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStackWithStatus.Execute with null and non-empty navigation stack, Then exception is thrown")]
+        public void WhenModifyNavigationStackWithStatusExecuteCalledWithNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()
         {
             _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
             WaitForNavigation();
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData((stack) => true, null)), Throws.Exception);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(null), Throws.Exception);
         }
 
-        [Test(Description = "When NavigateAndApplyFunc.Execute with IViewModelContract with null ViewModel and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithNullIViewModelContractViewModelAndNonEmptyNavigationStack_ThenExceptionIsThrown()
+        [Test(Description = "When ModifyNavigationStackWithStatus.Execute with valid IViewModelContract and non-empty navigation stack, Then no exception is thrown")]
+        public void WhenModifyNavigationStackWithStatusExecuteCalledWithValidIViewModelContractAndNonEmptyNavigationStack_ThenNoExceptionIsThrown()
         {
             _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
             WaitForNavigation();
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData((stack) => true, new ViewModelAndContract(null))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFunc.Execute with valid IViewModelContract and non-empty navigation stack, Then no exception is thrown")]
-        public void WhenNavigateAndApplyFuncExecuteCalledWithValidIViewModelContractAndNonEmptyNavigationStack_ThenNoExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData((stack) => true, GetEmptyVMViewModelAndContract())), Throws.Nothing);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullAndNonEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(null), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null RoutingWithContractsStateApplyFuncData and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullRoutingWithContractsStateApplyFuncDataAndNonEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(null)), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null Func and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullFuncAndNonEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData(null, GetEmptyVMViewModelAndContract()))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with null IViewModelContract and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullIViewModelContractAndNonEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, null))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with IViewModelContract with null ViewModel and non-empty navigation stack, Then exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithNullIViewModelContractViewModelAndNonEmptyNavigationStack_ThenExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, new ViewModelAndContract(null)))), Throws.Exception);
-        }
-
-        [Test(Description = "When NavigateAndApplyFuncWithStatus.Execute with valid IViewModelContract and non-empty navigation stack, Then no exception is thrown")]
-        public void WhenNavigateAndApplyFuncWithStatusExecuteCalledWithValidIViewModelContractAndNonEmptyNavigationStack_ThenNoExceptionIsThrown()
-        {
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
-            WaitForNavigation();
-            Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
-            Assert.That(() => _routingWithContractsState.NavigateAndApplyFuncWithStatus.Execute(new NavigateArgumentAndStatus<RoutingWithContractsStateApplyFuncData>(new RoutingWithContractsStateApplyFuncData((stack) => true, GetEmptyVMViewModelAndContract()))), Throws.Nothing);
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(new ModifyArgumentAndStatus((stack) => { })), Throws.Nothing);
         }
 
         // 
 
-        [Test(Description = "WhenNavigateAndApplyFuncIsCalledToClearTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackIsClearedAndNavigationToTheNewItemOccurs")]
-        public void WhenNavigateAndApplyFuncIsCalledToClearTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackIsClearedAndNavigationToTheNewItemOccurs()
+        [Test(Description = "WhenModifyNavigationStackIsCalledToClearTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackIsClearedAndNavigationToTheNewItemOccurs")]
+        public void WhenModifyNavigationStackIsCalledToClearTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackIsClearedAndNavigationToTheNewItemOccurs()
         {
             //Assert.Multiple(() =>
             //{
@@ -613,34 +519,29 @@ namespace ReactiveUIUnoSample.UnitTests
             _routingWithContractsState.Navigate.Execute(vm);
             WaitForNavigation();
             vm = GetEmptyVMViewModelAndContract();
-            _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData(
-                (navstack) =>
+            _routingWithContractsState.ModifyNavigationStack.Execute((navstack) =>
                 {
                     navstack.Clear();
-                    return true;
-                }, vm));
+                    navstack.Add(vm);
+                });
             WaitForNavigation();
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.EqualTo(1));
             Assert.That(_routingWithContractsState.NavigationStack[0], Is.SameAs(vm));
             //});
         }
 
-        [Test(Description = "WhenNavigateAndApplyFuncIsCalledToClearTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackIsClearedAndNavigationToTheNewItemOccurs")]
-        public void WhenNavigateAndApplyFuncIsCalledToRemoveAllItemsOfACertainTypeFromTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackContainsNoItemsOfThatTypeAndNavigationToTheNewItemOccurs()
+        [Test(Description = "WhenModifyNavigationStackIsCalledToClearTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackIsClearedAndNavigationToTheNewItemOccurs")]
+        public void WhenModifyNavigationStackIsCalledToRemoveAllItemsOfACertainTypeFromTheNavigationStackAndNavigateToANewItem_ThenTheNavigationStackContainsNoItemsOfThatTypeAndNavigationToTheNewItemOccurs()
         {
             //Assert.Multiple(() =>
             //{
-            TemperatureConversionsViewModel GenerateTemperatureConversionViewModel()
-            {
-                return new TemperatureConversionsViewModel(ScreenForContracts, TestSchedulerProvider);
-            }
             var emptyVMC = GetEmptyVMViewModelAndContract();
             _routingWithContractsState.Navigate.Execute(emptyVMC);
             WaitForNavigation();
             _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
             WaitForNavigation();
 
-            var tempVMC = GenerateTemperatureConversionViewModel().ToViewModelAndContract();
+            var tempVMC = GetTemperatureConversionVMViewModelAndContract();
             _routingWithContractsState.Navigate.Execute(tempVMC);
             WaitForNavigation();
 
@@ -654,20 +555,19 @@ namespace ReactiveUIUnoSample.UnitTests
             WaitForNavigation();
             _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
             WaitForNavigation();
-            var itemToAdd = GenerateTemperatureConversionViewModel().ToViewModelAndContract();
+            var itemToAdd = GetTemperatureConversionVMViewModelAndContract();
             var itemToAddViewModelType = itemToAdd.ViewModel.GetType();
             var removeViewModelType = emptyVMCViewModelType;
             Assert.That(itemToAddViewModelType, Is.Not.TypeOf(removeViewModelType));
-            _routingWithContractsState.NavigateAndApplyFunc.Execute(new RoutingWithContractsStateApplyFuncData(
-                (navstack) =>
+            _routingWithContractsState.ModifyNavigationStack.Execute((navstack) =>
                 {
                     var removeList = navstack.Where((vmc) => vmc.ViewModel.GetType() == removeViewModelType).ToList();
                     foreach (var item in removeList)
                     {
                         navstack.Remove(item);
                     }
-                    return true;
-                }, itemToAdd));
+                    navstack.Add(itemToAdd);
+                });
             WaitForNavigation();
             Assert.That(_routingWithContractsState.NavigationStack.Count((vmc) => vmc.ViewModel.GetType() == removeViewModelType), Is.Zero);
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Not.Zero);
@@ -683,7 +583,7 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(_routingWithContractsState.NavigationStack.Count, Is.Zero);
             _routingWithContractsState.NavigateWithStatus.Execute(firstNavItem);
             Assert.That(TestSchedulerProvider.MainThread.IsEnabled, Is.False);
-            TestSchedulerProvider.MainThread.AdvanceBy(1);
+            AdvanceScheduler(1);
             Assert.That(_routingWithContractsState.IsNavigating, Is.True);
             _routingWithContractsState.NavigateWithStatus.Execute(secondNavItem);
             WaitForNavigation();

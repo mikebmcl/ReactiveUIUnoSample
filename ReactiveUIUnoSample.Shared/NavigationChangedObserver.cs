@@ -71,6 +71,11 @@ namespace ReactiveUIUnoSample
 
         public void OnNext(IChangeSet<IViewModelAndContract> value)
         {
+            // Ignore any changes the user is making; we will get a notification when this is false if the current view model actually changed.
+            if (_mainViewModel.Router.IsInModifyNavigationStack)
+            {
+                return;
+            }
             _mainViewModel.IsBackEnabled = _mainViewModel.Router.NavigationStack.Count > 1;
             var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
 #if NETFX_CORE || __WASM__

@@ -18,5 +18,10 @@
             ViewModel = viewModel;
             Contract = contract;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(ViewModelAndContract)} VM: '{ViewModel?.GetType().Name}' C: '{Contract}'";
+        }
     }
 }

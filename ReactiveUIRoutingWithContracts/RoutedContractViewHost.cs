@@ -29,6 +29,7 @@ using ReactiveUI;
 #else
 using ReactiveUI;
 #endif
+using System.Reactive.Disposables;
 
 namespace ReactiveUIRoutingWithContracts
 {
@@ -81,16 +82,25 @@ namespace ReactiveUIRoutingWithContracts
             }
 
             IViewModelAndContract currentViewModel = default;
-            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x).StartWith(currentViewModel);
+            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Where(x => !Router.IsInModifyNavigationStack).Do(x => currentViewModel = x).StartWith(currentViewModel);
 
-            this.WhenActivated(d =>
+            this.WhenAnyValue(x => x.Router.IsInModifyNavigationStack, (modifying) =>
+            {
+                if (!modifying)
+                {
+                    ResolveViewForViewModel(null, true);
+                }
+                return modifying;
+            });
+
+            this.WhenActivated(disposables =>
             {
                 // NB: The DistinctUntilChanged is useful because most views in
                 // WinRT will end up getting here twice - once for configuring
                 // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-                d(vmAndContract.DistinctUntilChanged().Subscribe(
-                    ResolveViewForViewModel,
-                    ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
+                vmAndContract.DistinctUntilChanged().Subscribe(
+                    (vm) => { ResolveViewForViewModel(vm); },
+                    ex => RxApp.DefaultExceptionHandler.OnNext(ex)).DisposeWith(disposables);
             });
         }
 
@@ -121,8 +131,23 @@ namespace ReactiveUIRoutingWithContracts
         /// </value>
         public IViewLocator ViewLocator { get; set; }
 
-        private void ResolveViewForViewModel(IViewModelAndContract viewModel)
+        private string _lastContract;
+
+        private void ResolveViewForViewModel(IViewModelAndContract viewModel, bool refresh = false)
         {
+            if (refresh)
+            {
+                var existingViewModel = (Content as IViewFor)?.ViewModel;
+                var mostRecentViewModel = Router.NavigationStack.Count > 0 ? Router.NavigationStack[Router.NavigationStack.Count - 1] : default;
+                if (existingViewModel == mostRecentViewModel?.ViewModel && _lastContract == mostRecentViewModel?.Contract)
+                {
+                    return;
+                }
+                viewModel = mostRecentViewModel;
+            }
+
+            _lastContract = viewModel?.Contract;
+
             if (viewModel?.ViewModel is null)
             {
                 Content = DefaultContent;

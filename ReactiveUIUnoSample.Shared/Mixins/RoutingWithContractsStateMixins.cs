@@ -12,10 +12,10 @@ namespace ReactiveUIUnoSample
     public static class RoutingWithContractsStateMixins
     {
         /// <summary>
-        /// Removes the last item (i.e. the current ViewModel) from the <see cref="RoutingWithContractsState.NavigationStack"/> and returns 
-        /// <see cref="RoutingWithContractsState.Navigate"/>. When you call <see cref="ReactiveCommand{TParam, TResult}.Execute(TParam)"/> on
+        /// Removes the last item (i.e. the current ViewModel) from the <see cref="RoutingWithContractsStateUnguarded.NavigationStack"/> and returns 
+        /// <see cref="RoutingWithContractsStateUnguarded.Navigate"/>. When you call <see cref="ReactiveCommand{TParam, TResult}.Execute(TParam)"/> on
         /// the returned value, the parameter must be a ViewModel that implements <see cref="IRoutableViewModelForContracts"/>, because that
-        /// is the requirement imposed by <see cref="RoutingWithContractsState.Navigate"/>, which is what this returns.
+        /// is the requirement imposed by <see cref="RoutingWithContractsStateUnguarded.Navigate"/>, which is what this returns.
         /// </summary>.
         /// <param name="routingState">The routing state this extension method is being called for.</param>
         /// <param name="runAfterRemoval">
@@ -24,12 +24,12 @@ namespace ReactiveUIUnoSample
         /// might run during back navigation will not run in this case. So if you need to dispose of your view model, for example, this gives you
         /// a chance to do so.
         /// </param>
-        /// <returns><see cref="RoutingWithContractsState.Navigate"/></returns>
+        /// <returns><see cref="RoutingWithContractsStateUnguarded.Navigate"/></returns>
         /// <exception cref="ArgumentOutOfRangeException"/>
         /// <remarks>
         /// If there is only one item on the navigation stack then this method will temporarily leave the navigation stack empty.
-        /// If you are observing <see cref="RoutingWithContractsState.NavigationChanged"/> you need to make sure you handle that possibility
-        /// appropriately. You should already be doing so since <see cref="RoutingWithContractsState.NavigateAndReset"/> also clears the
+        /// If you are observing <see cref="RoutingWithContractsStateUnguarded.NavigationChanged"/> you need to make sure you handle that possibility
+        /// appropriately. You should already be doing so since <see cref="RoutingWithContractsStateUnguarded.NavigateAndReset"/> also clears the
         /// navigation stack before navigating, but if you never use that then your observer might not be written to handle an 
         /// empty navigation stack and your unit tests might not contain any tests to ensure that your observers properly handle
         /// an empty navigation stack.
@@ -46,10 +46,10 @@ namespace ReactiveUIUnoSample
         }
 
         /// <summary>
-        /// Removes all items from the navigation stack and returns <see cref="RoutingWithContractsState.Navigate"/>. This exists
+        /// Removes all items from the navigation stack and returns <see cref="RoutingWithContractsStateUnguarded.Navigate"/>. This exists
         /// to give you a chance to perform any custom actions on the removed view models since they do not pass through the normal
         /// back navigation handlers. If you do not need to run any custom actions, use the built in 
-        /// <see cref="RoutingWithContractsState.NavigateAndReset"/> property instead.
+        /// <see cref="RoutingWithContractsStateUnguarded.NavigateAndReset"/> property instead.
         /// </summary>
         /// <param name="routingState">The routing state this extension method is being called for.</param>
         /// <param name="runOnEachHighestToLowestIndexOrdered">

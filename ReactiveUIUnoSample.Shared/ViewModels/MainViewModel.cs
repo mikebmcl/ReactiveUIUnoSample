@@ -245,7 +245,7 @@ namespace ReactiveUIUnoSample.ViewModels
             {
                 try
                 {
-                    if (Router.NavigationStack.Last().ViewModel is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+                    if (Router.NavigationStack.LastOrDefault()?.ViewModel is Interfaces.ICallOnBackNavigation callOnBackNavigation)
                     {
                         if (callOnBackNavigation.CallOnBackNavigation())
                         {
@@ -275,7 +275,7 @@ namespace ReactiveUIUnoSample.ViewModels
             {
                 try
                 {
-                    if (Router.NavigationStack.Last().ViewModel is Interfaces.ICallOnBackNavigation callOnBackNavigation)
+                    if (Router.NavigationStack.LastOrDefault()?.ViewModel is Interfaces.ICallOnBackNavigation callOnBackNavigation)
                     {
                         if (callOnBackNavigation.CallOnBackNavigation())
                         {

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -144,7 +145,7 @@ namespace ReactiveUIRoutingWithContracts
 
             public void OnError(Exception error)
             {
-                _routingWithContractsState._userManipulatingStack = false;
+                _routingWithContractsState.IsInModifyNavigationStack = false;
                 _routingWithContractsState._isNavigating.ForceToFalse();
                 _routingWithContractsState.IsNavigating = false;
                 throw error;
@@ -152,7 +153,7 @@ namespace ReactiveUIRoutingWithContracts
 
             public void OnNext(IViewModelAndContract value)
             {
-                if (_routingWithContractsState._userManipulatingStack)
+                if (_routingWithContractsState.IsInModifyNavigationStack)
                 {
                     return;
                 }
@@ -399,13 +400,13 @@ namespace ReactiveUIRoutingWithContracts
         public ReactiveCommand<NavigateArgumentAndStatus<Action<ObservableCollection<IViewModelAndContract>>>, IViewModelAndContract> ModifyNavigationStackWithStatus { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the current view model which is to be shown for the Routing.
+        /// Gets or sets the current view model which is to be shown for the Routing. If you are observing this, check to see if <see cref="IsInModifyNavigationStack"/> is <c>true</c>; if so disregard the change because it means that changes are happening within the <see cref="Action{T}"/> that is invoked during execution of <see cref="ModifyNavigationStack"/> or <see cref="ModifyNavigationStackWithStatus"/>. If the current view model is actually different after that Action completes successfully, notification with new data will be sent when <see cref="IsInModifyNavigationStack"/> is <c>false</c>.
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IViewModelAndContract> CurrentViewModel { get; protected set; }
 
         /// <summary>
-        /// Gets or sets an observable which will signal when the Navigation changes.
+        /// Gets or sets an observable which will signal when the Navigation changes. If you are observing this, check to see if <see cref="IsInModifyNavigationStack"/> is <c>true</c>; if so disregard the change because it means that changes are happening within the <see cref="Action{T}"/> that is invoked during execution of <see cref="ModifyNavigationStack"/> or <see cref="ModifyNavigationStackWithStatus"/>. If the current view model is actually different after that Action completes successfully, observers will receive a notification with new data that consists of a single <see cref="Change{T}"/> that has <see cref="ListChangeReason.Refresh"/> as its <see cref="Change{T}.Reason"/> that will be sent when <see cref="IsInModifyNavigationStack"/> is <c>false</c>.
         /// </summary>
         [IgnoreDataMember]
         public IObservable<IChangeSet<IViewModelAndContract>> NavigationChanged { get; protected set; } // TODO: Create Test
@@ -415,7 +416,7 @@ namespace ReactiveUIRoutingWithContracts
         /// </summary>
         [IgnoreDataMember]
         [ReactiveUI.Fody.Helpers.Reactive]
-        public bool IsNavigating { get; set; }
+        public bool IsNavigating { get; protected set; }
 
         [IgnoreDataMember]
         private readonly AtomicBoolean _isNavigating = new AtomicBoolean();
@@ -429,7 +430,8 @@ namespace ReactiveUIRoutingWithContracts
         private bool _stackWasCleared;
 
         [IgnoreDataMember]
-        private bool _userManipulatingStack;
+        [ReactiveUI.Fody.Helpers.Reactive]
+        public bool IsInModifyNavigationStack { get; protected set; } //=> _isInModifyNavigationStack;
 
         [IgnoreDataMember]
         private bool _disposedValue;
@@ -758,10 +760,11 @@ namespace ReactiveUIRoutingWithContracts
                      IsNavigating = true;
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
                      // This is how we avoid having the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
-                     var startCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
-                     _userManipulatingStack = true;
+                     IViewModelAndContract startCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
+
+                     IsInModifyNavigationStack = true;
                      fn.Invoke(_navigationStack);
-                     _userManipulatingStack = false;
+                     IsInModifyNavigationStack = false;
 
                      var postActionCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
                      if (startCurrentViewModel != postActionCurrentViewModel)
@@ -780,7 +783,7 @@ namespace ReactiveUIRoutingWithContracts
                  }
                  catch
                  {
-                     _userManipulatingStack = false;
+                     IsInModifyNavigationStack = false;
                      _stackWasCleared = false;
                      _isNavigating.ForceToFalse();
                      IsNavigating = false;
@@ -812,11 +815,13 @@ namespace ReactiveUIRoutingWithContracts
                      IsNavigating = true;
                      status.SetAlreadyNavigating(false);
                      _navigatingToIViewModelAndContractWeakRef.SetTarget(null);
-                     // This is how we avoid havig the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
+                     // This is how we avoid having the observer accidentally switch state to navigation is over in case the user's action causes its OnNext to get the same view model that is the one that will actually be navigated to at the end.
                      var startCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
-                     _userManipulatingStack = true;
+                     var preActionStack = _navigationStack.ToList();
+
+                     IsInModifyNavigationStack = true;
                      fn.Invoke(_navigationStack);
-                     _userManipulatingStack = false;
+                     IsInModifyNavigationStack = false;
 
                      var postActionCurrentViewModel = _navigationStack.Count > 0 ? _navigationStack[_navigationStack.Count - 1] : default;
                      if (startCurrentViewModel != postActionCurrentViewModel)
@@ -835,7 +840,7 @@ namespace ReactiveUIRoutingWithContracts
                  }
                  catch
                  {
-                     _userManipulatingStack = false;
+                     IsInModifyNavigationStack = false;
                      _stackWasCleared = false;
                      _isNavigating.ForceToFalse();
                      IsNavigating = false;

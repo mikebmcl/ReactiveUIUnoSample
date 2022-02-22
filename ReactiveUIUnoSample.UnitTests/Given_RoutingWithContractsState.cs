@@ -122,10 +122,10 @@ namespace ReactiveUIUnoSample.UnitTests
         }
 
         /// <summary>
-        /// Creates an observer that mirrors how <see cref="RoutedContractViewHost"/> handles changes to <see cref="RoutingWithContractsState.CurrentViewModel"/> so that it can perform view resolution when appropriate. This is meant to be used with <see cref="TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable"/>, which provides verification that <see cref="RoutedContractViewHost"/> will perform view resolution when the user finishes modifying the navigation stack with <see cref="RoutingWithContractsState.ModifyNavigationStack"/> or <see cref="RoutingWithContractsState.ModifyNavigationStackWithStatus"/>. The observer here logs details of notification using <see cref="TestContext.WriteLine(string?)"/> and, if <paramref name="failOnError"/> is <c>true</c>, calls <see cref="Assert.Fail(string?)"/> with diagnostic data about the exception in the event of an exception, otherwise it calls <see cref="TestContext.WriteLine(string?)"/> with details about the exception. The observer is returned as an <see cref="IDisposable"/> that should be disposed when finished with the observer. Observes on <see cref="TestSchedulerProvider.MainThread"/>.
+        /// Creates an observer that mirrors how <see cref="RoutedContractViewHost"/> handles changes to <see cref="RoutingWithContractsState.CurrentViewModel"/> so that it can perform view resolution when appropriate. This is meant to be used with <see cref="TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable"/>, which provides verification that <see cref="RoutedContractViewHost"/> will perform view resolution when the user finishes modifying the navigation stack with <see cref="RoutingWithContractsState.ModifyNavigationStack"/> or <see cref="RoutingWithContractsState.ModifyNavigationStackWithStatus"/>. If no <paramref name="onNextCallback"/> is provided, the observer logs details of the notification using <see cref="TestContext.WriteLine(string?)"/>. If no <paramref name="onErrorCallback"/> is provided, then if <paramref name="failOnError"/> is <c>true</c>, the observer calls <see cref="Assert.Fail(string?)"/> with diagnostic data about the exception in the event of an exception and will throw the excpection, otherwise it calls <see cref="TestContext.WriteLine(string?)"/> with details about the exception and the exception is not thrown. The observer implements <see cref="IDisposable"/> and should be disposed when finished with the it. Observes on <see cref="TestSchedulerProvider.MainThread"/> is <paramref name="scheduler"/> is <c>null</c>.
         /// </summary>
-        /// <returns>The IObserver as an IDisposable that properly releases the subscription when disposed.</returns>
-        protected IDisposable TestWithRoutedContractViewHostBehavior(bool failOnError = false)
+        /// <returns>The <see cref="IViewModelAndContractObserver"/> used to observe changes to <see cref="RoutingWithContractsState.CurrentViewModel"/>. This type Implements <see cref="IDisposable"/> and so it should be disposed of when you are finished with it.</returns>
+        protected IViewModelAndContractObserver TestWithRoutedContractViewHostBehavior(bool failOnError = false, Action<IViewModelAndContract> onNextCallback = null, Func<Exception, bool> onErrorCallback = null, Action onCompleted = null, CancellationToken unsubscribeToken = default, TestScheduler scheduler = null)
         {
             IViewModelAndContract currentViewModel = default;// GetEmptyVMViewModelAndContract();
             var vmAndContract =
@@ -138,58 +138,102 @@ namespace ReactiveUIUnoSample.UnitTests
                 {
                     currentViewModel = x;
                 })
-                .StartWith(currentViewModel);
+                .StartWith(currentViewModel)
+                // Skip the initial null then report afterwords
+                .SkipWhile(vmc => vmc == null || vmc.ViewModel == null);
             if (failOnError)
             {
-                return new IViewModelAndContractObserver().Subscribe(vmAndContract,
-                    (vmc) =>
+                if (onNextCallback == null)
+                {
+                    onNextCallback = (vmc) =>
                     {
                         TestContext.WriteLine($"viewHostObserver.Next VM: '{vmc?.ViewModel.GetType().Name}' C: '{vmc?.Contract}'");
-                    },
-                    (ex) =>
+                    };
+                }
+                if (onErrorCallback == null)
+                {
+                    onErrorCallback = (ex) =>
                     {
                         var errorString = DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, "OnError called for viewHostObserver");
                         Assert.Fail(errorString);
                         return true;
-                    },
-                    null,
-                    TestSchedulerProvider.MainThread);
+                    };
+                }
+                return new IViewModelAndContractObserver().Subscribe(vmAndContract,
+                    scheduler ?? TestSchedulerProvider.MainThread,
+                    onNextCallback,
+                    onErrorCallback,
+                    onCompleted,
+                    unsubscribeToken);
             }
             else
             {
-                return new IViewModelAndContractObserver().Subscribe(vmAndContract,
-                    (vmc) =>
+                if (onNextCallback == null)
+                {
+                    onNextCallback = (vmc) =>
                     {
-                        //TestContext.WriteLine($"viewHostObserver received view model of type {vmc?.ViewModel.GetType().FullName ?? "(null)"} with contract '{vmc?.Contract}'");
                         TestContext.WriteLine($"viewHostObserver.Next VM: '{vmc?.ViewModel.GetType().Name}' C: '{vmc?.Contract}'");
-                    },
-                    (ex) =>
+                    };
+                }
+                if (onErrorCallback == null)
+                {
+                    onErrorCallback = (ex) =>
                     {
                         var errorString = DiagnosticsHelpers.GetDiagnosticStringWithExceptionData(ex, "OnError called for viewHostObserver");
                         TestContext.WriteLine(errorString);
                         return false;
-                    },
-                    null,
-                    TestSchedulerProvider.MainThread);
+                    };
+                }
+                return new IViewModelAndContractObserver().Subscribe(vmAndContract,
+                    TestSchedulerProvider.MainThread,
+                    onNextCallback,
+                    onErrorCallback,
+                    onCompleted,
+                    unsubscribeToken);
             }
         }
 
         /// <summary>
-        /// Creates an observer that mirrors how <see cref="RoutedContractViewHost"/> performs view resolution when the user finishes modifying the navigation stack with <see cref="RoutingWithContractsState.ModifyNavigationStack"/> or <see cref="RoutingWithContractsState.ModifyNavigationStackWithStatus"/>. This is meant to be used with <see cref="TestWithRoutedContractViewHostBehavior(bool)"/>, which mirrors how <see cref="RoutedContractViewHost"/> handles changes to <see cref="RoutingWithContractsState.CurrentViewModel"/> for all commands in <see cref="RoutingWithContractsState"/>. The observer here logs the current view model and contract using <see cref="TestContext.WriteLine(string?)"/> when <see cref="RoutingWithContractsState.IsInModifyNavigationStack"/> changes to false. It uses <see cref="BooleanObserver"/> but it could use any observer since the notification happens within the this.WhenAnyValue func that creates the IObservable. We are using it simply to provide an <see cref="IDisposable"/> for convenient cleanup. The observer is returned as an <see cref="IDisposable"/> that should be disposed when finished with the observer. Observes on <see cref="TestSchedulerProvider.MainThread"/>.
+        /// Creates an observer that mirrors how <see cref="RoutedContractViewHost"/> performs view resolution when the user finishes modifying the navigation stack with <see cref="RoutingWithContractsState.ModifyNavigationStack"/> or <see cref="RoutingWithContractsState.ModifyNavigationStackWithStatus"/>. This is meant to be used with <see cref="TestWithRoutedContractViewHostBehavior(bool)"/>, which mirrors how <see cref="RoutedContractViewHost"/> handles changes to <see cref="RoutingWithContractsState.CurrentViewModel"/> for all commands in <see cref="RoutingWithContractsState"/>. The observer here logs the current view model and contract using <see cref="TestContext.WriteLine(string?)"/> when <see cref="RoutingWithContractsState.IsInModifyNavigationStack"/> changes to false. It uses <see cref="BooleanObserver"/> but it could use any observer since the notification happens within the this.WhenAnyValue func that creates the IObservable that the observer subscribes to. The observer implements <see cref="IDisposable"/> and should be disposed when you are finished with it. Observes on <see cref="TestSchedulerProvider.MainThread"/> if <paramref name="scheduler"/> is <c>null</c>.
         /// </summary>
-        /// <returns>The IObserver as an IDisposable that properly releases the subscription when disposed.</returns>
-        protected IDisposable TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable()
+        /// <returns>The <see cref="BooleanObserver"/> used to observe changes to <see cref="RoutingWithContractsState.IsInModifyNavigationStack"/>. This type implements <see cref="IDisposable"/> and so it should be disposed of when you are finished with it.</returns>
+        protected BooleanObserver TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable(bool failOnError = false, Action<bool> onNextCallback = null, Func<Exception, bool> onErrorCallback = null, Action onCompleted = null, CancellationToken unsubscribeToken = default, TestScheduler scheduler = null)
         {
-            var obs = this.WhenAnyValue(x => x._routingWithContractsState.IsInModifyNavigationStack, (modifying) =>
+            var obs = this
+                .WhenAnyValue(x => x._routingWithContractsState.IsInModifyNavigationStack
+                //, (modifying) =>
+                //{
+                //    if (!modifying)
+                //    {
+                //        var currentVMAndContract = _routingWithContractsState.NavigationStack.Count > 0 ? _routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1] : default;
+                //        TestContext.WriteLine($"modifyingNavStackFalse VM: '{currentVMAndContract?.ViewModel.GetType().Name}' C: '{currentVMAndContract?.Contract}'");
+                //    }
+                //    return modifying;
+                //}
+                )
+                // Skip the initial assignment of false.
+                .SkipWhile(mod => mod == false);
+            //.SkipWhile((mod) => _routingWithContractsState.NavigationStack.Count is 0);
+            return new BooleanObserver().Subscribe(obs, scheduler ?? TestSchedulerProvider.MainThread, onNextCallback, onErrorCallback, onCompleted, unsubscribeToken);
+        }
+
+        protected void FailOnChangeVMC(IViewModelAndContract vmc)
+        {
+            Assert.Fail($"Current view model should not change but changed to VMC:'{vmc?.ViewModel?.GetType().Name}' C:'{vmc?.Contract}'");
+        }
+
+        protected void FailOnIsInModifyNavigationStackChanged(bool modifying)
+        {
+            var vmc = _routingWithContractsState.NavigationStack.Count > 0 ? _routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1] : default;
+            if (modifying)
             {
-                if (!modifying)
-                {
-                    var currentVMAndContract = _routingWithContractsState.NavigationStack.Count > 0 ? _routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1] : default;
-                    TestContext.WriteLine($"viewHostModifyingNavStackFalse VM: '{currentVMAndContract?.ViewModel.GetType().Name}' C: '{currentVMAndContract?.Contract}'");
-                }
-                return modifying;
-            });
-            return new BooleanObserver().Subscribe(obs, TestSchedulerProvider.MainThread);
+                Assert.Fail($"{nameof(RoutingWithContractsState.IsInModifyNavigationStack)} should not have become true. Current view model is:'{vmc?.ViewModel?.GetType().Name}' C:'{vmc?.Contract}'");
+            }
+            //if (!modifying)
+            else
+            {
+                Assert.Fail($"{nameof(RoutingWithContractsState.IsInModifyNavigationStack)} should not have become false. Current view model is:'{vmc?.ViewModel?.GetType().Name}' C:'{vmc?.Contract}'");
+            }
         }
 
         [SetUp]
@@ -230,7 +274,12 @@ namespace ReactiveUIUnoSample.UnitTests
         public void WhenNavigateExecuteCalledWithValidViewModel_ThenIViewModelAndContractObserverOnNextDelegateIsCalledAfterNoMoreThan10SchedulerAdvanceBy1Calls()
         {
             bool wasCalled = false;
-            using IViewModelAndContractObserver viewModelAndContractObserver = new IViewModelAndContractObserver().Subscribe(_routingWithContractsState.CurrentViewModel, (val) => wasCalled = true, null, null, TestSchedulerProvider.MainThread);
+            using IViewModelAndContractObserver viewModelAndContractObserver = new IViewModelAndContractObserver().Subscribe(
+                _routingWithContractsState.CurrentViewModel,
+                TestSchedulerProvider.MainThread,
+                (val) => wasCalled = true,
+                null,
+                null);
             _routingWithContractsState.Navigate.Execute(new EmptyViewModel(ScreenForContracts).ToViewModelAndContract());
             AdvanceScheduler(10);
             Assert.That(wasCalled, Is.True);
@@ -695,12 +744,47 @@ namespace ReactiveUIUnoSample.UnitTests
         [Test(Description = "When ModifyNavigationStackWithStatus.Execute with non-empty navigation stack and NavigateWithStatus attempt in Action, Then no exception is thrown on navigate attempt and stack does not change")]
         public void WhenModifyNavigationStackWithStatusExecuteCalledWithNonEmptyNavigationStackAndNavigateWithStatusAttemptInAction_ThenNoExceptionIsThrownOnNavigateWithStatusAttemptAndStackDoesNotChange()
         {
-            using var routedContractViewHostObserver = TestWithRoutedContractViewHostBehavior();
-            using var routedcontractViewHostIsModifyingStackObserver = TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable();
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract());
+            using var viewHostObserver = TestWithRoutedContractViewHostBehavior();
+            using var modifyingStackObserver = TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable();
+
+            var initialVMC = GetEmptyVMViewModelAndContract("initial");
+
+            IViewModelAndContract fromViewHostObserver = null;
+            int countChanges = 0;
+            viewHostObserver.SetOnNextCallback((vmc) =>
+            {
+                //if (vmc == null)
+                //{
+                //    return;
+                //}
+                fromViewHostObserver = vmc;
+                countChanges++;
+                Assert.That(vmc, Is.SameAs(initialVMC));
+            });
+            modifyingStackObserver.SetOnNextCallback(FailOnIsInModifyNavigationStackChanged);
+
+            Assert.Multiple(
+                () => _routingWithContractsState.Navigate.Execute(initialVMC)
+                );
+
             Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            Assert.That(countChanges, Is.EqualTo(1));
+            Assert.That(fromViewHostObserver, Is.SameAs(initialVMC));
+            countChanges = 0;
+            fromViewHostObserver = null;
+
+            viewHostObserver.SetOnNextCallback(FailOnChangeVMC);
+            modifyingStackObserver.SetOnNextCallback((isModifyingStack) =>
+            {
+                if (!isModifyingStack)
+                {
+                    Assert.That(_routingWithContractsState.NavigationStack.Count, Is.EqualTo(1));
+                    Assert.That(_routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1], Is.SameAs(initialVMC));
+                }
+            });
             var modifyWithStatus = new ModifyArgumentAndStatus((stack) =>
             {
+                Assert.That(_routingWithContractsState.IsInModifyNavigationStack, Is.True);
                 Assert.That(stack.Count, Is.EqualTo(1));
                 var originalTopStackItem = stack[stack.Count - 1];
                 var navigateTo = GetTemperatureConversionVMViewModelAndContract().ToNavigateArgumentAndStatus();
@@ -758,63 +842,141 @@ namespace ReactiveUIUnoSample.UnitTests
         [Test(Description = "When ModifyNavigationStackWithStatus.Execute with non-empty navigation stack and current view model is changed in the Action, Then no exception is thrown and navigation occurs")]
         public void WhenModifyNavigationStackWithStatusExecuteCalledWithNonEmptyNavigationStackAndCurrentViewModelChangedInAction_ThenNoExceptionIsThrownAndNavigationOccursAndRoutedContractViewHostObservableForCurrentViewModelWorks()
         {
-            using var routedContractViewHostObserver = TestWithRoutedContractViewHostBehavior(false);
-            using var routedcontractViewHostIsModifyingStackObserver = TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable();
-            _routingWithContractsState.Navigate.Execute(GetEmptyVMViewModelAndContract("initial"));
+            using var viewHostObserver = TestWithRoutedContractViewHostBehavior();
+            using var modifyingStackObserver = TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable();
+
+            var initialVMC = GetEmptyVMViewModelAndContract("initial");
+
+            IViewModelAndContract fromViewHostObserver = null;
+            int countChanges = 0;
+            viewHostObserver.SetOnNextCallback((vmc) =>
+            {
+                fromViewHostObserver = vmc;
+                countChanges++;
+                Assert.That(vmc, Is.SameAs(initialVMC));
+            });
+            modifyingStackObserver.SetOnNextCallback(FailOnIsInModifyNavigationStackChanged);
+
+            Assert.Multiple(
+                () => _routingWithContractsState.Navigate.Execute(initialVMC)
+                );
+
             Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            Assert.That(countChanges, Is.EqualTo(1));
+            Assert.That(fromViewHostObserver, Is.SameAs(initialVMC));
+            countChanges = 0;
+            fromViewHostObserver = null;
+
+            var addTo = GetTemperatureConversionVMViewModelAndContract("addTo");
+            viewHostObserver.SetOnNextCallback(FailOnChangeVMC);
+            modifyingStackObserver.SetOnNextCallback((isModifyingStack) =>
+            {
+                if (!isModifyingStack)
+                {
+                    Assert.That(_routingWithContractsState.NavigationStack.Count, Is.GreaterThanOrEqualTo(1));
+                    Assert.That(_routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1], Is.SameAs(addTo));
+                }
+            });
+
             var modifyWithStatus = new ModifyArgumentAndStatus((stack) =>
             {
                 Assert.That(stack.Count, Is.EqualTo(1));
                 var originalTopStackItem = stack[stack.Count - 1];
-                var addTo = GetTemperatureConversionVMViewModelAndContract("addTo");
                 stack.Add(addTo);
                 Assert.That(stack.Count, Is.EqualTo(2));
                 Assert.That(stack[stack.Count - 1], Is.SameAs(addTo));
             });
+
             _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(modifyWithStatus);
+
             Assert.That(modifyWithStatus.AlreadyNavigating, Is.False);
+
             // Verify that it's still navigating because we changed the current view model in the action.
             Assert.That(_routingWithContractsState.IsNavigating, Is.True);
+
             Assert.That(() => WaitForNavigation(), Throws.Nothing);
-            _routingWithContractsState.Navigate.Execute(GetTemperatureConversionVMViewModelAndContract("final"));
+
+            var finalVM = GetTemperatureConversionVMViewModelAndContract("final");
+            Assert.That(_routingWithContractsState.IsInModifyNavigationStack, Is.False);
+            // Even though _routingWithContractsState.IsInModifyNavigationStack is false, the observer hasn't necessarily gotten the notice yet. We skip some time here because we are only concerned with verifying that the next navigation does not change _routingWithContractsState.IsInModifyNavigationStack not that some earlier navigation changed it but the observable hasn't sent the notice about that right now. Changes to IsInModifyNavigationStack just trigger a check to see that the current content's view model matches the current view model.
+            AdvanceScheduler();
+            modifyingStackObserver.SetOnNextCallback(FailOnIsInModifyNavigationStackChanged);
+            countChanges = 0;
+            viewHostObserver.SetOnNextCallback((vmc) =>
+            {
+                fromViewHostObserver = vmc;
+                countChanges++;
+                Assert.That(vmc, Is.SameAs(finalVM));
+            });
+            Assert.That(() => _routingWithContractsState.Navigate.Execute(finalVM), Throws.Nothing);
             Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            Assert.That(countChanges, Is.EqualTo(1));
         }
 
         [Test(Description = "When ModifyNavigationStackWithStatus.Execute with non-empty navigation stack and multiple stack changes ending in current view model is changed in the Action, Then no exception is thrown and navigation occurs")]
         public void WhenModifyNavigationStackWithStatusExecuteCalledWithNonEmptyNavigationStackAndMultipleStackChangesEndingInCurrentViewModelChangedInAction_ThenNoExceptionIsThrownAndNavigationOccursAndRoutedContractViewHostObservableForCurrentViewModelWorks()
         {
-            Assert.Multiple(() =>
+            //Assert.Multiple(() =>
+            //{
+            using var viewHostObserver = TestWithRoutedContractViewHostBehavior();
+            using var modifyingStackObserver = TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable();
+
+            var initialVMC = GetFirstVMViewModelAndContract("initial");
+
+            IViewModelAndContract fromViewHostObserver = null;
+            int countChanges = 0;
+            viewHostObserver.SetOnNextCallback((vmc) =>
             {
-                using var routedContractViewHostObserver = TestWithRoutedContractViewHostBehavior(false);
-                using var routedcontractViewHostIsModifyingStackObserver = TestWithRoutedContractViewHostBehaviorIsInModifyNavigationStackObservable();
-                _routingWithContractsState.Navigate.Execute(GetFirstVMViewModelAndContract("initial"));
-                Assert.That(() => WaitForNavigation(), Throws.Nothing);
-                IViewModelAndContract expectedCurrentViewModel = null;
-                var modifyWithStatus = new ModifyArgumentAndStatus((stack) =>
-                {
-                    Assert.That(stack.Count, Is.EqualTo(1));
-                    stack.Add(GetTemperatureConversionVMViewModelAndContract("1"));
-                    stack.Add(GetEmptyVMViewModelAndContract("2"));
-                    stack.Add(GetEmptyVMViewModelAndContract("3"));
-                    stack.Add(GetTemperatureConversionVMViewModelAndContract("4"));
-                    stack.RemoveAt(2);
-                    stack.Move(2, 3);
-                    var addTo = GetTemperatureConversionVMViewModelAndContract("5");
-                    stack.Add(addTo);
-                    Assert.That(stack[stack.Count - 1], Is.SameAs(addTo));
-                    stack.Move(2, stack.Count - 1);
-                    stack.RemoveAt(0);
-                    expectedCurrentViewModel = stack[stack.Count - 1];
-                });
-                _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(modifyWithStatus);
-                Assert.That(modifyWithStatus.AlreadyNavigating, Is.False);
-                // Verify that it's still navigating because we changed the current view model in the action.
-                Assert.That(_routingWithContractsState.IsNavigating, Is.True);
-                Assert.That(() => WaitForNavigation(), Throws.Nothing);
-                Assert.That(expectedCurrentViewModel, Is.SameAs(_routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1]));
-                _routingWithContractsState.Navigate.Execute(GetTemperatureConversionVMViewModelAndContract("final"));
-                Assert.That(() => WaitForNavigation(), Throws.Nothing);
+                fromViewHostObserver = vmc;
+                countChanges++;
+                Assert.That(vmc, Is.SameAs(initialVMC));
             });
+            modifyingStackObserver.SetOnNextCallback(FailOnIsInModifyNavigationStackChanged);
+
+            Assert.That(() => _routingWithContractsState.Navigate.Execute(initialVMC), Throws.Nothing);
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            Assert.That(countChanges, Is.EqualTo(1));
+            Assert.That(fromViewHostObserver, Is.SameAs(initialVMC));
+            countChanges = 0;
+            fromViewHostObserver = null;
+
+            IViewModelAndContract expectedCurrentViewModel = null;
+            var modifyWithStatus = new ModifyArgumentAndStatus((stack) =>
+            {
+                Assert.That(stack.Count, Is.EqualTo(1));
+                stack.Add(GetTemperatureConversionVMViewModelAndContract("1"));
+                stack.Add(GetEmptyVMViewModelAndContract("2"));
+                stack.Add(GetEmptyVMViewModelAndContract("3"));
+                stack.Add(GetTemperatureConversionVMViewModelAndContract("4"));
+                stack.RemoveAt(2);
+                stack.Move(2, 3);
+                var addTo = GetTemperatureConversionVMViewModelAndContract("5");
+                stack.Add(addTo);
+                Assert.That(stack[stack.Count - 1], Is.SameAs(addTo));
+                stack.Move(2, stack.Count - 1);
+                stack.RemoveAt(0);
+                expectedCurrentViewModel = stack[stack.Count - 1];
+            });
+            viewHostObserver.SetOnNextCallback(FailOnChangeVMC);
+            modifyingStackObserver.SetOnNextCallback((isModifyingStack) =>
+            {
+                if (!isModifyingStack)
+                {
+                    Assert.That(_routingWithContractsState.NavigationStack.Count, Is.GreaterThanOrEqualTo(1));
+                    Assert.That(expectedCurrentViewModel, Is.SameAs(_routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1]));
+                }
+            });
+            Assert.That(() => _routingWithContractsState.ModifyNavigationStackWithStatus.Execute(modifyWithStatus), Throws.Nothing);
+            Assert.That(modifyWithStatus.AlreadyNavigating, Is.False);
+            // Verify that it's still navigating because we changed the current view model in the action.
+            Assert.That(_routingWithContractsState.IsNavigating, Is.True);
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
+            Assert.That(expectedCurrentViewModel, Is.SameAs(_routingWithContractsState.NavigationStack[_routingWithContractsState.NavigationStack.Count - 1]));
+            var finalVMC = GetTemperatureConversionVMViewModelAndContract("final");
+            viewHostObserver.SetOnNextCallback((vmc) => Assert.That(vmc, Is.SameAs(finalVMC)));
+            modifyingStackObserver.SetOnNextCallback(FailOnIsInModifyNavigationStackChanged);
+            Assert.That(() => _routingWithContractsState.Navigate.Execute(finalVMC), Throws.Nothing);
+            Assert.That(() => WaitForNavigation(), Throws.Nothing);
         }
     }
 }

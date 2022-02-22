@@ -82,16 +82,25 @@ namespace ReactiveUIRoutingWithContracts
             }
 
             IViewModelAndContract currentViewModel = default;
-            var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Where(x => !Router.IsInModifyNavigationStack).Do(x => currentViewModel = x).StartWith(currentViewModel);
+            var vmAndContract = this
+                .WhenAnyObservable(x => x.Router.CurrentViewModel)
+                .Where(x => !Router.IsInModifyNavigationStack).Do(x => currentViewModel = x)
+                .StartWith(currentViewModel)
+                // Skip the initial null then report afterwords
+                .SkipWhile(vmc => vmc == null || vmc.ViewModel == null);
 
-            this.WhenAnyValue(x => x.Router.IsInModifyNavigationStack, (modifying) =>
-            {
-                if (!modifying)
+            this
+                .WhenAnyValue(x => x.Router.IsInModifyNavigationStack, (modifying) =>
                 {
-                    ResolveViewForViewModel(null, true);
-                }
-                return modifying;
-            });
+                    if (!modifying)
+                    {
+                        ResolveViewForViewModel(null, true);
+                    }
+                    return modifying;
+                })
+                // Skip the initial assignment of false.
+                .SkipWhile(mod => mod == false);
+            ;
 
             this.WhenActivated(disposables =>
             {

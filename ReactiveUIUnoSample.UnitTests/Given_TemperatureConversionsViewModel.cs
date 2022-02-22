@@ -70,7 +70,7 @@ namespace ReactiveUIUnoSample.UnitTests
         public void WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTestCanExecuteIsTrue()
         {
             using var booleanObserver = new BooleanObserver();
-            booleanObserver.Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread);
+            booleanObserver.Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread, null, null);
             _viewModel.SelectedTestType = _viewModel.TestTypes.First();
             _viewModel.SelectedDifficulty = _viewModel.TestDifficulties.First();
             AdvanceScheduler(10);
@@ -89,8 +89,8 @@ namespace ReactiveUIUnoSample.UnitTests
         public void WhenSelectedTestTypeAndSelectedDifficultyAreSetAndRunRunTestExecuteFollowedByNavigateToFirstViewExecute_ThenNavigatesToTwoLineTestViewModelAndNotFirstView()
         {
             _viewModel.HostScreenWithContract.Router.CurrentViewModel.Subscribe();
-            BooleanObserver runTestCanExecuteObserver = new BooleanObserver().Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread);
-            BooleanObserver navigateToFirstViewCanExecute = new BooleanObserver().Subscribe(_viewModel.NavigateToFirstView.CanExecute, TestSchedulerProvider.MainThread);
+            BooleanObserver runTestCanExecuteObserver = new BooleanObserver().Subscribe(_viewModel.RunTest.CanExecute, TestSchedulerProvider.MainThread, null, null);
+            BooleanObserver navigateToFirstViewCanExecute = new BooleanObserver().Subscribe(_viewModel.NavigateToFirstView.CanExecute, TestSchedulerProvider.MainThread, null, null);
             Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
             Assert.That(runTestCanExecuteObserver.LastValue, Is.Null);
             _viewModel.SelectedTestType = _viewModel.TestTypes.First();

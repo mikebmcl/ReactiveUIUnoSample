@@ -26,30 +26,27 @@ using System.Linq;
 namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class TemperatureConversionsViewModel : DisplayViewModelBase//TemperatureConversionsViewModelBase//, IUnitConversionsTesting
+    public class TemperatureConversionsViewModel : DisplayViewModelBase
     {
         public TemperatureConversionsViewModel(IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
-            RunTest = ReactiveCommand.CreateFromTask(async () =>
+            RunTempTest = ReactiveCommand.CreateFromTask(async () =>
             {
-                await RunTestImpl();
+                await RunTempTestImpl();
             },
                 this.WhenAnyValue(
-                    //x => x.CurrentViewModel,
                     x => x.SelectedTestType,
                     x => x.SelectedDifficulty,
                     x => x.HostScreenWithContract.Router.IsNavigating,
                     (testType, difficulty, isnav) =>
-                    // cvm is just a signal that does nothing becaue the problem is the delay between navigation beginning and the navigation stack actually changing
                     testType != null &&
                     difficulty != null &&
                     !isnav)
-                //&& HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
                 .ObserveOn(SchedulerProvider.MainThread),
                 SchedulerProvider.MainThread
                 );
-            _runTestExceptionObserver = new ExceptionObserver(nameof(RunTest)).Subscribe(RunTest.ThrownExceptions, SchedulerProvider.MainThread, this.Log());
-            TempEntryOneText = "0";
+            _runTempTestExceptionObserver = new ExceptionObserver(nameof(RunTempTest)).Subscribe(RunTempTest.ThrownExceptions, SchedulerProvider.MainThread, this.Log());
+            TempInputText = "0";
             TempPickerTitle = "Temperature";
             SelectedTemperatureConversion = ConversionDirections[0];
             NavigateToFirstView = ReactiveCommand.CreateFromTask(async () =>
@@ -60,13 +57,11 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                     x => x.HostScreenWithContract.Router.IsNavigating,
                     (isnav) =>
                     !isnav)
-                //&& HostScreenWithContract.Router.NavigationStack?.LastOrDefault()?.ViewModel?.GetType() == this.GetType())
                 .ObserveOn(SchedulerProvider.MainThread),
                 SchedulerProvider.MainThread
                 );
-            //NavigateToFirstView.IsExecuting.ToProperty(this, nameof(NavigateToFirstViewIsRunning), out _navigateToFirstViewIsRunning, false, SchedulerProvider.MainThread);
             _navigateToFirstViewExceptionObserver = new ExceptionObserver(nameof(NavigateToFirstView)).Subscribe(NavigateToFirstView.ThrownExceptions, SchedulerProvider.MainThread, this.Log());
-            this.WhenAnyValue(x => x.TempEntryOneText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
+            this.WhenAnyValue(x => x.TempInputText, x => x.SelectedTemperatureConversion, (value, directionAsObj) =>
             {
                 string strToConvert = value;
                 if (string.IsNullOrWhiteSpace(strToConvert) || directionAsObj == null || !(directionAsObj is TemperatureConversionDirectionValueDisplayPair direction))
@@ -74,7 +69,7 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                     return "";
                 }
                 double convertedValue;
-                if (double.TryParse(value, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double valueToConvert))
+                if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double valueToConvert))
                 {
                     switch (direction.Value)
                     {
@@ -94,14 +89,14 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                     {
                         return _errorValue;
                     }
-                    return convertedValue.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
+                    return convertedValue.ToString("F1", CultureInfo.InvariantCulture);
                 }
                 else
                 {
                     return _errorValue;
                 }
 
-            }).ToProperty(this, nameof(TempEntryTwoText), out _tempEntryTwoText, false, SchedulerProvider.MainThread);
+            }).ToProperty(this, nameof(TempConversionResultText), out _tempConversionResultText, false, SchedulerProvider.MainThread);
         }
 
         // Number of Questions
@@ -125,7 +120,6 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         [Reactive]
         public string MaximumTemperature { get; set; }
 
-        //private object _selectedTestType;
         [Reactive]
         public object SelectedTestType { get; set; }
 
@@ -135,7 +129,6 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
             , new TemperatureConversionDirectionValueDisplayPair(TemperatureConversionDirection.FahrenheitToCelsius, _fahrenheitToCelsius)
         });
 
-        //private object _selectedDifficulty;
         [Reactive]
         public object SelectedDifficulty { get; set; }
 
@@ -145,10 +138,11 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         public object SelectedTemperatureConversion { get; set; }
 
         [Reactive]
-        public string TempEntryOneText { get; set; }
+        public string TempInputText { get; set; }
 
-        private readonly ObservableAsPropertyHelper<string> _tempEntryTwoText;
-        public string TempEntryTwoText => _tempEntryTwoText.Value;
+        private readonly ObservableAsPropertyHelper<string> _tempConversionResultText;
+        [ObservableAsProperty]
+        public string TempConversionResultText => _tempConversionResultText.Value;
 
         [Reactive]
         public string TempPickerTitle { get; set; }
@@ -215,15 +209,18 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
 
         public ReactiveCommand<Unit, Unit> NavigateToFirstView { get; set; }
         private readonly ExceptionObserver _navigateToFirstViewExceptionObserver;
-        //private readonly ObservableAsPropertyHelper<bool> _navigateToFirstViewIsRunning;
-        //public bool NavigateToFirstViewIsRunning => _navigateToFirstViewIsRunning?.Value ?? false;
 
-        public ReactiveCommand<Unit, Unit> RunTest { get; set; }
-        private readonly ExceptionObserver _runTestExceptionObserver;
-        //private readonly ObservableAsPropertyHelper<bool> _runTestIsExecuting;
-        //public bool RunTestIsExecuting => _runTestIsExecuting?.Value ?? false;
+        public ReactiveCommand<Unit, Unit> RunTempTest { get; set; }
+        private readonly ExceptionObserver _runTempTestExceptionObserver;
 
-        private IObservable<IViewModelAndContract> RunTestImpl()
+        public static string TempInputAutomationId => "TempInputTextId";
+        public static string TempConversionResultAutomationId => "TempConversionResultId";
+        public static string TempConversionTypeAutomationId => "TempConversionTypeId";
+        public static string TempTestTypeAutomationId => "TempTestTypeId";
+        public static string TempTestDifficultyAutomationId => "TempTestDifficultyId";
+        public static string RunTempTestAutomationId => "RunTempTestId";
+
+        private IObservable<IViewModelAndContract> RunTempTestImpl()
         {
             try
             {
@@ -261,7 +258,6 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                 string maximumTemperature = MaximumTemperature;
                 if (!double.TryParse(minimumTemperature, NumberStyles.Float, CultureInfo.InvariantCulture, out double minTemp))
                 {
-                    //minTemp = double.Parse(_minimumCelsiusTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);
                     if (testType == TemperatureConversionDirection.FahrenheitToCelsius)
                     {
                         minTemp = double.Parse(_minimumFahrenheitTemperatureDefaultValue, NumberStyles.Float, CultureInfo.InvariantCulture);

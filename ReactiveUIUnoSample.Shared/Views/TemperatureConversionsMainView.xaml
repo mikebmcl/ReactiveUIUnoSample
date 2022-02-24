@@ -73,47 +73,49 @@
                            FontWeight="Bold"
                            FontSize="16" />
             </StackPanel>-->
-            <Grid Grid.Row="1" Margin="0,0,0,6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBox x:Name="TempEntryOneTextBox" Grid.Column="0" Grid.Row="1" Margin="4" />
-                <!-- WASM doesn't like this so we're going to use an explicit ItemTemplate instead. -->
-                <!--<ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}" DisplayMemberPath="Display" />-->
-                <ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate x:DataType="vmuc:TemperatureConversionDirectionValueDisplayPair">
-                            <TextBlock Text="{x:Bind Display}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <TextBox x:Name="TempEntryTwoTextBox" Grid.Column="2" Grid.Row="1" Margin="4" />
-
-                <Grid Grid.Row="2" Grid.ColumnSpan="3" Margin="4">
+            <StackPanel Grid.Row="1" HorizontalAlignment="Stretch">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <ComboBox x:Name="TestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type">
+                    <TextBox x:Name="TempInputTextBox" Grid.Column="0" Grid.Row="1" Margin="4" AutomationProperties.AutomationId="{x:Bind vmuc:TemperatureConversionsViewModel.TempInputAutomationId}" />
+                    <!-- WASM doesn't seem to like the use of DisplayMemberPath so we're using an explicit ItemTemplate instead. -->
+                    <!--<ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}" DisplayMemberPath="Display" />-->
+                    <ComboBox x:Name="TemperaturePickerItemsComboBox" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" PlaceholderText="{x:Bind ViewModel.TempPickerTitle}" AutomationProperties.AutomationId="{x:Bind vmuc:TemperatureConversionsViewModel.TempConversionTypeAutomationId}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="vmuc:TemperatureConversionDirectionValueDisplayPair">
                                 <TextBlock Text="{x:Bind Display}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <ComboBox x:Name="TestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty">
+                    <TextBox x:Name="TempConversionResultTextBox" Grid.Column="2" Grid.Row="1" Margin="4" AutomationProperties.AutomationId="{x:Bind vmuc:TemperatureConversionsViewModel.TempConversionResultAutomationId}" />
+                </Grid>
+                <Rectangle Grid.Row="2" Grid.ColumnSpan="3" Style="{ThemeResource HorizontalAccentDividerBarRectangleStyle}" Margin="4,16,4,8" />
+
+                <TextBlock x:Name="TempTestingHeader" Grid.Row="3" Grid.ColumnSpan="2" Margin="4,8" Text="Temperature Conversion Testing" Style="{ThemeResource SansBodyTextBlockStyle}" />
+
+                <Grid Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="160" />
+                        <ColumnDefinition Width="Auto" MinWidth="160" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <ComboBox x:Name="TempTestTypeComboBox" Grid.Row="0" Grid.Column="0" PlaceholderText="Test Type" Margin="4" HorizontalAlignment="Stretch" AutomationProperties.AutomationId="{x:Bind vmuc:TemperatureConversionsViewModel.TempTestTypeAutomationId}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vmuc:TemperatureConversionDirectionValueDisplayPair">
+                                <TextBlock Text="{x:Bind Display}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox x:Name="TempTestDifficultyComboBox" Grid.Row="0" Grid.Column="1" PlaceholderText="Test Difficulty" Margin="4" HorizontalAlignment="Stretch" AutomationProperties.AutomationId="{x:Bind vmuc:TemperatureConversionsViewModel.TempTestDifficultyAutomationId}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="vmt:TestDifficultyValueDisplayPair">
                                 <TextBlock Text="{x:Bind Display}" />
@@ -121,9 +123,11 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Grid>
-                <Button x:Name="TestTemperatureConversionButton" Grid.Row="3" Grid.ColumnSpan="2" Content="Test Temperature Conversion" Command="{x:Bind ViewModel.RunTest}" />
-                <Button x:Name="FirstViewButton" Grid.Row="3" Grid.Column="2" Content="First View" Command="{x:Bind ViewModel.NavigateToFirstView}" />
-            </Grid>
+                <!-- For some reason, on Android the button will not be disabled when it cannot execute if we bind it in the code-behind so we need to bind the command here. -->
+                <Button x:Name="TestTemperatureConversionButton" Grid.Row="2" Grid.Column="0" Content="Begin Test" Margin="4,8" Command="{x:Bind ViewModel.RunTempTest}" AutomationProperties.AutomationId="{x:Bind vmuc:TemperatureConversionsViewModel.RunTempTestAutomationId}" />
+                <!--<Button x:Name="FirstViewButton" Grid.Row="3" Grid.Column="2" Content="First View" Command="{x:Bind ViewModel.NavigateToFirstView}" />-->
+                <!--</Grid>-->
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </Page>

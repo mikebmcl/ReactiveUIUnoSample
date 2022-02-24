@@ -57,16 +57,18 @@ namespace ReactiveUIUnoSample.Views
             // See: https://www.reactiveui.net/docs/handbook/when-activated/ and https://www.reactiveui.net/docs/handbook/data-binding/
             this.WhenActivated(disposables =>
             {
-                this.Bind(ViewModel, vm => vm.TempEntryOneText, view => view.TempEntryOneTextBox.Text, Observable.FromEventPattern(TempEntryOneTextBox, nameof(TextBox.TextChanged))).DisposeWith(disposables);
-                this.OneWayBind(ViewModel, vm => vm.TempEntryTwoText, view => view.TempEntryTwoTextBox.Text).DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.TempInputText, view => view.TempInputTextBox.Text, Observable.FromEventPattern(TempInputTextBox, nameof(TextBox.TextChanged))).DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.TempConversionResultText, view => view.TempConversionResultTextBox.Text).DisposeWith(disposables);
+
                 this.OneWayBind(ViewModel, vm => vm.ConversionDirections, view => view.TemperaturePickerItemsComboBox.ItemsSource);
                 this.Bind(ViewModel, vm => vm.SelectedTemperatureConversion, view => view.TemperaturePickerItemsComboBox.SelectedItem).DisposeWith(disposables);
 
-                this.OneWayBind(ViewModel, vm => vm.TestTypes, view => view.TestTypeComboBox.ItemsSource).DisposeWith(disposables);
-                this.Bind(ViewModel, vm => vm.SelectedTestType, view => view.TestTypeComboBox.SelectedItem).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, vm => vm.TestTypes, view => view.TempTestTypeComboBox.ItemsSource).DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.SelectedTestType, view => view.TempTestTypeComboBox.SelectedItem).DisposeWith(disposables);
 
-                this.OneWayBind(ViewModel, vm => vm.TestDifficulties, view => view.TestDifficultyComboBox.ItemsSource).DisposeWith(disposables);
-                this.Bind(ViewModel, vm => vm.SelectedDifficulty, view => view.TestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
+                this.OneWayBind(ViewModel, vm => vm.TestDifficulties, view => view.TempTestDifficultyComboBox.ItemsSource).DisposeWith(disposables);
+                this.Bind(ViewModel, vm => vm.SelectedDifficulty, view => view.TempTestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
             });
         }
     }

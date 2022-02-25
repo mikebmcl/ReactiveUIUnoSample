@@ -118,6 +118,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="ReactiveUI">
+      <Version>17.1.50</Version>
+    </PackageReference>
     <PackageReference Include="ReactiveUI.Fody">
       <Version>17.1.50</Version>
     </PackageReference>

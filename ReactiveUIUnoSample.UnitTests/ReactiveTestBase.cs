@@ -183,10 +183,14 @@ namespace ReactiveUIUnoSample.UnitTests
         /// method that handles checking to see if the scheduler is already running and then calling Sleep or AdvanceBy (for running or
         /// not running); whichever is appropriate.
         /// </summary>
-        /// <param name="time">The amount of time to advance the scheduler by in units, passed to either <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.AdvanceBy(TRelative)"/> or <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.Sleep(TRelative)"/> depemding on whether or not the scheduler is running, as determined by checking <see cref="System.Reactive.Concurrency.VirtualTimeSchedulerBase{TAbsolute, TRelative}.IsEnabled"/>. The default should be plenty, however depending on how many observables and observers were affected and how many times, it may not be enough. You may want to design the test so that each time you change something, you call this with a small value in a loop that checks to see if the observable effects of the change have occurred and if they do not after a reasonable number of loops, throw a meaningful exception that will let you examine the problem at the point it is occurring rather than having to piece it together from a single exception at the end of the test.</param>
+        /// <param name="time">The amount of time to advance the scheduler by in units. If you specify 0 or <c>default</c>, you will get the default value of 100. The default should be plenty, however depending on how many observables and observers were affected and how many times, it may not be enough. You may want to design the test so that each time you change something, you call this with a small value in a loop that checks to see if the observable effects of the change have occurred and if they do not after a reasonable number of loops, throw a meaningful exception that will let you examine the problem at the point it is occurring rather than having to piece it together from a single exception at the end of the test.</param>
         /// <param name="schedulerToWaitOn">The <see cref="TestScheduler"/> to advance. The default value of <c>null</c> will advance <see cref="TestSchedulerProvider.MainThread"/>.</param>
         public static void AdvanceScheduler(int time = 100, TestScheduler schedulerToWaitOn = null)
         {
+            if (time is default(int))
+            {
+                time = 100;
+            }
             TestScheduler scheduler = schedulerToWaitOn ?? TestSchedulerProvider.MainThread;
             bool schedulerWasRunning = scheduler.IsEnabled;
             scheduler.Stop();

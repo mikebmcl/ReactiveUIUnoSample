@@ -47,9 +47,10 @@ namespace ReactiveUIUnoSample.UnitTests
         [Test(Description = "When TempInputText is 100 And Conversion is Celsius to Fahrenheit Then TempConversionResultText is 212")]
         public void WhenTempInputTextIs100AndConversionIsCelsiusToFahrenheit_ThenTempConversionResultTextIs212()
         {
+            Assert.IsTrue(default(int) == 0);
             _viewModel.TempInputText = "100";
             _viewModel.SelectedTemperatureConversion = _viewModel.ConversionDirections.First((tcdvdp) => tcdvdp.Value == Helpers.TemperatureConversionDirection.CelsiusToFahrenheit);
-            AdvanceScheduler();
+            TestSchedulerProvider.AdvanceAllSchedulers();
             var sut = _viewModel.TempConversionResultText;
             Assert.That(double.TryParse(sut, out double convertedTemperature), Is.True);
             Assert.That(convertedTemperature, Is.EqualTo(212));
@@ -60,7 +61,7 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             _viewModel.TempInputText = "140";
             _viewModel.SelectedTemperatureConversion = _viewModel.ConversionDirections.First((tcdvdp) => tcdvdp.Value == Helpers.TemperatureConversionDirection.FahrenheitToCelsius);
-            AdvanceScheduler();
+            TestSchedulerProvider.AdvanceAllSchedulers();
             var sut = _viewModel.TempConversionResultText;
             Assert.That(double.TryParse(sut, out double convertedTemperature), Is.True);
             Assert.That(convertedTemperature, Is.EqualTo(60));
@@ -73,7 +74,7 @@ namespace ReactiveUIUnoSample.UnitTests
             booleanObserver.Subscribe(_viewModel.RunTempTest.CanExecute, TestSchedulerProvider.MainThread, null, null);
             _viewModel.SelectedTestType = _viewModel.TestTypes.First();
             _viewModel.SelectedDifficulty = _viewModel.TestDifficulties.First();
-            AdvanceScheduler(10);
+            TestSchedulerProvider.AdvanceAllSchedulers(10);
             Assert.That(booleanObserver.LastValue is true, Is.True);
         }
 
@@ -94,7 +95,8 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
             Assert.That(runTestCanExecuteObserver.LastValue, Is.Null);
             _viewModel.SelectedTestType = _viewModel.TestTypes.First();
-            AdvanceScheduler(10);
+            //AdvanceScheduler(10);
+            TestSchedulerProvider.AdvanceAllSchedulers(10);
             Assert.That(runTestCanExecuteObserver.LastValue, Is.False);
             _viewModel.SelectedDifficulty = _viewModel.TestDifficulties.First();
             AdvanceScheduler(10);

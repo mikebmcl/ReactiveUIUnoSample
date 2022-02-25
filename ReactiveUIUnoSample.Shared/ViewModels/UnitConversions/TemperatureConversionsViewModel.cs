@@ -94,8 +94,8 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                 else
                 {
                     return _errorValue;
-                } // NoteL For some reason specifying SchedulerProvider.MainThread as the schduler for ToProperty stops it from working (except on UWP)
-            }).ToProperty(this, nameof(TempConversionResultText), out _tempConversionResultText);
+                } // Note: Specifying SchedulerProvider.MainThread as the scheduler for ToProperty stops it from working (except on UWP); the default used by ReactiveUI is CurrentThreadScheduler.Instance. We are using SchedulerProvider.CurrentThread here so that our testing will work as expected when we inject a potentially different scheduler via the ISchedulerProvider that gets passed to the view model when it is constructed.
+            }).ToProperty(this, nameof(TempConversionResultText), out _tempConversionResultText, false, SchedulerProvider.CurrentThread);
         }
 
         // Number of Questions

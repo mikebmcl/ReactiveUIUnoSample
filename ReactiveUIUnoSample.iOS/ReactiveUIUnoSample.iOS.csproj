@@ -119,9 +119,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="ReactiveUI.Fody">
-      <Version>17.1.17</Version>
+      <Version>17.1.50</Version>
     </PackageReference>
-    <PackageReference Include="ReactiveUI.Uno" Version="17.*" />
+    <PackageReference Include="ReactiveUI.Uno" Version="17.1.50" />
     <PackageReference Include="Uno.Microsoft.Toolkit.Uwp">
       <Version>7.1.11</Version>
     </PackageReference>

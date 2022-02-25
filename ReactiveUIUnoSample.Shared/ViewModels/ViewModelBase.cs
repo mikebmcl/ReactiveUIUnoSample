@@ -44,9 +44,7 @@ namespace ReactiveUIUnoSample.ViewModels
         {
             (this as IReactiveObject).RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
-        private readonly ObservableAsPropertyHelper<IViewModelAndContract> _currentViewModelAndContract;
-        //public IViewModelAndContract CurrentViewModelAndContract => _currentViewModel?.Value;
-        public IRoutableViewModelForContracts CurrentViewModel => _currentViewModelAndContract?.Value?.ViewModel;
+
         /// <summary>
         /// </summary>
         /// <param name="hostScreen">The IScreen that this ViewModel is currently being shown in.</param>
@@ -58,7 +56,6 @@ namespace ReactiveUIUnoSample.ViewModels
             HostScreenWithContract = hostScreen;
             SchedulerProvider = schedulerProvider;
             UrlPathSegment = urlPathSegment ?? (useNullUrlPathSegment ? null : GenerateStringForUrlPathSegment());
-            HostScreenWithContract.Router.CurrentViewModel.ToProperty(this, nameof(CurrentViewModel), out _currentViewModelAndContract, false, SchedulerProvider.MainThread);
         }
     }
 }

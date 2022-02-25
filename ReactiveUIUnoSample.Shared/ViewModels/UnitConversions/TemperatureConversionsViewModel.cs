@@ -94,9 +94,8 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                 else
                 {
                     return _errorValue;
-                }
-
-            }).ToProperty(this, nameof(TempConversionResultText), out _tempConversionResultText, false, SchedulerProvider.MainThread);
+                } // NoteL For some reason specifying SchedulerProvider.MainThread as the schduler for ToProperty stops it from working (except on UWP)
+            }).ToProperty(this, nameof(TempConversionResultText), out _tempConversionResultText);
         }
 
         // Number of Questions
@@ -141,7 +140,8 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         public string TempInputText { get; set; }
 
         private readonly ObservableAsPropertyHelper<string> _tempConversionResultText;
-        [ObservableAsProperty]
+        // Note: Do not mark this with ObservablePropertyAttribute or it will stop working (except on UWP).
+        //[ObservableAsProperty]
         public string TempConversionResultText => _tempConversionResultText.Value;
 
         [Reactive]

@@ -101,19 +101,8 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         //    await m_currentTestItem.TestingProgress.UpdateDBEntry();
         //}
 
-        private bool m_hasSecondLine;
-        public bool HasSecondLine
-        {
-            get => m_hasSecondLine;
-            set
-            {
-                if (m_hasSecondLine != value)
-                {
-                    m_hasSecondLine = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        [Reactive]
+        public bool HasSecondLine { get; set; }
 
         [Reactive]
         public bool ShowSecondLine { get; set; }
@@ -194,19 +183,8 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         private const string m_resultTextWrongBeginning = "Sorry";
         private const string m_resultTextWrongEnd = "was the wrong answer. See above for the correct answer.";
 
-        private string m_disableOneWrongAnswerText = "Remove a Wrong Answer"; // Give Me A Hint
-        public string DisableOneWrongAnswerText
-        {
-            get => m_disableOneWrongAnswerText;
-            set
-            {
-                if (m_disableOneWrongAnswerText != value)
-                {
-                    m_disableOneWrongAnswerText = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        [Reactive]
+        public string DisableOneWrongAnswerText { get; set; }
 
         //private bool m_canDisableOneWrongAnswer = true;
         //public bool CanDisableOneWrongAnswer
@@ -438,7 +416,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             CurrentTestItem = TestItems[CurrentTestItemIndex];
             EnabledAnswersCount = CurrentTestItem.Answers.Count;
             DisableOneWrongAnswerCommand = ReactiveCommand.Create(DisableOneWrongAnswerCommandExecute, this.WhenAnyValue(x => x.EnabledAnswersCount, (currentlyEnabledCount) => currentlyEnabledCount > _canDisableAnswersAboveCount).ObserveOn(SchedulerProvider.MainThread));
-
+            DisableOneWrongAnswerText = "Remove a Wrong Answer";
             TestIsReady = true;
         }
     }

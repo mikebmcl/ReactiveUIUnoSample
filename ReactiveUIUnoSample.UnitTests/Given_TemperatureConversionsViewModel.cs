@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -106,6 +108,47 @@ namespace ReactiveUIUnoSample.UnitTests
             Assert.That(runTestCanExecuteObserver.LastValue is false && (_viewModel.RunTempTest as System.Windows.Input.ICommand).CanExecute(null), Is.False);
             Assert.That(navigateToFirstViewCanExecute.LastValue is false && (_viewModel.NavigateToFirstView as System.Windows.Input.ICommand).CanExecute(null), Is.False);
             Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TwoLineTestViewModel)));
+        }
+
+        [Test(Description = "When neither SelectedTestType nor SelectedDifficulty are set, Then RunTempTest returns false for CanExecute")]
+        public void WhenNeitherSelectedTestTypeNorSelectedDifficultyAreSet_ThenRunTempTestReturnsFalseForCanExecute()
+        {
+            _viewModel.HostScreenWithContract.Router.CurrentViewModel.Subscribe();
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
+            Assert.That(_viewModel.SelectedTestType, Is.Null);
+            Assert.That(_viewModel.SelectedDifficulty, Is.Null);
+            TestSchedulerProvider.AdvanceAllSchedulers();
+            // Default to true in Observable.MostRecent because we want this to fail if CanExecute has not had any items since we expect that it will have had items and the most recent would be false.
+            Assert.That(Observable.MostRecent(_viewModel.RunTempTest.CanExecute, true).FirstOrDefault(), Is.False);
+            Assert.That((_viewModel.RunTempTest as System.Windows.Input.ICommand).CanExecute(null), Is.False);
+        }
+
+        [Test(Description = "When SelectedTestType is set and SelectedDifficulty is not set, Then RunTempTest returns false for CanExecute")]
+        public void WhenSelectedTestTypeIsSetAndSelectedDifficultyIsNotSet_ThenRunTempTestReturnsFalseForCanExecute()
+        {
+            _viewModel.HostScreenWithContract.Router.CurrentViewModel.Subscribe();
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
+            _viewModel.SelectedTestType = _viewModel.TestTypes.First();
+            TestSchedulerProvider.AdvanceAllSchedulers();
+            Assert.That(_viewModel.SelectedTestType, Is.Not.Null);
+            Assert.That(_viewModel.SelectedDifficulty, Is.Null);
+            // Default to true in Observable.MostRecent because we want this to fail if CanExecute has not had any items since we expect that it will have had items and the most recent would be false.
+            Assert.That(Observable.MostRecent(_viewModel.RunTempTest.CanExecute, true).FirstOrDefault(), Is.False);
+            Assert.That((_viewModel.RunTempTest as System.Windows.Input.ICommand).CanExecute(null), Is.False);
+        }
+
+        [Test(Description = "When SelectedTestType is not set and SelectedDifficulty is set, Then RunTempTest returns false for CanExecute")]
+        public void WhenSelectedTestTypeIsNotSetAndSelectedDifficultyIsSet_ThenRunTempTestReturnsFalseForCanExecute()
+        {
+            _viewModel.HostScreenWithContract.Router.CurrentViewModel.Subscribe();
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TemperatureConversionsViewModel)));
+            _viewModel.SelectedDifficulty = _viewModel.TestDifficulties.First();
+            TestSchedulerProvider.AdvanceAllSchedulers();
+            Assert.That(_viewModel.SelectedTestType, Is.Null);
+            Assert.That(_viewModel.SelectedDifficulty, Is.Not.Null);
+            // Default to true in Observable.MostRecent because we want this to fail if CanExecute has not had any items since we expect that it will have had items and the most recent would be false.
+            Assert.That(Observable.MostRecent(_viewModel.RunTempTest.CanExecute, true).FirstOrDefault(), Is.False);
+            Assert.That((_viewModel.RunTempTest as System.Windows.Input.ICommand).CanExecute(null), Is.False);
         }
     }
 }

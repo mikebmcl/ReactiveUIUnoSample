@@ -2,13 +2,13 @@
 
 namespace ReactiveUIUnoSample.Interfaces.Testing
 {
-    public interface ITwoLineTestResults
+    public interface IOneLineTestResults
     {
         string Title { get; set; }
 
-        IList<ITwoLineTestItem> UserWasCorrect { get; set; }
-        IList<ITwoLineTestWrongAnswer> UserWasWrong { get; set; }
-        IList<ITwoLineTestItem> TestItems { get; set; }
+        IList<IOneLineTestItem> UserWasCorrect { get; set; }
+        IList<IOneLineTestWrongAnswer> UserWasWrong { get; set; }
+        IList<IOneLineTestItem> TestItems { get; set; }
 
         bool HasRightAnswers { get; }
         bool AllWrong { get; }

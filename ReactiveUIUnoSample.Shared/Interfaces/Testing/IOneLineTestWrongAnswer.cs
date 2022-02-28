@@ -1,8 +1,8 @@
 ﻿namespace ReactiveUIUnoSample.Interfaces.Testing
 {
-    public interface ITwoLineTestWrongAnswer
+    public interface IOneLineTestWrongAnswer
     {
-        ITwoLineTestItem TestItem { get; set; }
+        IOneLineTestItem TestItem { get; set; }
         string WrongAnswer { get; set; }
     }
 }

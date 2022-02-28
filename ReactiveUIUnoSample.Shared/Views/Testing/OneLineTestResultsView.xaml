@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="ReactiveUIUnoSample.Views.Testing.TwoLineTestResultsView"
+    x:Class="ReactiveUIUnoSample.Views.Testing.OneLineTestResultsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ReactiveUIUnoSample.Views.Testing"
@@ -32,7 +32,7 @@
             </StackPanel>
             <ItemsControl x:Name="WrongAnswersItemsControl" Grid.Row="2">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="ifacetest:ITwoLineTestWrongAnswer">
+                    <DataTemplate x:DataType="ifacetest:IOneLineTestWrongAnswer">
                         <Grid Margin="5" Padding="5">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

@@ -7,9 +7,9 @@ using Windows.UI.Xaml;
 namespace ReactiveUIUnoSample.Interfaces.Testing
 {
     /// <summary>
-    /// Provides an abstracted representation of all data needed for a test item that can be used to populate a <see cref="ITwoLineTest"/> in order to use <see cref="VocabTestContentPage"/>.
+    /// Provides an abstracted representation of all data needed for a test item that can be used to populate a <see cref="IOneLineTest"/> in order to use <see cref="VocabTestContentPage"/>.
     /// </summary>
-    public interface ITwoLineTestItem : INotifyPropertyChanged
+    public interface IOneLineTestItem : INotifyPropertyChanged
     {
         /// <summary>
         /// Needs to raise that it's been changed when it changes value.

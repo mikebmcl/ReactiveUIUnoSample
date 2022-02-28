@@ -27,30 +27,30 @@ namespace ReactiveUIUnoSample.Views.Testing
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class TwoLineTestView : Page, IViewFor<ViewModels.Testing.TwoLineTestViewModel>
+    public sealed partial class OneLineTestView : Page, IViewFor<ViewModels.Testing.OneLineTestViewModel>
     {
         // Add the following interface to the class
         // , IViewFor<TwoLineTestViewModel>
 
         public static readonly DependencyProperty ViewModelProperty =
-                DependencyProperty.Register(nameof(ViewModel), typeof(TwoLineTestViewModel),
-            typeof(TwoLineTestView), new PropertyMetadata(default(TwoLineTestViewModel)));
+                DependencyProperty.Register(nameof(ViewModel), typeof(OneLineTestViewModel),
+            typeof(OneLineTestView), new PropertyMetadata(default(OneLineTestViewModel)));
 
-        public TwoLineTestViewModel ViewModel
+        public OneLineTestViewModel ViewModel
         {
-            get => (TwoLineTestViewModel)GetValue(ViewModelProperty);
+            get => (OneLineTestViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
         object IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (TwoLineTestViewModel)value;
+            set => ViewModel = (OneLineTestViewModel)value;
         }
         private ReactiveUI.Uno.BooleanToVisibilityTypeConverter _booleanToVisibilityTypeConverter =
             new ReactiveUI.Uno.BooleanToVisibilityTypeConverter();
 
-        public TwoLineTestView()
+        public OneLineTestView()
         {
             this.InitializeComponent();
             // This goes in the constructor. It should be used for various types of bindings that need to be disposed of

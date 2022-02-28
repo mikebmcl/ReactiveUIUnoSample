@@ -340,7 +340,7 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                     existingQuestionOffsets = new HashSet<int>();
                 }
                 Random random = new Random();
-                List<ITwoLineTestItem> testItems = new List<ITwoLineTestItem>(numQuestions);
+                List<IOneLineTestItem> testItems = new List<IOneLineTestItem>(numQuestions);
                 switch (testType)
                 {
                     case TemperatureConversionDirection.FahrenheitToCelsius:
@@ -389,9 +389,9 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                                     answers.Add($"{startingAnswerValue + (addAnswerCtr * answerValueIncrement):F1} {answerUnits}");
                                 }
                                 string correctAnswer = answers[correctAnswerIdx];
-                                testItems.Add(new TwoLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
+                                testItems.Add(new OneLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
                             }
-                            return HostScreenWithContract.Router.Navigate.Execute(new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
+                            return HostScreenWithContract.Router.Navigate.Execute(new OneLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
                         }
                     case TemperatureConversionDirection.CelsiusToFahrenheit:
                         {
@@ -439,9 +439,9 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
                                     answers.Add($"{startingAnswerValue + (addAnswerCtr * answerValueIncrement):F1} {answerUnits}");
                                 }
                                 string correctAnswer = answers[correctAnswerIdx];
-                                testItems.Add(new TwoLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
+                                testItems.Add(new OneLineTestItemViewModel(question, correctAnswer, answers, null, null, HostScreenWithContract, SchedulerProvider));
                             }
-                            return HostScreenWithContract.Router.Navigate.Execute(new TwoLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
+                            return HostScreenWithContract.Router.Navigate.Execute(new OneLineTestViewModel(PreferencesKeys.UnitConversionsTestShowSecondLinePreferencesKey, false, null, false, testItems, HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
                         }
                     case TemperatureConversionDirection.Invalid:
                         throw new InvalidOperationException($"Value is {nameof(TemperatureConversionDirection)}.{nameof(TemperatureConversionDirection.Invalid)}. How did we even get here? We already checked {nameof(testType)} to ensure it was valid.");

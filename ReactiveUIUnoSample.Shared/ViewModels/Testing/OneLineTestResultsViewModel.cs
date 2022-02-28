@@ -9,14 +9,14 @@ using System.Collections.Generic;
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class TwoLineTestResultsViewModel : DisplayViewModelBase, ITwoLineTestResults
+    public class OneLineTestResultsViewModel : DisplayViewModelBase, IOneLineTestResults
     {
         [Reactive]
         public string Title { get; set; }
 
-        public IList<ITwoLineTestItem> UserWasCorrect { get; set; }
-        public IList<ITwoLineTestWrongAnswer> UserWasWrong { get; set; }
-        public IList<ITwoLineTestItem> TestItems { get; set; }
+        public IList<IOneLineTestItem> UserWasCorrect { get; set; }
+        public IList<IOneLineTestWrongAnswer> UserWasWrong { get; set; }
+        public IList<IOneLineTestItem> TestItems { get; set; }
 
         public bool HasRightAnswers => UserWasWrong?.Count != TestItems?.Count;
         public bool AllWrong => UserWasWrong?.Count == TestItems?.Count;
@@ -28,7 +28,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         public override object HeaderContent { get; set; }
 
-        public TwoLineTestResultsViewModel(string title, IList<ITwoLineTestItem> userWasCorrect, IList<ITwoLineTestWrongAnswer> userWasWrong, IList<ITwoLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public OneLineTestResultsViewModel(string title, IList<IOneLineTestItem> userWasCorrect, IList<IOneLineTestWrongAnswer> userWasWrong, IList<IOneLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             Title = title;
             HeaderContent = title;

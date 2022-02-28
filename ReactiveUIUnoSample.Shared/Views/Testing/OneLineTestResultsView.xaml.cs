@@ -25,25 +25,25 @@ namespace ReactiveUIUnoSample.Views.Testing
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class TwoLineTestResultsView : Page, IViewFor<ViewModels.Testing.TwoLineTestResultsViewModel>
+    public sealed partial class OneLineTestResultsView : Page, IViewFor<ViewModels.Testing.OneLineTestResultsViewModel>
     {
         public static readonly DependencyProperty ViewModelProperty =
-                    DependencyProperty.Register(nameof(ViewModel), typeof(ViewModels.Testing.TwoLineTestResultsViewModel),
-                typeof(TwoLineTestResultsView), new PropertyMetadata(default(ViewModels.Testing.TwoLineTestResultsViewModel)));
+                    DependencyProperty.Register(nameof(ViewModel), typeof(ViewModels.Testing.OneLineTestResultsViewModel),
+                typeof(OneLineTestResultsView), new PropertyMetadata(default(ViewModels.Testing.OneLineTestResultsViewModel)));
 
-        public ViewModels.Testing.TwoLineTestResultsViewModel ViewModel
+        public ViewModels.Testing.OneLineTestResultsViewModel ViewModel
         {
-            get => (ViewModels.Testing.TwoLineTestResultsViewModel)GetValue(ViewModelProperty);
+            get => (ViewModels.Testing.OneLineTestResultsViewModel)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
 
         object IViewFor.ViewModel
         {
             get => ViewModel;
-            set => ViewModel = (ViewModels.Testing.TwoLineTestResultsViewModel)value;
+            set => ViewModel = (ViewModels.Testing.OneLineTestResultsViewModel)value;
         }
 
-        public TwoLineTestResultsView()
+        public OneLineTestResultsView()
         {
             this.InitializeComponent();
             // This goes in the constructor. It should be used for various types of bindings that need to be disposed of

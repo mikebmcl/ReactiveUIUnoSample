@@ -24,7 +24,7 @@ using System.Reactive.Linq;
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class TwoLineTestViewModel : DisplayViewModelBase, ITwoLineTest, ICallOnBackNavigation
+    public class OneLineTestViewModel : DisplayViewModelBase, IOneLineTest, ICallOnBackNavigation
     {
         //private string m_title = "";
         //public override string Title { get => m_title; set { if (m_title != value) { m_title = value; RaisePropertyChanged(); } } }
@@ -110,7 +110,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         //private ITwoLineTestItem m_currentTestItem = default;
         [Reactive]
-        public ITwoLineTestItem CurrentTestItem { get; set; }
+        public IOneLineTestItem CurrentTestItem { get; set; }
         //{
         //    get => m_currentTestItem;
         //    set
@@ -133,9 +133,9 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         //}
 
         [Reactive]
-        public List<ITwoLineTestItem> TestItems { get; set; }
-        public List<ITwoLineTestItem> UserWasCorrect { get; set; } = new List<ITwoLineTestItem>();
-        public List<ITwoLineTestWrongAnswer> UserWasWrong { get; set; } = new List<ITwoLineTestWrongAnswer>();
+        public List<IOneLineTestItem> TestItems { get; set; }
+        public List<IOneLineTestItem> UserWasCorrect { get; set; } = new List<IOneLineTestItem>();
+        public List<IOneLineTestWrongAnswer> UserWasWrong { get; set; } = new List<IOneLineTestWrongAnswer>();
 
         private int m_currentTestItemIndex = -1;
         public int CurrentTestItemIndex
@@ -228,7 +228,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             else
             {
                 string userAnswer = CurrentTestItem.UserAnswer();
-                UserWasWrong.Add(new TwoLineTestWrongAnswer(CurrentTestItem, userAnswer));
+                UserWasWrong.Add(new OneLineTestWrongAnswer(CurrentTestItem, userAnswer));
                 ResultText = $"{m_resultTextWrongBeginning} '{userAnswer}' {m_resultTextWrongEnd}";
                 CheckedAnswerIsCorrect = false;
                 //IThreeStateTestAnswer correctItem = CurrentTestItem.Answers.First((item) => item.Text == CurrentTestItem.CorrectAnswer.Text);
@@ -291,7 +291,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             {
                 takeCount = CurrentTestItemIndex + 1;
             }
-            await HostScreenWithContract.Router.NavigateAndRemoveCurrent.Execute(new TwoLineTestResultsViewModel("Test Results", UserWasCorrect, UserWasWrong, new List<ITwoLineTestItem>(TestItems.Take(takeCount)), HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
+            await HostScreenWithContract.Router.NavigateAndRemoveCurrent.Execute(new OneLineTestResultsViewModel("Test Results", UserWasCorrect, UserWasWrong, new List<IOneLineTestItem>(TestItems.Take(takeCount)), HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
         }
 
         [Reactive]
@@ -350,7 +350,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         private readonly string _secondLineSettingsKey;
 
-        public TwoLineTestViewModel(string showSecondLinePreferencesKey, bool showSecondLineDefault, string showSecondLinePrompt, bool hasSecondLine, IList<ITwoLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public OneLineTestViewModel(string showSecondLinePreferencesKey, bool showSecondLineDefault, string showSecondLinePrompt, bool hasSecondLine, IList<IOneLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>(schedulerProvider.CurrentThread);
             HeaderContent = "First Page";
@@ -361,7 +361,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             //    return HostScreen.Router.Navigate.Execute(new SecondViewModel(HostScreenWithContract, SchedulerProvider, () => new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } }));
             //});
 
-            TestItems = new List<ITwoLineTestItem>(testItems);
+            TestItems = new List<IOneLineTestItem>(testItems);
             //CheckAndNextButtonText = CheckText;
             ResultText = m_resultTextEmpty;
             CheckAnswerButtonText = CheckText;
@@ -369,7 +369,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             CurrentTestItemIndex = 0;
             CheckAnswerCommand = ReactiveCommand.Create(CheckCommandExecute, this.WhenAnyValue(x => x.CurrentTestItem, x => x.CurrentTestItem.SelectedItem, x => x.CheckedAnswerIsCorrect, (item, selectedAnswer, checkedIsCorrect) => item != null && selectedAnswer != null && selectedAnswer?.IsEnabled is true && checkedIsCorrect == null).ObserveOn(SchedulerProvider.MainThread));
             // Need to explicitly specify the generics for WhenAnyValue here because of an ambiguity issue between overloads
-            NextFinishCommand = ReactiveCommand.Create(NextCommandExecute, this.WhenAnyValue<TwoLineTestViewModel, bool, bool?>(x => x.CheckedAnswerIsCorrect, (checkedIsCorrect) => checkedIsCorrect != null).ObserveOn(SchedulerProvider.MainThread));
+            NextFinishCommand = ReactiveCommand.Create(NextCommandExecute, this.WhenAnyValue<OneLineTestViewModel, bool, bool?>(x => x.CheckedAnswerIsCorrect, (checkedIsCorrect) => checkedIsCorrect != null).ObserveOn(SchedulerProvider.MainThread));
 
             HasSecondLine = hasSecondLine;
             if (hasSecondLine)

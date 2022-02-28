@@ -85,7 +85,7 @@ namespace ReactiveUIUnoSample.UnitTests
         {
             WhenSelectedTestTypeAndSelectedDifficultyAreSet_ThenRunTempTestCanExecuteIsTrue();
             Assert.That(() => (_viewModel.RunTempTest as System.Windows.Input.ICommand).Execute(null), Throws.Nothing);
-            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(OneLineTestViewModel)));
         }
 
         [Test(Description = "When SelectedTestType and SelectedDifficulty are set and RunTempTest.Execute followed by NavigateToFirstView.Execute, Then navigates to TwoLineTestViewModel and not FirstView")]
@@ -107,7 +107,7 @@ namespace ReactiveUIUnoSample.UnitTests
             AdvanceScheduler(4);
             Assert.That(runTestCanExecuteObserver.LastValue is false && (_viewModel.RunTempTest as System.Windows.Input.ICommand).CanExecute(null), Is.False);
             Assert.That(navigateToFirstViewCanExecute.LastValue is false && (_viewModel.NavigateToFirstView as System.Windows.Input.ICommand).CanExecute(null), Is.False);
-            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(TwoLineTestViewModel)));
+            Assert.That(GetCurrentViewModel(), Is.AssignableTo(typeof(OneLineTestViewModel)));
         }
 
         [Test(Description = "When neither SelectedTestType nor SelectedDifficulty are set, Then RunTempTest returns false for CanExecute")]

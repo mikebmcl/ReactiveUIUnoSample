@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace ReactiveUIUnoSample.Interfaces.Testing
 {
-    public interface ITwoLineTest
+    public interface IOneLineTest
     {
         string Title { get; set; }
         string CurrentTestItemAsTitleString { get; }
@@ -17,7 +17,7 @@ namespace ReactiveUIUnoSample.Interfaces.Testing
         /// </summary>
         string ShowSecondLinePrompt { get; set; }
         bool TestIsReady { get; set; }
-        ITwoLineTestItem CurrentTestItem { get; set; }
+        IOneLineTestItem CurrentTestItem { get; set; }
         string ResultText { get; set; }
         //Brush CheckResultBackgroundBrush { get; set; }
         //Brush CheckResultForegroundBrush { get; set; }

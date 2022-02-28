@@ -16,7 +16,7 @@ using ReactiveUIRoutingWithContracts;
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public abstract class TwoLineTestItemViewModelBase : ViewModelBase, ITwoLineTestItem
+    public abstract class OneLineTestItemViewModelBase : ViewModelBase, IOneLineTestItem
     {
         [Reactive]
         public string FirstLine { get; set; }
@@ -128,7 +128,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         //    //}
         //}
 
-        protected TwoLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, string secondLine, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        protected OneLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, string secondLine, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             FirstLine = question;
             SecondLine = secondLine;

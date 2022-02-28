@@ -27,11 +27,8 @@ namespace ReactiveUIUnoSample.Views.Testing
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class OneLineTestView : Page, IViewFor<ViewModels.Testing.OneLineTestViewModel>
+    public sealed partial class OneLineTestView : Page, IViewFor<OneLineTestViewModel>
     {
-        // Add the following interface to the class
-        // , IViewFor<TwoLineTestViewModel>
-
         public static readonly DependencyProperty ViewModelProperty =
                 DependencyProperty.Register(nameof(ViewModel), typeof(OneLineTestViewModel),
             typeof(OneLineTestView), new PropertyMetadata(default(OneLineTestViewModel)));

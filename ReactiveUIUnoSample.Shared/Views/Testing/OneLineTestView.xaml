@@ -21,7 +21,6 @@
 
             <StackPanel Margin="8" HorizontalAlignment="Center" Orientation="Vertical">
                 <TextBlock x:Name="CurrentTestItemFirstLineTextBlock" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
-                <TextBlock x:Name="CurrentTestItemSecondLineTextBlock" Visibility="{x:Bind ViewModel.ShowSecondLine}" Text="{x:Bind ViewModel.CurrentTestItem.SecondLine}" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
             </StackPanel>
 
             <ListView x:Name="AnswersListBox" Grid.Row="1" Margin="8" SelectionMode="Single">

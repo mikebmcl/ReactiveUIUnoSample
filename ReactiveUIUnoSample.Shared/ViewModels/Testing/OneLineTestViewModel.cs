@@ -26,17 +26,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
     [Windows.UI.Xaml.Data.Bindable]
     public class OneLineTestViewModel : DisplayViewModelBase, IOneLineTest, ICallOnBackNavigation
     {
-        //private string m_title = "";
-        //public override string Title { get => m_title; set { if (m_title != value) { m_title = value; RaisePropertyChanged(); } } }
-
-        //private void TestItemChangedEventHandler(object sender, PropertyChangedEventArgs args)
-        //{
-        //    if (args.PropertyName == nameof(ITwoLineTestItem.SelectedItem))
-        //    {
-        //        ChangeCommandCanExecute(CheckAndNextButtonCommand);
-        //    }
-        //}
-
         private readonly Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object> m_confirmLeavePage;
         public Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object> ConfirmLeavePage => m_confirmLeavePage;
         /// <summary>
@@ -81,56 +70,9 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         public static string UpdateVocabReadingsProgressMessage { get; } = nameof(UpdateVocabReadingsProgressMessage);
         private const int m_numberOfCorrectnessTrackingDataItemsToKeep = 10;
-        //public async void UpdateProgress()
-        //{
-        //    bool userIsCorrect = m_currentTestItem.UserAnswerIsCorrect();
-        //    if (CurrentTestItem.TestingProgress == null)
-        //    {
-        //        return;
-        //    }
-        //    CurrentTestItem.TestingProgress.NumberOfTimesCorrect += userIsCorrect ? 1 : 0;
-        //    CurrentTestItem.TestingProgress.NumberOfTimesTested += 1;
-        //    Queue<bool> updateCorrectnessTrackingData = new Queue<bool>(CurrentTestItem.TestingProgress.CorrectnessTrackingData);
-        //    updateCorrectnessTrackingData.Enqueue(userIsCorrect);
-        //    if (updateCorrectnessTrackingData.Count > m_numberOfCorrectnessTrackingDataItemsToKeep)
-        //    {
-        //        _ = updateCorrectnessTrackingData.Dequeue();
-        //    }
-        //    CurrentTestItem.TestingProgress.CorrectnessTrackingData = updateCorrectnessTrackingData;
-        //    CurrentTestItem.TestingProgress.LastTestedDate = DateTime.UtcNow;
-        //    await m_currentTestItem.TestingProgress.UpdateDBEntry();
-        //}
 
-        [Reactive]
-        public bool HasSecondLine { get; set; }
-
-        [Reactive]
-        public bool ShowSecondLine { get; set; }
-        public string ShowSecondLinePrompt { get; set; }
-
-        //private ITwoLineTestItem m_currentTestItem = default;
         [Reactive]
         public IOneLineTestItem CurrentTestItem { get; set; }
-        //{
-        //    get => m_currentTestItem;
-        //    set
-        //    {
-        //        if (m_currentTestItem != value)
-        //        {
-        //            //if (m_currentTestItem != null)
-        //            //{
-        //            //    m_currentTestItem.PropertyChanged -= TestItemChangedEventHandler;
-        //            //}
-        //            //m_currentTestItem = value;
-        //            //if (m_currentTestItem != null)
-        //            //{
-        //            //    m_currentTestItem.PropertyChanged += TestItemChangedEventHandler;
-        //            //}
-        //            RaisePropertyChanged();
-        //            RaisePropertyChanged(nameof(ShowSecondLine));
-        //        }
-        //    }
-        //}
 
         [Reactive]
         public List<IOneLineTestItem> TestItems { get; set; }
@@ -157,7 +99,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         public int TestItemCount => TestItems.Count;
 
         // This is used to let us know that the test is ready for the user since we'll have some async stuff that needs to complete before the test is ready.
-
         [Reactive]
         public bool TestIsReady { get; set; }
 
@@ -185,20 +126,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
 
         [Reactive]
         public string DisableOneWrongAnswerText { get; set; }
-
-        //private bool m_canDisableOneWrongAnswer = true;
-        //public bool CanDisableOneWrongAnswer
-        //{
-        //    get => m_canDisableOneWrongAnswer;
-        //    set
-        //    {
-        //        if (m_canDisableOneWrongAnswer != value)
-        //        {
-        //            m_canDisableOneWrongAnswer = value;
-        //            RaisePropertyChanged();
-        //        }
-        //    }
-        //}
 
         [Reactive]
         public bool? CheckedAnswerIsCorrect { get; set; }
@@ -270,8 +197,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             //CanDisableOneWrongAnswer = true;
         }
 
-        //public readonly WeakReference<Windows.UI.Xaml.Controls.ListView> AnswersListViewWeakRef = new WeakReference<Windows.UI.Xaml.Controls.ListView>(null);
-
         private async Task FinishCommandExecuteInternal()
         {
             SkipConfirmLeave = true;
@@ -325,21 +250,11 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                     IThreeStateTestAnswer answer = CurrentTestItem.Answers[i];
                     answer.IsEnabled = false;
                     EnabledAnswersCount -= 1;
-                    //answer.ButtonState = ThreeStateButtonState.Disabled;
                     if (answer.IsSelected)
                     {
                         answer.IsSelected = false;
                         CurrentTestItem.SelectedItem = null;
                     }
-                    //if (AnswersListViewWeakRef.TryGetTarget(out Windows.UI.Xaml.Controls.ListView listView))
-                    //{
-                    //    Windows.UI.Xaml.DependencyObject container = listView.ContainerFromIndex(i);
-                    //    if (container is Windows.UI.Xaml.Controls.ListViewItem viewItem)
-                    //    {
-                    //        viewItem.IsHitTestVisible = false;
-                    //        viewItem.IsEnabled = false;
-                    //    }
-                    //}
                     break;
                 }
             }
@@ -348,21 +263,12 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         public string Title { get; set; }
         public override object HeaderContent { get; set; }
 
-        private readonly string _secondLineSettingsKey;
-
-        public OneLineTestViewModel(string showSecondLinePreferencesKey, bool showSecondLineDefault, string showSecondLinePrompt, bool hasSecondLine, IList<IOneLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        public OneLineTestViewModel(IList<IOneLineTestItem> testItems, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false, [System.Runtime.CompilerServices.CallerMemberName] string callerMemberName = null, [System.Runtime.CompilerServices.CallerFilePath] string callerFilePath = null, [System.Runtime.CompilerServices.CallerLineNumber] int callerLineNumber = 0) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             m_confirmLeavePage = new Interaction<(string Title, string Text, string Stay, string Leave, Func<bool, Task> FinishInteraction, AtomicBoolean IsNavigating), object>(schedulerProvider.CurrentThread);
             HeaderContent = "First Page";
-            //NextPageCommand = ReactiveCommand.CreateFromObservable(() =>
-            //{
-            //    // Set the correct contract name to ensure we get SecondView. This must be done before navigation whenever a view is registered with a contract string such as the views that use SecondViewModel..
-            //    HostScreenWithContract.Contract = SecondViewModel.SecondViewContractName;
-            //    return HostScreen.Router.Navigate.Execute(new SecondViewModel(HostScreenWithContract, SchedulerProvider, () => new ContentControl() { Content = new TextBlock() { Text = "Second Page", FontStyle = Windows.UI.Text.FontStyle.Italic } }));
-            //});
 
             TestItems = new List<IOneLineTestItem>(testItems);
-            //CheckAndNextButtonText = CheckText;
             ResultText = m_resultTextEmpty;
             CheckAnswerButtonText = CheckText;
             NextFinishButtonTest = NextText;
@@ -370,48 +276,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             CheckAnswerCommand = ReactiveCommand.Create(CheckCommandExecute, this.WhenAnyValue(x => x.CurrentTestItem, x => x.CurrentTestItem.SelectedItem, x => x.CheckedAnswerIsCorrect, (item, selectedAnswer, checkedIsCorrect) => item != null && selectedAnswer != null && selectedAnswer?.IsEnabled is true && checkedIsCorrect == null).ObserveOn(SchedulerProvider.MainThread));
             // Need to explicitly specify the generics for WhenAnyValue here because of an ambiguity issue between overloads
             NextFinishCommand = ReactiveCommand.Create(NextCommandExecute, this.WhenAnyValue<OneLineTestViewModel, bool, bool?>(x => x.CheckedAnswerIsCorrect, (checkedIsCorrect) => checkedIsCorrect != null).ObserveOn(SchedulerProvider.MainThread));
-
-            HasSecondLine = hasSecondLine;
-            if (hasSecondLine)
-            {
-                if (!string.IsNullOrWhiteSpace(showSecondLinePreferencesKey))
-                {
-                    _secondLineSettingsKey = showSecondLinePreferencesKey;
-                    var values = ApplicationData.Current.LocalSettings.Values;
-                    if (!values.ContainsKey(showSecondLinePreferencesKey))
-                    {
-                        values.Add(showSecondLinePreferencesKey, showSecondLineDefault);
-                        ShowSecondLine = showSecondLineDefault && HasSecondLine;
-                    }
-                    else
-                    {
-                        if (values[showSecondLinePreferencesKey] is bool showSecondLineValue)
-                        {
-                            ShowSecondLine = showSecondLineValue && HasSecondLine;
-                        }
-                        else
-                        {
-                            if (callerMemberName == null)
-                            {
-                                callerMemberName = string.Empty;
-                            }
-                            if (callerFilePath == null)
-                            {
-                                callerMemberName = string.Empty;
-                            }
-                            // Because this is a generalized interface for a lot of potential different test types, we should show the called of the constructor in order to
-                            // give a better idea of where this bad key string was sent from.
-                            DiagnosticsHelpers.ReportProblem($"Expected local setting with key '{showSecondLinePreferencesKey}' to be of type bool but instead it is of type '{values[showSecondLinePreferencesKey].GetType().FullName}'. Using default.", LogLevel.Warning, this.Log(), callerMemberName: callerMemberName, callerFilePath: callerFilePath, callerLineNumber: callerLineNumber);
-                            ShowSecondLine = showSecondLineDefault && HasSecondLine;
-                        }
-                    }
-                    if (string.IsNullOrWhiteSpace(showSecondLinePrompt))
-                    {
-                        showSecondLinePrompt = "Show additional question information?";
-                    }
-                    ShowSecondLinePrompt = showSecondLinePrompt;
-                }
-            }
 
             CurrentTestItem = TestItems[CurrentTestItemIndex];
             EnabledAnswersCount = CurrentTestItem.Answers.Count;

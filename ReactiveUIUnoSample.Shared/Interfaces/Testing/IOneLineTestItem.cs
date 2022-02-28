@@ -7,7 +7,7 @@ using Windows.UI.Xaml;
 namespace ReactiveUIUnoSample.Interfaces.Testing
 {
     /// <summary>
-    /// Provides an abstracted representation of all data needed for a test item that can be used to populate a <see cref="IOneLineTest"/> in order to use <see cref="VocabTestContentPage"/>.
+    /// Provides an abstracted representation of all data needed for a test item that can be used to populate an <see cref="IOneLineTest"/>.
     /// </summary>
     public interface IOneLineTestItem : INotifyPropertyChanged
     {
@@ -16,7 +16,6 @@ namespace ReactiveUIUnoSample.Interfaces.Testing
         /// </summary>
         IThreeStateTestAnswer SelectedItem { get; set; }
         string FirstLine { get; set; }
-        string SecondLine { get; set; }
 
         IList<IThreeStateTestAnswer> Answers { get; set; }
         IThreeStateTestAnswer CorrectAnswer { get; set; }

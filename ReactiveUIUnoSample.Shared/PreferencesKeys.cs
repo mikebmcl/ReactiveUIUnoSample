@@ -10,6 +10,6 @@ namespace ReactiveUIUnoSample
 
         public const string MainWindowToolsIsExpandedPreferencesKey = "MainWindowToolsIsExpanded";
 
-        public const string UnitConversionsTestShowSecondLinePreferencesKey = "UnitConversionsTestShowSecondLine";
+        //public const string UnitConversionsTestShowSecondLinePreferencesKey = "UnitConversionsTestShowSecondLine";
     }
 }

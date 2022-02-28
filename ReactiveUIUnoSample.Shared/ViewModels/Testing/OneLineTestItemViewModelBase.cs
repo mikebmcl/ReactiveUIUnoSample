@@ -21,9 +21,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         [Reactive]
         public string FirstLine { get; set; }
 
-        [Reactive]
-        public string SecondLine { get; set; }
-
         public string UserAnswer()
         {
             return !(SelectedItem is IThreeStateTestAnswer userAnswer) ? string.Empty : userAnswer.Text ?? string.Empty;
@@ -33,28 +30,8 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             return SelectedItem.Text == CorrectAnswer.Text;
         }
 
-        //private IThreeStateTestAnswer m_selectedItem = null;
         [Reactive]
         public IThreeStateTestAnswer SelectedItem { get; set; }
-        //{
-        //    get => m_selectedItem;
-        //    set
-        //    {
-        //        if (m_selectedItem != value)
-        //        {
-        //            if (m_selectedItem != null)
-        //            {
-        //                m_selectedItem.IsSelected = false;
-        //            }
-        //            if (value != null)
-        //            {
-        //                value.IsSelected = true;
-        //            }
-        //            m_selectedItem = value;
-        //            RaisePropertyChanged();
-        //        }
-        //    }
-        //}
 
         protected bool SetAnswerStateCanExecute(string answer)
         {
@@ -74,18 +51,14 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                 {
                     selected = tsta;
                     tsta.IsSelected = true;
-                    //tsta.ButtonState = ThreeStateButtonState.Selected;
-                    //ChangeCommandCanExecute(tsta.PressCommand);
                 }
                 else
                 {
                     tsta.IsSelected = false;
                     if (!tsta.IsEnabled)
                     {
-                        //tsta.ButtonState = ThreeStateButtonState.Enabled;
                         tsta.IsEnabled = true;
                     }
-                    //ChangeCommandCanExecute(tsta.PressCommand);
                 }
             }
             if (SelectedItem != null)
@@ -109,44 +82,21 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         public bool HasCorrectAnswerFrameworkElement => CorrectAnswerFrameworkElement != null;
         public bool NoCorrectAnswerFrameworkElement => CorrectAnswerFrameworkElement == null;
 
-        //private bool ViewCorrectAnswerFrameworkElementCommandCanExecute()
-        //{
-        //    return CorrectAnswerFrameworkElement != null;
-        //}
-        //private async void ViewCorrectAnswerFrameworkElementCommandExecute()
-        //{
-        //    //await RootPage.Current.PushContent(CorrectAnswerFrameworkElement);
-        //    //if (CorrectAnswerFrameworkElement is ScrollViewer scrollViewer)
-        //    //{
-        //    //    Views.ContentViewPresenterContentPage page = new Views.ContentViewPresenterContentPage(CorrectAnswerFrameworkElement, FirstLine);
-        //    //    await App.Navigation.PushAsync(page);
-        //    //}
-        //    //else
-        //    //{
-        //    //    Views.ContentViewPresenterContentPage page = new Views.ContentViewPresenterContentPage(new Views.EmbedContentViewInScrollViewContentView(CorrectAnswerFrameworkElement), FirstLine);
-        //    //    await App.Navigation.PushAsync(page);
-        //    //}
-        //}
-
-        protected OneLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, string secondLine, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
+        protected OneLineTestItemViewModelBase(string question, string correctAnswer, IEnumerable<string> answers, FrameworkElement correctAnswerContentView, IScreenForContracts hostScreen, ISchedulerProvider schedulerProvider, string urlPathSegment = null, bool useNullUrlPathSegment = false) : base(hostScreen, schedulerProvider, urlPathSegment, useNullUrlPathSegment)
         {
             FirstLine = question;
-            SecondLine = secondLine;
             int enabledAnswersCount = 0;
             Answers = new List<IThreeStateTestAnswer>();
             foreach (string item in answers)
             {
                 enabledAnswersCount++;
                 Answers.Add(new ButtonViewModel(item, ReactiveCommand.Create<string>(SetAnswerStateExecute, this.WhenAny(x => x.Answers, (an) => an?.Value.FirstOrDefault(v => v.Text == item)?.IsEnabled is true).ObserveOn(SchedulerProvider.MainThread))));
-                //new CommandHandler(() => SetAnswerStateExecute(item), () => SetAnswerStateCanExecute(item))));
             }
             CorrectAnswer = Answers.First(tsta => tsta.Text == correctAnswer);
 
             CorrectAnswerFrameworkElement = correctAnswerContentView;
-            //TestingProgress = testingProgress;
             RaisePropertyChanged(nameof(HasCorrectAnswerFrameworkElement));
             RaisePropertyChanged(nameof(NoCorrectAnswerFrameworkElement));
-            //ViewCorrectAnswerFrameworkElementCommand = new CommandHandler(ViewCorrectAnswerFrameworkElementCommandExecute, ViewCorrectAnswerFrameworkElementCommandCanExecute);
         }
     }
 }

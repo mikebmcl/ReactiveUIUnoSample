@@ -37,28 +37,26 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Text="Question:" />
                             <TextBlock Grid.Row="1" Text="{x:Bind TestItem.FirstLine}" />
-                            <TextBlock Grid.Row="2" Text="{x:Bind TestItem.SecondLine}" />
 
-                            <TextBlock Grid.Row="3" Margin="0,5,0,0" Foreground="{ThemeResource SystemFillColorCriticalBrush}">
+                            <TextBlock Grid.Row="2" Margin="0,5,0,0" Foreground="{ThemeResource SystemFillColorCriticalBrush}">
                                 <TextBlock.Inlines>
                                     <Run Text="Your answer: " />
                                     <Run Text="{x:Bind WrongAnswer}" />
                                 </TextBlock.Inlines>
                             </TextBlock>
-                            <TextBlock Grid.Row="4" Padding="10" Foreground="{ThemeResource SystemFillColorSuccessBrush}">
+                            <TextBlock Grid.Row="3" Padding="10" Foreground="{ThemeResource SystemFillColorSuccessBrush}">
                                 <TextBlock.Inlines>
                                     <Run Text="Correct answer: " />
                                     <Run Text="{Binding TestItem.CorrectAnswer.Text}" />
                                 </TextBlock.Inlines>
                             </TextBlock>
-                            <!--<Button Grid.Row="5" Visibility="{Binding TestItem.HasCorrectAnswerFrameworkElement, Converter={StaticResource BoolToVisConv}}" Content="See Details" Command="{Binding TestItem.ViewCorrectAnswerFrameworkElementCommand}" />-->
+                            <!--<Button Grid.Row="4" Visibility="{Binding TestItem.HasCorrectAnswerFrameworkElement, Converter={StaticResource BoolToVisConv}}" Content="See Details" Command="{Binding TestItem.ViewCorrectAnswerFrameworkElementCommand}" />-->
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

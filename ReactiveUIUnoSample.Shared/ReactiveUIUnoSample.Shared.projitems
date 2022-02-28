@@ -29,18 +29,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\TemperatureConversionsMainView.xaml.cs">
       <DependentUpon>TemperatureConversionsMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\Testing\TwoLineTestResultsView.xaml.cs">
-      <DependentUpon>TwoLineTestResultsView.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Testing\OneLineTestResultsView.xaml.cs">
+      <DependentUpon>OneLineTestResultsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)WeakEventHandlerEventManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICallOnBackNavigation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\INavigationViewProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISchedulerProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\IThreeStateTestAnswer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTestItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTestResults.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\ITwoLineTestWrongAnswer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\IOneLineTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\IOneLineTestItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\IOneLineTestResults.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\IOneLineTestWrongAnswer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\Testing\TestDifficulty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NavigationViewProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PreferencesKeys.cs" />
@@ -54,11 +54,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\FirstViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SecondViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestItemViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestItemViewModelBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestResultsViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\TwoLineTestWrongAnswerViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\OneLineTestItemViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\OneLineTestItemViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\OneLineTestResultsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\OneLineTestViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\Testing\OneLineTestWrongAnswerViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnitConversions\TemperatureConversionDirectionValueDisplayPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\UnitConversions\TemperatureConversionsViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
@@ -74,8 +74,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\SecondView.xaml.cs">
       <DependentUpon>SecondView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Views\Testing\TwoLineTestView.xaml.cs">
-      <DependentUpon>TwoLineTestView.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Testing\OneLineTestView.xaml.cs">
+      <DependentUpon>OneLineTestView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -107,11 +107,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Views\Testing\TwoLineTestResultsView.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)Views\Testing\OneLineTestResultsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Views\Testing\TwoLineTestView.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)Views\Testing\OneLineTestView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -24,14 +24,35 @@
             </StackPanel>
 
             <ListView x:Name="AnswersListBox" Grid.Row="1" Margin="8" SelectionMode="Single">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
+                <!-- Note: It's important when modifying a container style to base it on the default style if one exists, otherwise you can end up with
+                    missing styling elements such as the accent-colored indication of the selected item in this ListView. To determine if there is a
+                    default style, check:
+                         
+                    https://github.com/microsoft/microsoft-ui-xaml/tree/main/dev/CommonStyles
+                         
+                    Usually if there is a default style its name will follow the pattern DefaultControlNameStyle such as DefaultListViewItemStyle as
+                    below. The file names there are not one-to-one control mapped. For example, ListBox_themeresources.xaml contains styling for both
+                    ListBox and ListBoxItem. The versioning is confusing; generally assume that files that end with themeresources.xaml are the ones
+                    you will be working with and that the other versions are for backward compatibility or preview release testing. Uno might have a
+                    style defined so you should check that as well, though normally it will be based on the default styles above with platform-specific
+                    customizations:
+                    
+                    https://github.com/microsoft/microsoft-ui-xaml/tree/main/dev/CommonStyles
+                    https://github.com/unoplatform/uno/tree/master/src/Uno.UI/UI/Xaml/Controls - A few controls have named defaults in .xaml files
+
+                    As an example of what happens if you miss a default for a BasedOn that you should've had, uncomment the ListView.ItemContainerStyle
+                    below and try running it both with and without the BasedOn. As noted above, without the BasedOn it will not have the selected visual
+                    indicator (the little accent-colored marking to the left of the text). You can generally accomplish any styling you want using an
+                    item template. This does have its uses though, so we have the demonstration below.
+                -->
+                <!--<ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
                         <Setter Property="Margin" Value="4" />
                     </Style>
-                </ListView.ItemContainerStyle>
+                </ListView.ItemContainerStyle>-->
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="vms:ButtonViewModel">
-                        <ListViewItem Content="{x:Bind Text}" IsEnabled="{x:Bind IsEnabled, Mode=OneWay}" IsSelected="{x:Bind IsSelected, Mode=TwoWay}" />
+                        <ListViewItem Margin="4" Content="{x:Bind Text}" IsEnabled="{x:Bind IsEnabled, Mode=OneWay}" IsSelected="{x:Bind IsSelected, Mode=TwoWay}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

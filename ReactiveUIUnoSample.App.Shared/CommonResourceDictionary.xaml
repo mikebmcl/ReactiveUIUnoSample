@@ -24,13 +24,13 @@
     <Style TargetType="UserControl">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="TextBox">
+    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="RadioButton">
+    <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="Button">
+    <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
     <Style TargetType="ComboBox">
@@ -39,11 +39,23 @@
     <Style TargetType="ComboBoxItem">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="ListViewItem">
+    <Style TargetType="ListView">
          <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
+    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="NavigationView">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="NavigationViewItem">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="NavigationViewItemHeader">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
 
-    <Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+    <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
 

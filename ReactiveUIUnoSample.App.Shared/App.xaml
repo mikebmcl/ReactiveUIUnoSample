@@ -8,6 +8,7 @@
         <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="ms-appx:///CommonResourceDictionary.xaml" />
              </ResourceDictionary.MergedDictionaries>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary Source="ms-appx:///LightThemeResourceDictionary.xaml" x:Key="Light" />

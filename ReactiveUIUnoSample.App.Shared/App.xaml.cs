@@ -44,6 +44,9 @@ namespace ReactiveUIUnoSample
             global::Uno.UI.FeatureConfiguration.Style.ConfigureNativeFrameNavigation();
 #endif
 
+            //RequestedTheme = ApplicationTheme.Light;
+            //RequestedTheme = ApplicationTheme.Dark;
+
             this.InitializeComponent();
 
             DiagnosticsHelpers.TerminateApplication = Application.Current.Exit;

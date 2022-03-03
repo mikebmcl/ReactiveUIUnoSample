@@ -2,41 +2,46 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Note that we are including a fallback to the generic styles 'sans-serif' and 'serif' here. This way if there's some problem with the font or it cannot be used, the system will know to fallback to a default font that matches our general intention rather than picking a font without any hint about what might be appropriate. -->
-    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans,sans-serif</x:String>
+    <!-- Note: If you want to test to see that your custom fonts are being used, if your custom font is a sans-serif font have it fall back to serif generic, if it is a serif font, have it fall back to a sans-serif generic, etc., so that you can visually verify that it is not using the fallback. If you do this, MAKE SURE to restore the generic fallbacks to their proper value after testing in case your program is unable to use your custom font on a platform and has to fall back. -->
+    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans,serif</x:String>
     <x:String x:Key="NotoSerif">ms-appx:///Assets/Fonts/NotoSerif-Regular.ttf#Noto Serif,serif</x:String>
 
     <!-- To use these bold fonts you also need to set FontWeight="Bold" -->
-    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans,serif</x:String>
     <x:String x:Key="NotoSerifBold">ms-appx:///Assets/Fonts/NotoSerif-Bold.ttf#Noto Serif,serif</x:String>
 
     <!-- To use this italic font you also need to set FontStyle="Italic" -->
-    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans,serif</x:String>
     <x:String x:Key="NotoSerifItalic">ms-appx:///Assets/Fonts/NotoSerif-Italic.ttf#Noto Serif,serif</x:String>
 
     <!-- To use these bold fonts you also need to set FontWeight="Bold" and FontStyle="Italic" -->
-    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans,sans-serif</x:String>
+    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans,serif</x:String>
     <x:String x:Key="NotoSerifBoldItalic">ms-appx:///Assets/Fonts/NotoSerif-BoldItalic.ttf#Noto Serif,serif</x:String>
 
     <!-- Defaults -->
-    <Style TargetType="ContentControl">
-        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
-    </Style>
-    <Style TargetType="UserControl">
-        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
-    </Style>
-    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
-        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
-    </Style>
-    <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
-        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
-    </Style>
+    <!-- Note: When using Fluent-styled controls, such as we are doing ( https://platform.uno/docs/articles/features/fluent-styles.html ), it is important to used BasedOn for all Windows.UI.Xaml.Controls controls to avoid overwriting their templates. See: https://docs.microsoft.com/en-us/windows/apps/design/style/xaml-styles#avoid-restyling-controls . If you switch to using WinUI (i.e. controls in the Microsoft.UI.Xaml.Controls namespace) instead of UWP, remove all of the BasedOns for the default styles, as per the previous link. We are not creating defaults for all of the controls, only the ones we want to override some part of their default style. IMPORTANT: Not all controls have default styles.  -->
     <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="ComboBox">
+    <Style TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckBoxStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="ComboBoxItem">
+    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource DefaultComboBoxItemStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="ContentControl">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="ContentDialog" BasedOn="{StaticResource DefaultContentDialogStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="Control">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="ItemsControl">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
     <Style TargetType="ListView">
@@ -54,8 +59,17 @@
     <Style TargetType="NavigationViewItemHeader">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-
-    <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
+    <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="UserControl">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <!-- TextBlock has no default style but this is a good base style to use - it derives from BaseTextBlockStyle, which is used for all of the TextBlock styles that are defined, but sets the FontWeight to Normal (BaseTextBlockStyle has a FontWeight of SemiBold, likely because 5 of the 7 defined styles use SemiBold and are meant for document organization as opposed to document text) -->
+    <Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
 
@@ -364,4 +378,277 @@
         <Setter Property="Width" Value="2" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
+
+
+    <!-- Empty default styles for controls with that have existing styles that should be used when creating modifications to the controls that those styles apply to that come from the source for Fluent-styled controls: https://github.com/microsoft/microsoft-ui-xaml
+
+    Note: This list and the list(s) that follow it were generated by cloning the repos then using WSL to run a piped combination of GNU grep and gawk commands in the root directory of the cloned repo. I'm including that series of commands here for informational purposes only. Should you choose to ignore that fact and use the commands, their use is governed by the LICENSE file contained in the root directory. Of particular note: The results may be missing some defaults, may include things that are irrelevant or should not be used, and otherwise might not be valid. The styles that have been generated using the commands are derived from sources that change regularly. They are not automatically refreshed and as such only reflect the state of those sources at a specific moment in time sometime prior to the date and time that this file was most recently updated. For this reason, they are already out of date. The styles also does not include any third party controls nor any controls in other projects that come from the maintainers of the projects these were generated from. Proper testing, examination of changes prior to updating to new versions of packages and other dependencies, and manual review should be done to ensure that your application is properly modifying styles for controls used in your application that you decide to modify along with all other best practices. As an example, there is a style below for RadioButtons however there is no RadioButtons control in UWP; it only exists in WinUI. Because the commands are not sophisticated enough to determine the namespace that something is in, however, it finds that default style and includes it. If you attempt to simply copy and paste the styles below, your code will be wrong and might seem to work on some platforms but will likely have a runtime exception when starting up in UWP since that control doesn't exist.
+
+    Note: Because XML does not allow two - characters in a row within comments, the first grep command has a \ separating the two - characters which are meant to be two consecutive - characters with no \. This command will run properly even with the \ when using GNU bash, which is the shell that was used to run it to generate the lists, however it is meant to be two consecutive - characters rather than -\-.
+    
+    grep -roh -\-include="*.xaml" 'x:Key="Default.*Style' | grep -o 'Default[^"]*' | gawk '{ if ($0 in a) { next; } a[$0] = $0; } END { cnt = asort(a); for (idx = 1; idx <= cnt; idx++) { cntrl=gensub(/Default/, "", 1, a[idx]);cntrl=gensub(/Style/, "", 1, cntrl); printf("    <Style TargetType=\"%s\" BasedOn=\"{StaticResource %s}\">\n    </Style>\n", cntrl, a[idx]); } }'
+
+
+    <Style TargetType="AppBarButton" BasedOn="{StaticResource DefaultAppBarButtonStyle}">
+    </Style>
+    <Style TargetType="AppBarSeparator" BasedOn="{StaticResource DefaultAppBarSeparatorStyle}">
+    </Style>
+    <Style TargetType="AppBarToggleButton" BasedOn="{StaticResource DefaultAppBarToggleButtonStyle}">
+    </Style>
+    <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
+    </Style>
+    <Style TargetType="BreadcrumbBarItem" BasedOn="{StaticResource DefaultBreadcrumbBarItemStyle}">
+    </Style>
+    <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    </Style>
+    <Style TargetType="CalendarView" BasedOn="{StaticResource DefaultCalendarViewStyle}">
+    </Style>
+    <Style TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckBoxStyle}">
+    </Style>
+    <Style TargetType="ColorPicker" BasedOn="{StaticResource DefaultColorPickerStyle}">
+    </Style>
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource DefaultComboBoxItemStyle}">
+    </Style>
+    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+    </Style>
+    <Style TargetType="CommandBarFlyoutCommandBarOS" BasedOn="{StaticResource DefaultCommandBarFlyoutCommandBarOSStyle}">
+    </Style>
+    <Style TargetType="CommandBarFlyoutCommandBar" BasedOn="{StaticResource DefaultCommandBarFlyoutCommandBarStyle}">
+    </Style>
+    <Style TargetType="CommandBarOverflowPresenter" BasedOn="{StaticResource DefaultCommandBarOverflowPresenterStyle}">
+    </Style>
+    <Style TargetType="CommandBar" BasedOn="{StaticResource DefaultCommandBarStyle}">
+    </Style>
+    <Style TargetType="ContentDialog" BasedOn="{StaticResource DefaultContentDialogStyle}">
+    </Style>
+    <Style TargetType="DatePickerFlyoutPresenter" BasedOn="{StaticResource DefaultDatePickerFlyoutPresenterStyle}">
+    </Style>
+    <Style TargetType="DatePicker" BasedOn="{StaticResource DefaultDatePickerStyle}">
+    </Style>
+    <Style TargetType="DropDownButton" BasedOn="{StaticResource DefaultDropDownButtonStyle}">
+    </Style>
+    <Style TargetType="Expander" BasedOn="{StaticResource DefaultExpanderStyle}">
+    </Style>
+    <Style TargetType="FlipViewItem" BasedOn="{StaticResource DefaultFlipViewItemStyle}">
+    </Style>
+    <Style TargetType="FlipView" BasedOn="{StaticResource DefaultFlipViewStyle}">
+    </Style>
+    <Style TargetType="FlyoutPresenter" BasedOn="{StaticResource DefaultFlyoutPresenterStyle}">
+    </Style>
+    <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+    </Style>
+    <Style TargetType="HyperlinkButton" BasedOn="{StaticResource DefaultHyperlinkButtonStyle}">
+    </Style>
+    <Style TargetType="InfoBadge" BasedOn="{StaticResource DefaultInfoBadgeStyle}">
+    </Style>
+    <Style TargetType="ListBoxItem" BasedOn="{StaticResource DefaultListBoxItemStyle}">
+    </Style>
+    <Style TargetType="ListBox" BasedOn="{StaticResource DefaultListBoxStyle}">
+    </Style>
+    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+    </Style>
+    <Style TargetType="LoopingSelector" BasedOn="{StaticResource DefaultLoopingSelectorStyle}">
+    </Style>
+    <Style TargetType="MediaTransportControls" BasedOn="{StaticResource DefaultMediaTransportControlsStyle}">
+    </Style>
+    <Style TargetType="MenuBar" BasedOn="{StaticResource DefaultMenuBarStyle}">
+    </Style>
+    <Style TargetType="MenuFlyoutItem" BasedOn="{StaticResource DefaultMenuFlyoutItemStyle}">
+    </Style>
+    <Style TargetType="MenuFlyoutPresenter" BasedOn="{StaticResource DefaultMenuFlyoutPresenterStyle}">
+    </Style>
+    <Style TargetType="MenuFlyoutSubItem" BasedOn="{StaticResource DefaultMenuFlyoutSubItemStyle}">
+    </Style>
+    <Style TargetType="PasswordBox" BasedOn="{StaticResource DefaultPasswordBoxStyle}">
+    </Style>
+    <Style TargetType="PersonPicture" BasedOn="{StaticResource DefaultPersonPictureStyle}">
+    </Style>
+    <Style TargetType="PivotHeaderItem" BasedOn="{StaticResource DefaultPivotHeaderItemStyle}">
+    </Style>
+    <Style TargetType="PivotItem" BasedOn="{StaticResource DefaultPivotItemStyle}">
+    </Style>
+    <Style TargetType="Pivot" BasedOn="{StaticResource DefaultPivotStyle}">
+    </Style>
+    <Style TargetType="ProgressBar" BasedOn="{StaticResource DefaultProgressBarStyle}">
+    </Style>
+    <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
+    </Style>
+    <Style TargetType="RadioButtons" BasedOn="{StaticResource DefaultRadioButtonsStyle}">
+    </Style>
+    <Style TargetType="RadioMenuFlyoutItem" BasedOn="{StaticResource DefaultRadioMenuFlyoutItemStyle}">
+    </Style>
+    <Style TargetType="RefreshContainer" BasedOn="{StaticResource DefaultRefreshContainerStyle}">
+    </Style>
+    <Style TargetType="RepeatButton" BasedOn="{StaticResource DefaultRepeatButtonStyle}">
+    </Style>
+    <Style TargetType="RichEditBox" BasedOn="{StaticResource DefaultRichEditBoxStyle}">
+    </Style>
+    <Style TargetType="ScrollBar" BasedOn="{StaticResource DefaultScrollBarStyle}">
+    </Style>
+    <Style TargetType="ScrollView" BasedOn="{StaticResource DefaultScrollViewStyle}">
+    </Style>
+    <Style TargetType="ScrollViewer" BasedOn="{StaticResource DefaultScrollViewerStyle}">
+    </Style>
+    <Style TargetType="Slider" BasedOn="{StaticResource DefaultSliderStyle}">
+    </Style>
+    <Style TargetType="SplitView" BasedOn="{StaticResource DefaultSplitViewStyle}">
+    </Style>
+    <Style TargetType="SwipeControl" BasedOn="{StaticResource DefaultSwipeControlStyle}">
+    </Style>
+    <Style TargetType="TabView" BasedOn="{StaticResource DefaultTabViewStyle}">
+    </Style>
+    <Style TargetType="TeachingTip" BasedOn="{StaticResource DefaultTeachingTipStyle}">
+    </Style>
+    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+    </Style>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+    </Style>
+    <Style TargetType="ToggleMenuFlyoutItem" BasedOn="{StaticResource DefaultToggleMenuFlyoutItemStyle}">
+    </Style>
+    <Style TargetType="ToggleSwitch" BasedOn="{StaticResource DefaultToggleSwitchStyle}">
+    </Style>
+    <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTipStyle}">
+    </Style>
+    <Style TargetType="TreeView" BasedOn="{StaticResource DefaultTreeViewStyle}">
+    </Style>
+    <Style TargetType="TwoPaneView" BasedOn="{StaticResource DefaultTwoPaneViewStyle}">
+    </Style>
+    
+    -->
+    
+    <!-- Empty default styles for controls with that have existing styles that should be used when creating modifications to the controls that those styles apply to that come from: https://github.com/unoplatform/uno/ 
+    (Expect this to be primarily duplicates of the styles for the Fluent-style controls above, though controls that are not supported in Uno might not be here. If there are any Uno-specific controls with default styles that are part of the main Uno project, then they would be here, though I'm not sure if there are any such controls.)
+
+    <Style TargetType="AppBarButton" BasedOn="{StaticResource DefaultAppBarButtonStyle}">
+    </Style>
+    <Style TargetType="AppBarSeparator" BasedOn="{StaticResource DefaultAppBarSeparatorStyle}">
+    </Style>
+    <Style TargetType="AppBarToggleButton" BasedOn="{StaticResource DefaultAppBarToggleButtonStyle}">
+    </Style>
+    <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
+    </Style>
+    <Style TargetType="BreadcrumbBarItem" BasedOn="{StaticResource DefaultBreadcrumbBarItemStyle}">
+    </Style>
+    <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+    </Style>
+    <Style TargetType="CalendarView" BasedOn="{StaticResource DefaultCalendarViewStyle}">
+    </Style>
+    <Style TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckBoxStyle}">
+    </Style>
+    <Style TargetType="ColorPicker" BasedOn="{StaticResource DefaultColorPickerStyle}">
+    </Style>
+    <Style TargetType="ComboBoxItem" BasedOn="{StaticResource DefaultComboBoxItemStyle}">
+    </Style>
+    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+    </Style>
+    <Style TargetType="CommandBarFlyoutCommandBar" BasedOn="{StaticResource DefaultCommandBarFlyoutCommandBarStyle}">
+    </Style>
+    <Style TargetType="CommandBarOverflowPresenter" BasedOn="{StaticResource DefaultCommandBarOverflowPresenterStyle}">
+    </Style>
+    <Style TargetType="CommandBar" BasedOn="{StaticResource DefaultCommandBarStyle}">
+    </Style>
+    <Style TargetType="ContentDialog" BasedOn="{StaticResource DefaultContentDialogStyle}">
+    </Style>
+    <Style TargetType="DatePickerFlyoutPresenter" BasedOn="{StaticResource DefaultDatePickerFlyoutPresenterStyle}">
+    </Style>
+    <Style TargetType="DatePickerSelector" BasedOn="{StaticResource DefaultDatePickerSelectorStyle}">
+    </Style>
+    <Style TargetType="DatePicker" BasedOn="{StaticResource DefaultDatePickerStyle}">
+    </Style>
+    <Style TargetType="DropDownButton" BasedOn="{StaticResource DefaultDropDownButtonStyle}">
+    </Style>
+    <Style TargetType="Expander" BasedOn="{StaticResource DefaultExpanderStyle}">
+    </Style>
+    <Style TargetType="FlipViewItem" BasedOn="{StaticResource DefaultFlipViewItemStyle}">
+    </Style>
+    <Style TargetType="FlipView" BasedOn="{StaticResource DefaultFlipViewStyle}">
+    </Style>
+    <Style TargetType="FlyoutPresenter" BasedOn="{StaticResource DefaultFlyoutPresenterStyle}">
+    </Style>
+    <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+    </Style>
+    <Style TargetType="HyperlinkButton" BasedOn="{StaticResource DefaultHyperlinkButtonStyle}">
+    </Style>
+    <Style TargetType="InfoBadge" BasedOn="{StaticResource DefaultInfoBadgeStyle}">
+    </Style>
+    <Style TargetType="ListBoxItem" BasedOn="{StaticResource DefaultListBoxItemStyle}">
+    </Style>
+    <Style TargetType="ListBox" BasedOn="{StaticResource DefaultListBoxStyle}">
+    </Style>
+    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+    </Style>
+    <Style TargetType="LoopingSelector" BasedOn="{StaticResource DefaultLoopingSelectorStyle}">
+    </Style>
+    <Style TargetType="MapControl" BasedOn="{StaticResource DefaultMapControlStyle}">
+    </Style>
+    <Style TargetType="MediaTransportControls" BasedOn="{StaticResource DefaultMediaTransportControlsStyle}">
+    </Style>
+    <Style TargetType="MenuBar" BasedOn="{StaticResource DefaultMenuBarStyle}">
+    </Style>
+    <Style TargetType="MenuFlyoutItem" BasedOn="{StaticResource DefaultMenuFlyoutItemStyle}">
+    </Style>
+    <Style TargetType="MenuFlyoutPresenter" BasedOn="{StaticResource DefaultMenuFlyoutPresenterStyle}">
+    </Style>
+    <Style TargetType="MenuFlyoutSubItem" BasedOn="{StaticResource DefaultMenuFlyoutSubItemStyle}">
+    </Style>
+    <Style TargetType="MyExtControl" BasedOn="{StaticResource DefaultMyExtControlStyle}">
+    </Style>
+    <Style TargetType="PasswordBox" BasedOn="{StaticResource DefaultPasswordBoxStyle}">
+    </Style>
+    <Style TargetType="PathControl" BasedOn="{StaticResource DefaultPathControlStyle}">
+    </Style>
+    <Style TargetType="PersonPicture" BasedOn="{StaticResource DefaultPersonPictureStyle}">
+    </Style>
+    <Style TargetType="PivotHeaderItem" BasedOn="{StaticResource DefaultPivotHeaderItemStyle}">
+    </Style>
+    <Style TargetType="PivotItem" BasedOn="{StaticResource DefaultPivotItemStyle}">
+    </Style>
+    <Style TargetType="Pivot" BasedOn="{StaticResource DefaultPivotStyle}">
+    </Style>
+    <Style TargetType="ProgressBar" BasedOn="{StaticResource DefaultProgressBarStyle}">
+    </Style>
+    <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
+    </Style>
+    <Style TargetType="RadioButtons" BasedOn="{StaticResource DefaultRadioButtonsStyle}">
+    </Style>
+    <Style TargetType="RadioMenuFlyoutItem" BasedOn="{StaticResource DefaultRadioMenuFlyoutItemStyle}">
+    </Style>
+    <Style TargetType="RefreshContainer" BasedOn="{StaticResource DefaultRefreshContainerStyle}">
+    </Style>
+    <Style TargetType="RepeatButton" BasedOn="{StaticResource DefaultRepeatButtonStyle}">
+    </Style>
+    <Style TargetType="RichEditBox" BasedOn="{StaticResource DefaultRichEditBoxStyle}">
+    </Style>
+    <Style TargetType="SampleControl" BasedOn="{StaticResource DefaultSampleControlStyle}">
+    </Style>
+    <Style TargetType="ScrollBar" BasedOn="{StaticResource DefaultScrollBarStyle}">
+    </Style>
+    <Style TargetType="ScrollViewer" BasedOn="{StaticResource DefaultScrollViewerStyle}">
+    </Style>
+    <Style TargetType="Slider" BasedOn="{StaticResource DefaultSliderStyle}">
+    </Style>
+    <Style TargetType="SplitView" BasedOn="{StaticResource DefaultSplitViewStyle}">
+    </Style>
+    <Style TargetType="SwipeControl" BasedOn="{StaticResource DefaultSwipeControlStyle}">
+    </Style>
+    <Style TargetType="TabView" BasedOn="{StaticResource DefaultTabViewStyle}">
+    </Style>
+    <Style TargetType="TeachingTip" BasedOn="{StaticResource DefaultTeachingTipStyle}">
+    </Style>
+    <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+    </Style>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+    </Style>
+    <Style TargetType="ToggleMenuFlyoutItem" BasedOn="{StaticResource DefaultToggleMenuFlyoutItemStyle}">
+    </Style>
+    <Style TargetType="ToggleSwitch" BasedOn="{StaticResource DefaultToggleSwitchStyle}">
+    </Style>
+    <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTipStyle}">
+    </Style>
+    <Style TargetType="TreeView" BasedOn="{StaticResource DefaultTreeViewStyle}">
+    </Style>
+    <Style TargetType="TwoPaneView" BasedOn="{StaticResource DefaultTwoPaneViewStyle}">
+    </Style>
+    
+    -->
 </ResourceDictionary>

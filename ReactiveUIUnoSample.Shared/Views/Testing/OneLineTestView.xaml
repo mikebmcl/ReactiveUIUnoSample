@@ -23,7 +23,7 @@
                 <TextBlock x:Name="CurrentTestItemFirstLineTextBlock" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
             </StackPanel>
 
-            <ListView x:Name="AnswersListBox" Grid.Row="1" Margin="8" SelectionMode="Single">
+            <ListView x:Name="AnswersListView" Grid.Row="1" Margin="8" SelectionMode="Single">
                 <!-- Note: It's important when modifying a container style to base it on the default style if one exists, otherwise you can end up with
                     missing styling elements such as the accent-colored indication of the selected item in this ListView. To determine if there is a
                     default style, check:

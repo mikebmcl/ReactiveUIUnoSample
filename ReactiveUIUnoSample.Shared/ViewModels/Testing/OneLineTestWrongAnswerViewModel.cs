@@ -3,9 +3,9 @@
 namespace ReactiveUIUnoSample.ViewModels.Testing
 {
     [Windows.UI.Xaml.Data.Bindable]
-    public class OneLineTestWrongAnswer : IOneLineTestWrongAnswer
+    public class OneLineTestWrongAnswerViewModel : IOneLineTestWrongAnswer
     {
-        public OneLineTestWrongAnswer(IOneLineTestItem testItem, string wasWrong)
+        public OneLineTestWrongAnswerViewModel(IOneLineTestItem testItem, string wasWrong)
         {
             TestItem = testItem;
             WrongAnswer = wasWrong;

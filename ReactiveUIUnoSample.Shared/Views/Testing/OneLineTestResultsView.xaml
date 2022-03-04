@@ -5,7 +5,7 @@
     xmlns:local="using:ReactiveUIUnoSample.Views.Testing"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ifacetest="using:ReactiveUIUnoSample.Interfaces.Testing"
+    xmlns:ifacetesting="using:ReactiveUIUnoSample.Interfaces.Testing"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -32,7 +32,7 @@
             </StackPanel>
             <ItemsControl x:Name="WrongAnswersItemsControl" Grid.Row="2">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="ifacetest:IOneLineTestWrongAnswer">
+                    <DataTemplate x:DataType="ifacetesting:IOneLineTestWrongAnswer">
                         <Grid Margin="5" Padding="5">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

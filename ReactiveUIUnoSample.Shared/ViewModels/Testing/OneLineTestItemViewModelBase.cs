@@ -33,10 +33,6 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         [Reactive]
         public IThreeStateTestAnswer SelectedItem { get; set; }
 
-        protected bool SetAnswerStateCanExecute(string answer)
-        {
-            return Answers?.FirstOrDefault(item => item.Text == answer).IsEnabled ?? false;
-        }
         protected void SetAnswerStateExecute(string answer)
         {
             IList<IThreeStateTestAnswer> localAnswers = Answers;
@@ -55,20 +51,20 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                 else
                 {
                     tsta.IsSelected = false;
-                    if (!tsta.IsEnabled)
-                    {
-                        tsta.IsEnabled = true;
-                    }
+                    //if (!tsta.IsEnabled)
+                    //{
+                    //    tsta.IsEnabled = true;
+                    //}
                 }
             }
-            if (SelectedItem != null)
-            {
-                SelectedItem.IsSelected = false;
-            }
-            if (selected != null)
-            {
-                selected.IsSelected = true;
-            }
+            //if (SelectedItem != null)
+            //{
+            //    SelectedItem.IsSelected = false;
+            //}
+            //if (selected != null)
+            //{
+            //    selected.IsSelected = true;
+            //}
             SelectedItem = selected;
         }
 
@@ -86,14 +82,14 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         {
             FirstLine = question;
             int enabledAnswersCount = 0;
-            Answers = new List<IThreeStateTestAnswer>();
+            var answersList = new List<IThreeStateTestAnswer>();
             foreach (string item in answers)
             {
                 enabledAnswersCount++;
-                Answers.Add(new ButtonViewModel(item, ReactiveCommand.Create<string>(SetAnswerStateExecute, this.WhenAny(x => x.Answers, (an) => an?.Value.FirstOrDefault(v => v.Text == item)?.IsEnabled is true).ObserveOn(SchedulerProvider.MainThread))));
+                answersList.Add(new ButtonViewModel(item, ReactiveCommand.Create(() => SetAnswerStateExecute(item))));
             }
-            CorrectAnswer = Answers.First(tsta => tsta.Text == correctAnswer);
-
+            CorrectAnswer = answersList.First(tsta => tsta.Text == correctAnswer);
+            Answers = answersList;
             CorrectAnswerFrameworkElement = correctAnswerContentView;
             RaisePropertyChanged(nameof(HasCorrectAnswerFrameworkElement));
             RaisePropertyChanged(nameof(NoCorrectAnswerFrameworkElement));

@@ -3,6 +3,7 @@ using ReactiveUI.Fody.Helpers;
 
 using ReactiveUIUnoSample.Interfaces.Testing;
 
+using System.Reactive;
 using System.Windows.Input;
 
 namespace ReactiveUIUnoSample.ViewModels
@@ -19,9 +20,9 @@ namespace ReactiveUIUnoSample.ViewModels
         [Reactive]
         public bool IsSelected { get; set; }
 
-        public ICommand PressCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> PressCommand { get; set; }
 
-        public ButtonViewModel(string text, ICommand pressCommand)
+        public ButtonViewModel(string text, ReactiveCommand<Unit, Unit> pressCommand)
         {
             IsEnabled = true;
             Text = text ?? "";

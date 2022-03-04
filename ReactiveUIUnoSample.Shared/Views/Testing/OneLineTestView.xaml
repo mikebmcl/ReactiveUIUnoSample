@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ReactiveUIUnoSample.Views"
-    xmlns:vms="using:ReactiveUIUnoSample.ViewModels"
+    xmlns:ifacetest="using:ReactiveUIUnoSample.Interfaces.Testing"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -23,7 +23,7 @@
                 <TextBlock x:Name="CurrentTestItemFirstLineTextBlock" HorizontalAlignment="Center" HorizontalTextAlignment="Center" />
             </StackPanel>
 
-            <ListView x:Name="AnswersListView" Grid.Row="1" Margin="8" SelectionMode="Single">
+            <ItemsControl x:Name="AnswersItemsControl" Grid.Row="1" Margin="8">
                 <!-- Note: It's important when modifying a container style to base it on the default style if one exists, otherwise you can end up with
                     missing styling elements such as the accent-colored indication of the selected item in this ListView. To determine if there is a
                     default style, check:
@@ -43,19 +43,23 @@
                     As an example of what happens if you miss a default for a BasedOn that you should've had, uncomment the ListView.ItemContainerStyle
                     below and try running it both with and without the BasedOn. As noted above, without the BasedOn it will not have the selected visual
                     indicator (the little accent-colored marking to the left of the text). You can generally accomplish any styling you want using an
-                    item template. This does have its uses though, so we have the demonstration below.
+                    item template. This does have its uses though, so we have the demonstration below. However it will only work if you change the control
+                    to be a ListView instead of an ItemsControl. This has other problems because except on UWP, customizing ListViewItem's style results
+                    in the content not being displayed (in fact from the WASM at runtime, it appears to not add it). The customized ListViewItem style
+                    is commented out in CommonResourceDictionary.xaml as a result though we aren't using ListView anywhere currently since we don't
+                    need its added functionality.
                 -->
                 <!--<ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
                         <Setter Property="Margin" Value="4" />
                     </Style>
                 </ListView.ItemContainerStyle>-->
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="vms:ButtonViewModel">
-                        <ListViewItem Margin="4" Content="{x:Bind Text}" IsEnabled="{x:Bind IsEnabled, Mode=OneWay}" IsSelected="{x:Bind IsSelected, Mode=TwoWay}" />
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="ifacetest:IThreeStateTestAnswer">
+                        <ToggleButton Margin="4" Content="{x:Bind Text}" IsEnabled="{Binding IsEnabled, Mode=OneWay}" IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch" Command="{x:Bind PressCommand}" />
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
             <Border Grid.Row="2" Margin="8" Padding="4">
                 <TextBlock x:Name="ResultTextBlock" HorizontalAlignment="Stretch" HorizontalTextAlignment="Center" />

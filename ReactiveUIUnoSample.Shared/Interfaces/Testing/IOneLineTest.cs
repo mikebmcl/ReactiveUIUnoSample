@@ -1,4 +1,6 @@
-﻿
+﻿using ReactiveUI;
+
+using System.Reactive;
 using System.Windows.Input;
 
 namespace ReactiveUIUnoSample.Interfaces.Testing
@@ -14,7 +16,7 @@ namespace ReactiveUIUnoSample.Interfaces.Testing
         //Brush CheckResultForegroundBrush { get; set; }
         string CheckAnswerButtonText { get; set; }
         string DisableOneWrongAnswerText { get; set; }
-        ICommand DisableOneWrongAnswerCommand { get; set; }
-        ICommand CheckAnswerCommand { get; set; }
+        ReactiveCommand<Unit, Unit> DisableOneWrongAnswerCommand { get; set; }
+        ReactiveCommand<Unit, Unit> CheckAnswerCommand { get; set; }
     }
 }

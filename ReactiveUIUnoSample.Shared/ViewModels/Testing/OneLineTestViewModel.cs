@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -116,8 +117,8 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         [Reactive]
         public string NextFinishButtonTest { get; set; }
 
-        public ICommand CheckAnswerCommand { get; set; }
-        public ICommand NextFinishCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> CheckAnswerCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> NextFinishCommand { get; set; }
 
         private const string m_resultTextEmpty = " ";
         private const string m_resultTextCorrect = "Correct!";
@@ -130,10 +131,10 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         [Reactive]
         public bool? CheckedAnswerIsCorrect { get; set; }
 
-        private bool CheckCommandCanExecute()
-        {
-            return CurrentTestItem != null && CurrentTestItem.Answers.Any(tsta => tsta.IsSelected);
-        }
+        //private bool CheckCommandCanExecute()
+        //{
+        //    return CurrentTestItem != null && CurrentTestItem.Answers.Any(tsta => tsta.IsSelected);
+        //}
         private void CheckCommandExecute()
         {
             //CanDisableOneWrongAnswer = false;
@@ -151,16 +152,40 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
                 CheckedAnswerIsCorrect = true;
                 //CheckResultBGColor = m_resultCorrectBGColor;
                 //CheckResultTextColor = m_resultCorrectTextColor;
+                foreach (var item in CurrentTestItem.Answers)
+                {
+                    if (item != CurrentTestItem.CorrectAnswer)
+                    {
+                        item.IsEnabled = false;
+                    }
+                }
             }
             else
             {
                 string userAnswer = CurrentTestItem.UserAnswer();
-                UserWasWrong.Add(new OneLineTestWrongAnswer(CurrentTestItem, userAnswer));
+                var userAnswerVM = CurrentTestItem.SelectedItem;
+                UserWasWrong.Add(new OneLineTestWrongAnswerViewModel(CurrentTestItem, userAnswer));
                 ResultText = $"{m_resultTextWrongBeginning} '{userAnswer}' {m_resultTextWrongEnd}";
                 CheckedAnswerIsCorrect = false;
                 //IThreeStateTestAnswer correctItem = CurrentTestItem.Answers.First((item) => item.Text == CurrentTestItem.CorrectAnswer.Text);
                 //CurrentTestItem.SelectedItem = correctItem;
-                CurrentTestItem.CorrectAnswer.PressCommand.Execute(null);
+                CurrentTestItem.CorrectAnswer.PressCommand.Execute();
+                foreach (var item in CurrentTestItem.Answers)
+                {
+                    if (item == CurrentTestItem.CorrectAnswer)
+                    {
+                        item.IsSelected = true;
+                        //using (var disposable = item.PressCommand.Execute().Subscribe()) { }
+                    }
+                    else
+                    {
+                        if (item == userAnswerVM)
+                        {
+                            item.IsSelected = true;
+                        }
+                        item.IsEnabled = false;
+                    }
+                }
                 //CheckResultBGColor = m_resultWrongBGColor;
                 //CheckResultTextColor = m_resultWrongTextColor;
             }
@@ -226,7 +251,7 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
         /// If there are at more than this many enabled answers, <see cref="DisableOneWrongAnswerCommand"/> can execute.
         /// </summary>
         private const int _canDisableAnswersAboveCount = 2;
-        public ICommand DisableOneWrongAnswerCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> DisableOneWrongAnswerCommand { get; set; }
         protected void DisableOneWrongAnswerCommandExecute()
         {
             if (CurrentTestItem == null)
@@ -275,11 +300,11 @@ namespace ReactiveUIUnoSample.ViewModels.Testing
             CurrentTestItemIndex = 0;
             CheckAnswerCommand = ReactiveCommand.Create(CheckCommandExecute, this.WhenAnyValue(x => x.CurrentTestItem, x => x.CurrentTestItem.SelectedItem, x => x.CheckedAnswerIsCorrect, (item, selectedAnswer, checkedIsCorrect) => item != null && selectedAnswer != null && selectedAnswer?.IsEnabled is true && checkedIsCorrect == null).ObserveOn(SchedulerProvider.MainThread));
             // Need to explicitly specify the generics for WhenAnyValue here because of an ambiguity issue between overloads
-            NextFinishCommand = ReactiveCommand.Create(NextCommandExecute, this.WhenAnyValue<OneLineTestViewModel, bool, bool?>(x => x.CheckedAnswerIsCorrect, (checkedIsCorrect) => checkedIsCorrect != null).ObserveOn(SchedulerProvider.MainThread));
+            NextFinishCommand = ReactiveCommand.CreateFromTask(NextCommandExecute, this.WhenAnyValue<OneLineTestViewModel, bool, bool?>(x => x.CheckedAnswerIsCorrect, (checkedIsCorrect) => checkedIsCorrect != null).ObserveOn(SchedulerProvider.MainThread));
 
             CurrentTestItem = TestItems[CurrentTestItemIndex];
             EnabledAnswersCount = CurrentTestItem.Answers.Count;
-            DisableOneWrongAnswerCommand = ReactiveCommand.Create(DisableOneWrongAnswerCommandExecute, this.WhenAnyValue(x => x.EnabledAnswersCount, (currentlyEnabledCount) => currentlyEnabledCount > _canDisableAnswersAboveCount).ObserveOn(SchedulerProvider.MainThread));
+            DisableOneWrongAnswerCommand = ReactiveCommand.Create(DisableOneWrongAnswerCommandExecute, this.WhenAnyValue(x => x.EnabledAnswersCount, x => x.CheckedAnswerIsCorrect, (currentlyEnabledCount, checkedIsCorrect) => currentlyEnabledCount > _canDisableAnswersAboveCount && checkedIsCorrect is null).ObserveOn(SchedulerProvider.MainThread));
             DisableOneWrongAnswerText = "Remove a Wrong Answer";
             TestIsReady = true;
         }

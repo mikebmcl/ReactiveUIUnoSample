@@ -3,19 +3,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Note that we are including a fallback to the generic styles 'sans-serif' and 'serif' here. This way if there's some problem with the font or it cannot be used, the system will know to fallback to a default font that matches our general intention rather than picking a font without any hint about what might be appropriate. -->
     <!-- Note: If you want to test to see that your custom fonts are being used, if your custom font is a sans-serif font have it fall back to serif generic, if it is a serif font, have it fall back to a sans-serif generic, etc., so that you can visually verify that it is not using the fallback. If you do this, MAKE SURE to restore the generic fallbacks to their proper value after testing in case your program is unable to use your custom font on a platform and has to fall back. -->
-    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans,serif</x:String>
+    <x:String x:Key="NotoSans">ms-appx:///Assets/Fonts/NotoSans-Regular.ttf#Noto Sans,sans-serif</x:String>
     <x:String x:Key="NotoSerif">ms-appx:///Assets/Fonts/NotoSerif-Regular.ttf#Noto Serif,serif</x:String>
 
     <!-- To use these bold fonts you also need to set FontWeight="Bold" -->
-    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans,serif</x:String>
+    <x:String x:Key="NotoSansBold">ms-appx:///Assets/Fonts/NotoSans-Bold.ttf#Noto Sans,sans-serif</x:String>
     <x:String x:Key="NotoSerifBold">ms-appx:///Assets/Fonts/NotoSerif-Bold.ttf#Noto Serif,serif</x:String>
 
     <!-- To use this italic font you also need to set FontStyle="Italic" -->
-    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans,serif</x:String>
+    <x:String x:Key="NotoSansItalic">ms-appx:///Assets/Fonts/NotoSans-Italic.ttf#Noto Sans,sans-serif</x:String>
     <x:String x:Key="NotoSerifItalic">ms-appx:///Assets/Fonts/NotoSerif-Italic.ttf#Noto Serif,serif</x:String>
 
     <!-- To use these bold fonts you also need to set FontWeight="Bold" and FontStyle="Italic" -->
-    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans,serif</x:String>
+    <x:String x:Key="NotoSansBoldItalic">ms-appx:///Assets/Fonts/NotoSans-BoldItalic.ttf#Noto Sans,sans-serif</x:String>
     <x:String x:Key="NotoSerifBoldItalic">ms-appx:///Assets/Fonts/NotoSerif-BoldItalic.ttf#Noto Serif,serif</x:String>
 
     <!-- Defaults -->
@@ -47,9 +47,10 @@
     <Style TargetType="ListView">
          <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
-    <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+    <!-- Except on UWP, customizing ListViewItem's style results in the content not being displayed (based on browser tools with WASM at runtime and using a breakpoint in Skia.Gtk to take a look at it, it appears that the generator simply did not add the Content for the ListViewItem if it has a custom style here). So we are not including it here. As a result, if you use ListView and want your items to use the custom font and other styling, make sure to use an ItemTemplate that has controls that do have proper styling rather than trying to just use DisplayMemberPath. -->
+    <!--<Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
          <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
-    </Style>
+    </Style>-->
     <Style TargetType="NavigationView">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
@@ -63,6 +64,9 @@
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
     <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+    </Style>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
         <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
     </Style>
     <Style TargetType="UserControl">

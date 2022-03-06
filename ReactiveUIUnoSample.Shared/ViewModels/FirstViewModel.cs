@@ -31,7 +31,6 @@ namespace ReactiveUIUnoSample.ViewModels
                     return HostScreenWithContract.Router.Navigate.Execute(new TemperatureConversionsViewModel(HostScreenWithContract, SchedulerProvider).ToViewModelAndContract());
                 });
         }
-        public static string EnteredAmountTextBoxAutomationId => "EnteredAmountTextBox";
 
         // The ReactiveAttribute from Fody adds INotifyProperty, including a backing field, for us. See: https://www.reactiveui.net/docs/handbook/view-models/boilerplate-code
         [Reactive]

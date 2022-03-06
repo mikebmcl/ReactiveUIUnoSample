@@ -213,13 +213,6 @@ namespace ReactiveUIUnoSample.ViewModels.UnitConversions
         public ReactiveCommand<Unit, Unit> RunTempTest { get; set; }
         private readonly ExceptionObserver _runTempTestExceptionObserver;
 
-        public static string TempInputAutomationId => "TempInputTextId";
-        public static string TempConversionResultAutomationId => "TempConversionResultId";
-        public static string TempConversionTypeAutomationId => "TempConversionTypeId";
-        public static string TempTestTypeAutomationId => "TempTestTypeId";
-        public static string TempTestDifficultyAutomationId => "TempTestDifficultyId";
-        public static string RunTempTestAutomationId => "RunTempTestId";
-
         private IObservable<IViewModelAndContract> RunTempTestImpl()
         {
             try

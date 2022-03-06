@@ -20,6 +20,7 @@
 //using Windows.UI.Xaml;
 //using Windows.UI.Xaml.Controls;
 //using ReactiveUIUnoSample.ViewModels;
+//using ReactiveUIUnoSample.Views;
 
 //namespace ReactiveUIUnoSample.UITest
 //{
@@ -42,7 +43,7 @@
 //            {
 //                App.RefreshBrowser();
 //            }
-//            Query enteredAmountTextBox = q => q.All().Marked(FirstViewModel.EnteredAmountTextBoxAutomationId);
+//            Query enteredAmountTextBox = q => q.All().Marked(FirstView.EnteredAmountTextBoxAutomationId);
 //            //using var _ = new AssertionScope();
 //            var matchedElementCount = app.WaitForElement(enteredAmountTextBox).Length;
 //            Assert.IsTrue(matchedElementCount == 1);
@@ -61,7 +62,7 @@
 //            {
 //                App.RefreshBrowser();
 //            }
-//            Query enteredAmountTextBox = q => q.All().Marked(FirstViewModel.EnteredAmountTextBoxAutomationId);
+//            Query enteredAmountTextBox = q => q.All().Marked(FirstView.EnteredAmountTextBoxAutomationId);
 //            app.WaitForElement(enteredAmountTextBox);
 //            using var _ = new AssertionScope();
 //            string result = app.Query(q => enteredAmountTextBox(q).GetDependencyPropertyValue(nameof(TextBox.Text)).Value<string>()).FirstOrDefault();
@@ -81,7 +82,7 @@
 //            {
 //                App.RefreshBrowser();
 //            }
-//            Query enteredAmountTextBox = q => q.All().Marked(FirstViewModel.EnteredAmountTextBoxAutomationId);
+//            Query enteredAmountTextBox = q => q.All().Marked(FirstView.EnteredAmountTextBoxAutomationId);
 //            app.WaitForElement(enteredAmountTextBox);
 //            decimal value = 100000.32M;
 //            app.Query(q => enteredAmountTextBox(q).SetDependencyPropertyValue(nameof(TextBox.Text), value.ToString()));
@@ -93,7 +94,7 @@
 //            TakeScreenshot("successfulformatting");
 //            using var _ = new AssertionScope();
 //            string result = app.Query(q => enteredAmountTextBox(q).GetDependencyPropertyValue(nameof(TextBox.Text)).Value<string>()).FirstOrDefault();
-//            result.Should().NotBeNullOrWhiteSpace($"because {FirstViewModel.EnteredAmountTextBoxAutomationId} should not be null or empty after setting its value and switching focus away from it");
+//            result.Should().NotBeNullOrWhiteSpace($"because {FirstView.EnteredAmountTextBoxAutomationId} should not be null or empty after setting its value and switching focus away from it");
 //            var converter = new Converters.DecimalToStringBindingTypeConverter();
 //            if (!converter.TryConvert(value, typeof(string), null, out object expected) || !(expected is string))
 //            {

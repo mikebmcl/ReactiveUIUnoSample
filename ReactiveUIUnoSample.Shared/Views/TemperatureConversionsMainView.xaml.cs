@@ -71,5 +71,12 @@ namespace ReactiveUIUnoSample.Views
                 this.Bind(ViewModel, vm => vm.SelectedDifficulty, view => view.TempTestDifficultyComboBox.SelectedItem).DisposeWith(disposables);
             });
         }
+
+        public static string TempInputAutomationId => "TempInputTextId";
+        public static string TempConversionResultAutomationId => "TempConversionResultId";
+        public static string TempConversionTypeAutomationId => "TempConversionTypeId";
+        public static string TempTestTypeAutomationId => "TempTestTypeId";
+        public static string TempTestDifficultyAutomationId => "TempTestDifficultyId";
+        public static string RunTempTestAutomationId => "RunTempTestId";
     }
 }

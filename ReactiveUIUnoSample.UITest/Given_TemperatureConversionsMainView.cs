@@ -21,7 +21,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using ReactiveUIUnoSample.ViewModels;
 using ReactiveUIUnoSample.ViewModels.Testing;
-using ReactiveUIUnoSample.ViewModels.UnitConversions;
+using ReactiveUIUnoSample.Views;
 
 namespace ReactiveUIUnoSample.UITest
 {
@@ -31,7 +31,7 @@ namespace ReactiveUIUnoSample.UITest
         public void WhenLoaded_ThenThereShouldBeExactlyOneControlWithAutomationIdTempInputAutomationId()
         {
             App.RefreshBrowser();
-            Query tempInputControl = q => q.All().Marked(TemperatureConversionsViewModel.TempInputAutomationId);
+            Query tempInputControl = q => q.All().Marked(TemperatureConversionsMainView.TempInputAutomationId);
             var matchedElementCount = App.WaitForElement(tempInputControl).Length;
             Assert.That(matchedElementCount, Is.EqualTo(1));
         }
@@ -43,7 +43,7 @@ namespace ReactiveUIUnoSample.UITest
         public void WhenLoaded_ThenThereShouldBeExactlyOneControlWithAutomationIdTempConversionResultAutomationId()
         {
             App.RefreshBrowser();
-            Query someControl = q => q.All().Marked(TemperatureConversionsViewModel.TempConversionResultAutomationId);
+            Query someControl = q => q.All().Marked(TemperatureConversionsMainView.TempConversionResultAutomationId);
             var matchedElementCount = App.WaitForElement(someControl).Length;
             Assert.That(matchedElementCount, Is.EqualTo(1));
         }

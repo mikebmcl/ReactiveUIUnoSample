@@ -9,6 +9,11 @@
             Value = value;
             Display = display;
         }
+
+        public override string ToString()
+        {
+            return Display ?? "";
+        }
     }
 
     public class ValueDisplayPairString : ValueDisplayGenericPair<string>

@@ -11,7 +11,7 @@
     <PackageReference Include="FluentAssertions.Reactive" Version="0.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="ReactiveUI" Version="17.1.50" />
     <PackageReference Include="ReactiveUI.Fody" Version="17.1.50" />
@@ -27,7 +27,7 @@
     <PackageReference Include="Uno.Core.Build" Version="4.0.1" />
     <PackageReference Include="Uno.Microsoft.Toolkit.Uwp" Version="7.1.11" />
     <PackageReference Include="Uno.Microsoft.Toolkit.Uwp.UI.Controls.Primitives" Version="7.1.11" />
-    <PackageReference Include="Uno.UI" Version="4.1.8" />
+    <PackageReference Include="Uno.UI" Version="4.1.9" />
   </ItemGroup>
 
   <ItemGroup>

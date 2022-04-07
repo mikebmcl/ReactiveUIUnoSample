@@ -35,6 +35,7 @@
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>-->
             <muxc:NavigationViewItem Content="About..." AutomationProperties.Name="About" Tag="about" />
+            <!--<muxc:NavigationViewItem Content="Force Full GC" Tag="forcefullgc" />-->
             <!--<muxc:NavigationViewItem Content="Unit Conversions" Icon="World" AutomationProperties.Name="unitconversions" Tag="unitconversions" />
             <muxc:NavigationViewItem Content="About..." Icon="Comment" AutomationProperties.Name="about" Tag="about" />-->
         </muxc:NavigationView.MenuItems>

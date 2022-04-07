@@ -206,6 +206,17 @@ namespace ReactiveUIUnoSample.ViewModels
             {
                 // find NavigationViewItem with Content that equals InvokedItem
                 NavigationViewItem item = view.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => (string)x.Content == (string)args.InvokedItem);
+                //if ((string)item.Tag == "forcefullgc")
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Running GC...");
+                //    Console.WriteLine("Running GC...");
+                //    GC.Collect();
+                //    GC.WaitForPendingFinalizers();
+                //    GC.Collect();
+                //    System.Diagnostics.Debug.WriteLine("GC complete.");
+                //    Console.WriteLine("GC complete.");
+                //    return;
+                //}
                 var vm = GetViewModelForNavigationViewItem(item);
                 if (vm.ViewModel != null)
                 {
